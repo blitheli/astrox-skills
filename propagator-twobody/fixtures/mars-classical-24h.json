@@ -1,0 +1,11 @@
+{
+  "Start": "7 Apr 2023 04:00:00.000000",
+  "Stop": "8 Apr 2023 04:00:00.000000",
+  "CentralBody": "Mars",
+  "GravitationalParameter": 4.282837564100000e+013,
+  "OrbitEpoch": "7 Apr 2023 04:00:00.00000",
+  "CoordSystem": "Inertial",
+  "CoordType": "Classical",
+  "OrbitalElements": [ 3696190, 0, 90, 0, 0, 0 ],
+  "Step": 60
+}

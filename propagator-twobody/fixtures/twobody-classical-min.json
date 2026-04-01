@@ -1,0 +1,10 @@
+{
+  "CentralBody": "Earth",
+  "CoordSystem": "Inertial",
+  "CoordType": "Classical",
+  "OrbitalElements": [6878137, 0, 45, 0, 200, 0],
+  "OrbitEpoch": "2024-05-01T12:00:00Z",
+  "Start": "2024-05-01T12:00:00Z",
+  "Stop": "2024-05-01T14:00:00Z",
+  "Step": 60
+}
