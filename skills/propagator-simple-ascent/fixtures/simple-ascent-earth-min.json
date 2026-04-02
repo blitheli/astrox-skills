@@ -1,0 +1,12 @@
+{
+  "Start": "2022-05-23T04:00:00.000Z",
+  "Stop": "2022-05-23T04:10:00.000Z",
+  "Step": 5.0,
+  "LaunchLatitude": 28.6084,
+  "LaunchLongitude": -80.6042,
+  "LaunchAltitude": 0.0,
+  "BurnoutVelocity": 7725.84,
+  "BurnoutLatitude": 25.051,
+  "BurnoutLongitude": -51.326,
+  "BurnoutAltitude": 300000
+}

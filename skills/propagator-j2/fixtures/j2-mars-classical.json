@@ -1,0 +1,8 @@
+{
+  "Start": "2025-06-03T00:00:00.000Z",
+  "Stop": "2025-06-04T00:00:00.000Z",
+  "CentralBody": "Mars",
+  "OrbitEpoch": "2025-06-03T00:00:00.000Z",
+  "CoordType": "Classical",
+  "OrbitalElements": [3696190, 0, 45.0, 0, 0, 0]
+}

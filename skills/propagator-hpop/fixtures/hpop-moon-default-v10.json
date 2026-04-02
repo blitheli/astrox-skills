@@ -1,0 +1,43 @@
+﻿{
+  "Description": "STK缺省的Propagator:Moon Default V10",
+  "Start": "2017-06-28T04:00:00.000Z",
+  "Stop": "2017-06-29T04:00:00.000Z",
+  "OrbitEpoch": "2017-06-28T04:00:00.000Z",
+  "CoordEpoch": "2000-01-01T11:58:55.816Z",
+  "CoordSystem": "Inertial",
+  "CoordType": "Cartesian",
+  "OrbitalElements": [ 2000000, 0.0, 0.0, 0.0, 1375.9593682995, 747.0849814891 ],
+  "GravitationalParameter": 4.902800222140800e+012,
+  "Mass": 1000,
+  "CoefficientOfDrag": 2.2,
+  "AreaMassRatioDrag": 0.02,
+  "CoefficientOfSRP": 1.0,
+  "AreaMassRatioSRP": 0.02,
+
+  "HpopPropagator": {
+    "Name": "Moon_Hpop_default_v10",
+    "CentralBodyName": "Moon",
+    "GravityModel": {
+      "$type": "GravityField",
+      "GravityFileName": "GL0900D.grv",
+      "Degree": 48,
+      "Order": 48,
+      "SolidTideType": "Permanent tide only"
+    },
+    "ThirdBodyForce": [
+      {
+        "ThirdBodyName": "Earth"
+      },
+      {
+        "ThirdBodyName": "Sun"
+      }
+    ],
+    "SRPModel": {
+      "$type": "SRPSpherical",
+      "Description": "光压模型:SRPSpherical类型",
+      "ShadowModel": "DualCone",
+      "SunPosition": "Apparent",
+      "EclipsingBodies": [ "Earth", "Moon" ]
+    }
+  }
+}

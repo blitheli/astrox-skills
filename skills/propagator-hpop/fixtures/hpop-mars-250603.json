@@ -1,0 +1,38 @@
+{
+  "Description": "Mars仅非球形引力摄动",
+  "Start": "2025-06-03T00:00:00.000Z",
+  "Stop": "2025-06-04T00:00:00.000Z",
+  "OrbitEpoch": "2025-06-03T00:00:00.000Z",
+  "CoordType": "Classical",
+  "CoordSystem": "Inertial",
+  "OrbitalElements": [3696190, 0, 45.0, 0, 0, 0],
+  "GravitationalParameter": 0.4282837564100000E14,
+  "Mass": 1000,
+  "CoefficientOfDrag": 2.2,
+  "AreaMassRatio_Drag": 0.02,
+  "CoefficientOfSRP": 1.0,
+  "AreaMassRatio_SRP": 0.02,
+  "HpopPropagator": {
+    "Name": "Mars_Hpop_v12.8",
+    "CentralBodyName": "Mars",
+    "GravityModel": {
+      "$type": "GravityField",
+      "GravityFileName": "MRO110C.grv",
+      "Degree": 4,
+      "Order": 4,
+      "SolidTideType": "None"
+    },
+    "ThirdBodyForce": [
+      {
+        "ThirdBodyName": "Sun"
+      }
+    ],
+    "SRPModel": {
+      "$type": "SRPSpherical",
+      "Description": "光压模型:SRPSpherical类型",
+      "ShadowModel": "DualCone",
+      "SunPosition": "Apparent",
+      "EclipsingBodies": ["Mars"]
+    }
+  }
+}

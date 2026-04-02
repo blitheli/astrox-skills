@@ -13,6 +13,26 @@
       "name": "propagator-twobody",
       "skillFile": "skills/propagator-twobody/SKILL.md",
       "fixturesDir": "skills/propagator-twobody/fixtures"
+    },
+    {
+      "name": "propagator-simple-ascent",
+      "skillFile": "skills/propagator-simple-ascent/SKILL.md",
+      "fixturesDir": "skills/propagator-simple-ascent/fixtures"
+    },
+    {
+      "name": "propagator-ballistic",
+      "skillFile": "skills/propagator-ballistic/SKILL.md",
+      "fixturesDir": "skills/propagator-ballistic/fixtures"
+    },
+    {
+      "name": "propagator-j2",
+      "skillFile": "skills/propagator-j2/SKILL.md",
+      "fixturesDir": "skills/propagator-j2/fixtures"
+    },
+    {
+      "name": "propagator-hpop",
+      "skillFile": "skills/propagator-hpop/SKILL.md",
+      "fixturesDir": "skills/propagator-hpop/fixtures"
     }
   ]
 }

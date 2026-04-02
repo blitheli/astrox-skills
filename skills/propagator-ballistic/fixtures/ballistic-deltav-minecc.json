@@ -1,0 +1,12 @@
+{
+  "Start": "2022-06-27T04:00:00.000Z",
+  "Step": 5,
+  "LaunchLatitude": 0,
+  "LaunchLongitude": 0,
+  "LaunchAltitude": 0.0,
+  "BallisticType": "DeltaV_MinEcc",
+  "BallisticTypeValue": 6901.943,
+  "ImpactLatitude": 20,
+  "ImpactLongitude": 20,
+  "ImpactAltitude": 0
+}

@@ -1,0 +1,54 @@
+﻿{
+  "Description": "STK缺省的Propagator:Earth Default V10",
+  "Start": "2018-12-01T00:00:00.000Z",
+  "Stop": "2018-12-02T00:00:00.000Z",
+  "OrbitEpoch": "2018-12-01T00:00:00.000Z",
+  "CoordEpoch": "2000-01-01T11:58:55.816Z",
+  "CoordSystem": "Inertial",
+  "CoordType": "Classical",
+  "OrbitalElements": [ 6678137, 0, 28.5, 0, 0, 0 ],
+  "GravitationalParameter": 3.986004415E14,
+  "Mass": 1000,
+  "CoefficientOfDrag": 2.2,
+  "AreaMassRatioDrag": 0.02,
+  "CoefficientOfSRP": 1.0,
+  "AreaMassRatioSRP": 0.02,
+
+  "HpopPropagator": {
+    "Name": "Earth_Hpop_default_v10",
+    "CentralBodyName": "Earth",
+
+    "GravityModel": {
+      "$type": "GravityField",
+      "GravityFileName": "EGM2008.grv",
+      "UseSecularVariations": true,
+      "Degree": 21,
+      "Order": 21,
+      "EOPfilePath": "EOP-v1.1.txt",
+      "SolidTideType": "Permanent tide only"
+    },
+    "ThirdBodyForce": [
+      {
+        "ThirdBodyName": "Moon"
+      },
+      {
+        "ThirdBodyName": "Sun"
+      }
+    ],
+    "AtmosphericModel": {
+      "$type": "JacchiaRoberts",
+      "Description": "大气密度模型:JacchiaRoberts类型",
+      "DragModelType": "Spherical",
+      "AtmosDataSource": "Constant Values",
+      "F10p7Avg": 150.0,
+      "Kp": 3.0
+    },
+    "SRPModel": {
+      "$type": "SRPSpherical",
+      "Description": "光压模型:SRPSpherical类型",
+      "ShadowModel": "DualCone",
+      "SunPosition": "Apparent",
+      "EclipsingBodies": [ "Earth", "Moon" ]
+    }
+  }
+}
