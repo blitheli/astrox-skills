@@ -32,7 +32,7 @@ description: 通过 Astrox WebAPI 的 POST /Propagator/sgp4，依据两行根数
 
 ### 响应数据结构（CzmlPositionOut）
 
-详见 `docs/api-schemas/CzmlPositionOut.md`
+详见 `shared-docs/api-schemas/CzmlPositionOut.md`
 
 ## 注意事项
 
@@ -96,4 +96,4 @@ curl "${BASE_URL}/Propagator/sgp4" \
 |------|----------|
 | `propagator-sgp4/fixtures/sgp4-min.json` | 与 OpenAPI 默认 TLE 一致的 6 h 窗口 + `Step: 60` |
 
-从响应中取**末时刻**位置速度：按 `docs/api-schemas/CzmlPositionOut.md` 中 `cartesianVelocity` 平铺格式，取最后一组 `[t, X, Y, Z, Vx, Vy, Vz]`。
+从响应中取**末时刻**位置速度：按 `shared-docs/api-schemas/CzmlPositionOut.md` 中 `cartesianVelocity` 平铺格式，取最后一组 `[t, X, Y, Z, Vx, Vy, Vz]`。

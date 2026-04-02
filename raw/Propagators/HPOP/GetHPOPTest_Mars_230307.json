@@ -1,0 +1,44 @@
+﻿{
+  "Start": "2023-03-07T04:00:00.000Z",
+  "Stop": "2023-03-08T04:00:00.000Z",
+  "OrbitEpoch": "2023-03-07T04:00:00.000Z",
+  "CoordEpoch": "2000-01-01T11:58:55.816Z",
+  "CoordSystem": "Inertial",
+  "CoordType": "Cartesian",
+  "OrbitalElements": [ 3596190.000, 0.0, 0.0, 0.0, 2990.567199157414, 1725.628089264959 ],
+  "GravitationalParameter": 0.4282837564100000E14,
+  "Mass": 1000,
+  "CoefficientOfDrag": 2.2,
+  "AreaMassRatio_Drag": 0.02,
+  "CoefficientOfSRP": 1.0,
+  "AreaMassRatio_SRP": 0.02,
+
+  "HpopPropagator": {
+    "Name": "Mars_Hpop_default_v10",
+    "CentralBody": "Mars",
+
+    "GravityModel": {
+      "$type": "GravityField",
+      "GravityFilePath": "MRO110C.grv",
+      "Degree": 70,
+      "Order": 70,
+      "EOPfilePath": "EOP-v1.1.txt",
+      "EnableTide": false,
+      "TideSelectItem": "PermnantTides"
+    },
+    "thirdBodyParameter": [
+      {
+        "ThirdBodyName": "Jupiter"
+      },
+      {
+        "ThirdBodyName": "Sun"
+      }
+    ],
+    "srpParameter": {
+      "ModelType": "Spherical",
+      "ShadowModel": "DualCone",
+      "SunPositionType": "True",
+      "EclipsingList": [ "Mars" ]
+    }
+  }
+}

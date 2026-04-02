@@ -1,0 +1,18 @@
+{
+  "project": "astrox-skills",
+  "skillsRoot": "skills",
+  "sharedDocsRoot": "skills/shared-docs",
+  "defaultServer": "http://astrox.cn:8765/",
+  "skills": [
+    {
+      "name": "propagator-sgp4",
+      "skillFile": "skills/propagator-sgp4/SKILL.md",
+      "fixturesDir": "skills/propagator-sgp4/fixtures"
+    },
+    {
+      "name": "propagator-twobody",
+      "skillFile": "skills/propagator-twobody/SKILL.md",
+      "fixturesDir": "skills/propagator-twobody/fixtures"
+    }
+  ]
+}
