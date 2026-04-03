@@ -48,6 +48,7 @@ description: 通过 Astrox WebAPI 的 POST /Propagator/Ballistic 计算导弹弹
 - 经度范围：-180 到 180 度
 - 纬度范围：-90 到 90 度
 - 弹道类型必须为有效的四种类型之一
+- 相应的数据默认为地球固连系(Earth Fixed, ECF)
 
 ## 弹道类型说明
 

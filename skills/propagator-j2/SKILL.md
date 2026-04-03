@@ -24,9 +24,9 @@ description: 通过 Astrox WebAPI 的 POST /Propagator/J2 计算考虑 J2 项摄
 | :--- | :--- | :--- | :--- |
 | `CentralBody` | string | 否 | 缺省 "Earth" |
 | `CoordSystem`| string | 否 | 缺省 "Inertial" |
-| `GravitationalParameter`|number|否|引力常数(m^3/s^2)，默认按中心天体自动获取 |
-| `J2NormalizedValue`|number|否|归一化J2值，默认按中心天体自动获取 |
-| `RefDistance`|number|否|参考距离(m)，默认按中心天体自动获取 |
+| `GravitationalParameter`|number|否|引力常数(m^3/s^2)，缺省使用EGM2008:3.9860044150E+14 |
+| `J2NormalizedValue`|number|否|归一化J2值，缺省: 地球EGM2008:0.000484165143790815 |
+| `RefDistance`|number|否|参考距离(m)，缺省: 地球EGM2008:6378136.3 |
 | `CoordType` | string | 否 | "Classical" 或 "Cartesian" (缺省 Classical) |
 | `OrbitalElements` | array | 是 | 轨道根数,具体根数由CoordType决定 |
 | `OrbitEpoch` | string | 是 | 轨道历元(UTCG) ("yyyy-MM-ddTHH:mm:ssZ") |
