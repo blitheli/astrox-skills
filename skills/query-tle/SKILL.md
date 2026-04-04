@@ -1,9 +1,11 @@
 ---
-name: query-ssc
-description: 通过 Astrox WebAPI 的 GET /ssc 从数据库中获取所有符合查询条件的卫星。当用户需要查询卫星TLE、卫星轨道、卫星星历时使用。
+name: query-tle
+description: 从数据库中获取所有符合查询条件的卫星。当用户需要查询卫星TLE、卫星轨道、卫星星历时使用。
 ---
 
 # 卫星TLE查询技能 (Query TLE)
+
+目前仅支持通过 Astrox WebAPI 的 GET /ssc
 
 ## 核心指令 (Core Instructions)
 1. **输入解析**：识别用户提供的卫星名称、卫星编号、任务类型、所属国家、轨道参数等查询条件。
@@ -33,41 +35,71 @@ description: 通过 Astrox WebAPI 的 GET /ssc 从数据库中获取所有符合
 
 ### 响应数据结构 (SatelliteDatabaseOutput)
 
+#### 顶层字段
+
+| 字段名 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `IsSuccess` | boolean | 结果(True:成功；False:失败) |
+| `Message` | string | 结果信息(主要是存储失败的原因) |
+| `TotalCount` | integer | 查询到的卫星总数 |
+| `TLEs` | array `SatelliteDatabaseEntry[]` \| null | 所有卫星集合(数据库查询结果) |
+
+#### TLEs 子项字段 (SatelliteDatabaseEntry)
+
+| 字段名 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `Active` | boolean | 是否有效 |
+| `CommonName` | string \| null | 常用名称 |
+| `OfficialName` | string \| null | 官方名称 |
+| `SatelliteNumber` | string \| null | SSC编号 |
+| `TleEpoch` | string \| null | TLE历元时刻(yyyy-MM-ddTHH:mm:ssZ) |
+| `RevolutionNumber` | integer | 历元时刻对应的运行圈数 |
+| `TLE_Line1` | string \| null | 两行根数TLE-Line1 |
+| `TLE_Line2` | string \| null | 两行根数TLE-Line2 |
+| `InternationalDesignator` | string \| null | 国际标识 |
+| `Owner` | string \| null | 卫星所属国 |
+| `Mission` | string \| null | 卫星任务类型 |
+| `LaunchSite` | string \| null | 发射点 |
+| `LaunchDateString` | string \| null | 发射日期(YYYYMMDDHHMM in UTC) |
+| `OrbitDescription` | string \| null | 轨道描述(若已坠入大气，则包含"Decayed"以及日期) |
+| `Mass` | number | 卫星质量(kg) |
+| `Apogee` | number | 远地点高度(m) |
+| `Perigee` | number | 近地点高度(m) |
+| `Period` | number | 轨道周期(s) |
+| `Inclination` | number | 轨道倾角(rad) |
+| `LastDatabaseUpdate` | string | 数据库更新时间 |
+| `WriteUp` | string \| null | 卫星描述信息 |
+
+#### 响应示例
+
 ```json
 {
   "IsSuccess": true,
-  "Message": "",
-  "TotalCount": 1,
+  "Message": "Success",
+  "TotalCount": 2,
   "TLEs": [
     {
-      "Satellite": {
-        "SSC": "25544",
-        "Name": "ISS (ZARYA)",
-        "Mission": "General",
-        "Owner": "INT"
-      },
-      "TLE": {
-        "SatelliteNumber": "25544",
-        "InternationalDesignator": "1998-067A",
-        "Epoch": "2024-04-01T12:00:00Z",
-        "MeanMotion": 15.49835367,
-        "Eccentricity": 0.0006703,
-        "Inclination": 51.6416,
-        "RAAN": 248.4787,
-        "ArgumentOfPerigee": 130.5360,
-        "MeanAnomaly": 325.0288,
-        "Bstar": 0.0001,
-        "MeanMotionDot": 0.00001,
-        "Line1": "1 25544U 98067A   24092.50000000  .00010000  00000-0  18000-3 0  9999",
-        "Line2": "2 25544  51.6416 248.4787 0006703 130.5360 325.0288 15.49835367444444"
-      },
-      "Orbit": {
-        "Perigee": 408.5,
-        "Apogee": 412.3,
-        "SemiMajorAxis": 6778.1,
-        "Period": 92.68
-      },
-      "Active": true
+      "Active": true,
+      "CommonName": "ISS",
+      "OfficialName": "ISS",
+      "SatelliteNumber": "25544",
+      "TleEpoch": "2026-04-03T21:00:58.615Z",
+      "RevolutionNumber": 56023,
+      "TLE_Line1": "1 25544U 98067A   26093.87567842  .00012431  00000-0  23534-3 0  9998",
+      "TLE_Line2": "2 25544  51.6327 307.8415 0006253 268.9169  91.1103 15.48754008560234",
+      "InternationalDesignator": "1998-067A",
+      "Owner": "ISS",
+      "Mission": "Engineer",
+      "LaunchSite": "TYM",
+      "LaunchDateString": "199811200640",
+      "OrbitDescription": "",
+      "Mass": 31100,
+      "Apogee": 425000,
+      "Perigee": 416000,
+      "Period": 5580,
+      "Inclination": 0.9005898940290741,
+      "LastDatabaseUpdate": "2026-04-04T00:00:00",
+      "WriteUp": "https://celestrak.org/satcat/1998/1998-067.php"
     }
   ]
 }
@@ -79,9 +111,9 @@ description: 通过 Astrox WebAPI 的 GET /ssc 从数据库中获取所有符合
 - 任务类型：Astronomy(天文学)、Comm(通信)、Navigation(导航)、General(通用)等
 - 所属国家：PRC(中国)、UK(英国)、US(美国)、INT(国际)等
 - 轨道高度单位：米 (m)
-- 轨道倾角单位：度 (deg)
+- 轨道倾角单位：弧度 (rad)
 - 半长轴单位：米 (m)
-- 轨道周期单位：分钟 (min)
+- 轨道周期单位：秒 (s)
 - 平均运动：圈/天 (rev/day)
 - 偏心率：无量纲
 - 一般情况下只需要提供卫星名称即可查询
