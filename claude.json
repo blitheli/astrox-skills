@@ -33,6 +33,26 @@
       "name": "propagator-hpop",
       "skillFile": "skills/propagator-hpop/SKILL.md",
       "fixturesDir": "skills/propagator-hpop/fixtures"
+    },
+    {
+      "name": "orbitwizard-sso",
+      "skillFile": "skills/orbitwizard-sso/SKILL.md",
+      "fixturesDir": "skills/orbitwizard-sso/fixtures"
+    },
+    {
+      "name": "orbitwizard-geo",
+      "skillFile": "skills/orbitwizard-geo/SKILL.md",
+      "fixturesDir": "skills/orbitwizard-geo/fixtures"
+    },
+    {
+      "name": "orbitwizard-molniya",
+      "skillFile": "skills/orbitwizard-molniya/SKILL.md",
+      "fixturesDir": "skills/orbitwizard-molniya/fixtures"
+    },
+    {
+      "name": "orbitwizard-walker",
+      "skillFile": "skills/orbitwizard-walker/SKILL.md",
+      "fixturesDir": "skills/orbitwizard-walker/fixtures"
     }
   ]
 }

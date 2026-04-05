@@ -1,0 +1,7 @@
+{
+  "Description": "Molniya orbit initial design",
+  "OrbitEpoch": "2023-08-11T04:00:00.000Z",
+  "PerigeeAltitude": 500,
+  "ApogeeLongitude": 100,
+  "ArgumentOfPeriapsis": 270
+}
