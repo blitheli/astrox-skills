@@ -53,6 +53,11 @@
       "name": "orbitwizard-walker",
       "skillFile": "skills/orbitwizard-walker/SKILL.md",
       "fixturesDir": "skills/orbitwizard-walker/fixtures"
+    },
+    {
+      "name": "lighting-times",
+      "skillFile": "skills/lighting-times/SKILL.md",
+      "fixturesDir": "skills/lighting-times/fixtures"
     }
   ]
 }

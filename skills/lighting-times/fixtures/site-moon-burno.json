@@ -1,0 +1,11 @@
+{
+  "Description": "月面Bruno坑光照计算",
+  "Start": "2022-09-05T04:00:00Z",
+  "Stop": "2023-09-04T04:00:00Z",
+  "Position": {
+    "$type": "SitePosition",
+    "CentralBody": "Moon",
+    "cartographicDegrees": [102.91745, 35.911758, -2345.2],
+    "clampToGround": true
+  }
+}
