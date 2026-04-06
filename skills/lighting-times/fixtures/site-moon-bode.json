@@ -1,0 +1,11 @@
+{
+  "Description": "月面博得月溪点光照计算（无地形遮罩，有月食场景）",
+  "Start": "2029-06-01T04:00:00.000Z",
+  "Stop": "2029-07-01T04:00:00.000Z",
+  "Position": {
+    "$type": "SitePosition",
+    "CentralBody": "Moon",
+    "cartographicDegrees": [-4.8, 11, 0],
+    "clampToGround": true
+  }
+}
