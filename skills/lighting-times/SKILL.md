@@ -79,6 +79,7 @@ description: 计算地面站、卫星等对象的光照时间，考虑 De430 视
 
 ## 注意事项
 
+- 若没有设置Start,Stop,则默认Start为当前日期零点,Stop=Start+1天
 - 时间格式：使用 ISO8601 格式 (`yyyy-MM-ddTHH:mm:ssZ`)
 - 坐标单位：经纬度为度(deg)，高度为米(m)
 - 地形遮罩：`AzElMaskData` 仅用于地面站，单位为弧度(rad)
