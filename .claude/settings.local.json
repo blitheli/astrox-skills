@@ -2,6 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(git checkout:*)"
+    ],
+    "additionalDirectories": [
+      "d:\\astrox-skills\\skills\\lighting-times"
     ]
   }
 }

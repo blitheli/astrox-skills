@@ -1,0 +1,14 @@
+{
+  "Description": "火星卫星TwoBody光照计算（火星遮挡）",
+  "Start": "2023-04-07T04:00:00Z",
+  "Stop": "2023-04-08T04:00:00Z",
+  "Position": {
+    "$type": "TwoBody",
+    "CentralBody": "Mars",
+    "GravitationalParameter": 42828375641000.0,
+    "OrbitEpoch": "2023-04-07T04:00:00Z",
+    "CoordSystem": "Inertial",
+    "CoordType": "Classical",
+    "OrbitalElements": [3696190, 0, 45, 0, 0, 0]
+  }
+}

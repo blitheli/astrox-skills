@@ -1,0 +1,11 @@
+{
+  "Description": "地球地面站光照计算-圣海伦斯火山",
+  "Start": "2022-09-05T04:00:00Z",
+  "Stop": "2022-09-07T04:00:00Z",
+  "Position": {
+    "$type": "SitePosition",
+    "CentralBody": "Earth",
+    "cartographicDegrees": [-122.18936, 46.19557, 0],
+    "clampToGround": false
+  }
+}

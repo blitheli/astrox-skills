@@ -1,0 +1,14 @@
+{
+  "Description": "月球卫星TwoBody光照计算（默认月球遮挡）",
+  "Start": "2022-09-05T04:00:00Z",
+  "Stop": "2022-09-05T08:00:00Z",
+  "Position": {
+    "$type": "TwoBody",
+    "CentralBody": "Moon",
+    "GravitationalParameter": 4902800305555.4,
+    "OrbitEpoch": "2022-09-05T04:00:00Z",
+    "CoordSystem": "Inertial",
+    "CoordType": "Classical",
+    "OrbitalElements": [2037400, 0, 45, 0, 90, 0]
+  }
+}

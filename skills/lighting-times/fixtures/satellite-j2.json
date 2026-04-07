@@ -1,0 +1,12 @@
+{
+  "Description": "J2卫星光照计算",
+  "Start": "2022-09-05T04:00:00Z",
+  "Stop": "2022-09-06T04:00:00Z",
+  "Position": {
+    "$type": "J2",
+    "OrbitEpoch": "2022-09-05T04:00:00Z",
+    "CoordSystem": "Inertial",
+    "CoordType": "Classical",
+    "OrbitalElements": [7678140, 0, 58.5, 0, 0, 0]
+  }
+}
