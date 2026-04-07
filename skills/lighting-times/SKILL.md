@@ -1,8 +1,7 @@
 ---
-
-## name: lighting-times
-
+name: lighting-times
 description: 计算地面站、卫星等对象的光照时间，考虑 De430 视太阳位置。支持天体遮挡和地形遮罩。当用户需要计算光照时间、阴影(日食)时间、半影/本影时间时使用。
+---
 
 # 光照时间计算技能 (Lighting Times)
 
