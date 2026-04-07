@@ -1,7 +1,6 @@
 ---
 
 ## name: orbitwizard-walker
-
 description: 生成 Walker 星座参数。用户需要根据种子轨道与星座构型参数快速生成 Walker 星座时使用。
 
 # OrbitWizard Walker 技能
