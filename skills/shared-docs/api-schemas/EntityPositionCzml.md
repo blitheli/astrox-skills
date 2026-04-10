@@ -1,15 +1,15 @@
 # EntityPositionCzml 数据结构
 
-Cesium/CZML 风格的单段位置对象，含 `**$type` 判别字段（值为 `CzmlPosition`）**。
+Cesium/CZML 风格的单段位置对象,含 `**$type` 判别字段(值为 `CzmlPosition`)**。
 
-编写请求时以具体接口要求的 `$ref` 为准，字段按下表填写。
+编写请求时以具体接口要求的 `$ref` 为准,字段按下表填写。
 
 ## 字段说明
 
 
 | 字段名                      | 类型       | 必须   | 默认值            | 说明                                  |
 | ------------------------ | -------- | ---- | -------------- | ----------------------------------- |
-| `$type`                  | string   | 是    | `CzmlPosition` | 类型标识符，必须为 `CzmlPosition`            |
+| `$type`                  | string   | 是    | `CzmlPosition` | 类型标识符,必须为 `CzmlPosition`            |
 | `CentralBody`            | string   | 否    | `Earth`        | 中心天体                                |
 | `interpolationAlgorithm` | string   | 否    | `LAGRANGE`     | `LINEAR`、`LAGRANGE`、`HERMITE`       |
 | `interpolationDegree`    | integer  | 否    | `7`            | 插值阶数                                |
@@ -40,5 +40,5 @@ Cesium/CZML 风格的单段位置对象，含 `**$type` 判别字段（值为 `C
 
 ## 注意事项
 
-- `$type` 必须为 `CzmlPosition`，否则无法作为该多态分支正确反序列化。
+- `$type` 必须为 `CzmlPosition`,否则无法作为该多态分支正确反序列化。
 

@@ -1,5 +1,5 @@
 {
-  "Description": "月球卫星TwoBody光照计算（默认月球遮挡）",
+  "Description": "月球卫星TwoBody光照计算(默认月球遮挡)",
   "Start": "2022-09-05T04:00:00Z",
   "Stop": "2022-09-05T08:00:00Z",
   "Position": {

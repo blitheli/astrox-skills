@@ -1,13 +1,13 @@
 # IEntityPosition
 
-对象位置基类，用于定义各类位置对象（地面站、卫星等）。通过 `$type` 字段区分具体类型。
+对象位置基类,用于定义各类位置对象(地面站、卫星等)。通过 `$type` 字段区分具体类型。
 
 ## 支持的类型
 
 
 | `$type` 值       | 类型名称       | 说明              | 参考文档                                                             |
 | --------------- | ---------- | --------------- | ---------------------------------------------------------------- |
-| `SitePosition`  | 地面站        | 固定点位置（如地面站、月面站） | [EntityPositionSite.md](EntityPositionSite.md)                   |
+| `SitePosition`  | 地面站        | 固定点位置(如地面站、月面站) | [EntityPositionSite.md](EntityPositionSite.md)                   |
 | `J2`            | J2摄动       | J2摄动轨道传播器       | [EntityPositionJ2.md](EntityPositionJ2.md)                       |
 | `TwoBody`       | 二体问题       | 二体轨道传播器         | [EntityPositionTwoBody.md](EntityPositionTwoBody.md)             |
 | `CzmlPositions` | CZML位置     | CZML格式的位置数据     | [EntityPositionCzmlPositions.md](EntityPositionCzmlPositions.md) |
@@ -19,7 +19,7 @@
 
 ## 使用方式
 
-通过 `$type` 字段指定具体类型，然后提供对应类型的参数：
+通过 `$type` 字段指定具体类型,然后提供对应类型的参数:
 
 ```json
 {
@@ -30,7 +30,7 @@
 }
 ```
 
-或：
+或:
 
 ```json
 {

@@ -1,5 +1,5 @@
 {
-  "Description": "北京附近地面站对 ISS 相关 TLE (25730) 的 Access 最小用例；时间与 TLE 历元对齐",
+  "Description": "北京附近地面站对 ISS 相关 TLE (25730) 的 Access 最小用例;时间与 TLE 历元对齐",
   "Start": "2021-05-01T00:00:00Z",
   "Stop": "2021-05-01T06:00:00Z",
   "OutStep": 60,
@@ -7,7 +7,7 @@
   "UseLightTimeDelay": false,
   "FromObjectPath": {
     "Name": "Facility/BeijingSite",
-    "Description": "地面站（转发端）",
+    "Description": "地面站(转发端)",
     "Position": {
       "$type": "SitePosition",
       "CentralBody": "Earth",
@@ -17,7 +17,7 @@
   },
   "ToObjectPath": {
     "Name": "Satellite/SGP4-25730",
-    "Description": "SGP4 卫星（接收端）",
+    "Description": "SGP4 卫星(接收端)",
     "Position": {
       "$type": "SGP4",
       "SatelliteNumber": "25730",
