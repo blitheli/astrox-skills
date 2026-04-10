@@ -1,8 +1,7 @@
 ---
-
-## name: propagator-j2
-
+name: propagator-j2
 description: 计算考虑 J2 项摄动的轨道轨迹，输出 CzmlPositionOut（CZML结构的位置序列）。当用户需要 J2 摄动、地球扁率影响、一阶带谐项轨道递推时使用。
+---
 
 # J2 摄动轨道积分器技能 (J2 Propagator)
 

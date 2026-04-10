@@ -23,8 +23,9 @@
 ### 注意事项
 
 - 使用英文符号:,()
-- 创建的SKILL.md要符合skill格式,尤其是yaml头
+- SKILL.md 须符合技能文档规范，顶部使用标准 YAML frontmatter（`---`、`name`、`description`、`---`）；不要随意改写已有技能中已约定的 frontmatter 字段含义。
 - 远程 API 服务器可能未开启。遇到连接失败（Connection reset / timeout）时，不代表环境配置有误，只是服务器侧未运行。
 - 技能目录结构与注册信息参见 `CLAUDE.md` 和 `claude.json`。
 - `raw/` 目录下的 C# 文件是上游参考代码，不需要在本地编译。
+- 使用技能时不必展开查询 `astrox-web-api.json`；该文件主要用于创建或维护技能、核对字段与 OpenAPI 契约。
 
