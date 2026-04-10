@@ -16,15 +16,17 @@ OpenAPI 中与链路/访问分析相关的**实体路径**对象,用于描述带
 | `Description`       | string          | 否     | 对象描述                                                                                                                                                                                |
 | `Vgt`               | object          | 否     | VGT 提供者(`CrdnProvider`),用于自定义点、向量、坐标轴等                                                                                                                                              |
 | `Position`          | object          | **是** | 对象位置,多态类型 `**IEntityPosition`**;通过 `**$type`** 区分具体实现(如 `SGP4`、`J2`、`SitePosition` 等)。详见 [IEntityPosition.md](IEntityPosition.md)                                                   |
-| `Orientation`       | object / null   | 否     | 对象姿态(OpenAPI:`CrdnAxes`,与 [CrdnAxes.md](CrdnAxes.md) 中 `CrdnAxes` 多态一致);若 `Sensor` 非空,则表示**传感器**的姿态                                                                                |
-| `Sensor`            | object / null   | 否     | 传感器。详见 [AgSensor.md](AgSensor.md);非空时服务端可能默认施加传感器相关约束                                                                                                            |
+| `Orientation`       | object / null   | 否     | 对象姿态(OpenAPI:`CrdnAxes`,与 [CrdnAxes.md](CrdnAxes.md) 中 `CrdnAxes` 多态一致);若 `Sensor` 非空,则表示**传感器**的姿态                                                                                 |
+| `Sensor`            | object / null   | 否     | 传感器。详见 [AgSensor.md](AgSensor.md);非空时服务端可能默认施加传感器相关约束                                                                                                                               |
 | `SensorPointing`    | object / null   | 否     | 传感器指向(`ISensorPointing`);仅当存在 `Sensor` 时有效                                                                                                                                          |
-| `Constraints`       | array / null    | 否     | 约束集合,元素为实现 `**IContraint`** 的具体类型。详见 [IContraint.md](IContraint.md)                                                                                                               |
+| `Constraints`       | array / null    | 否     | 约束集合,元素为实现 `**IContraint`** 的具体类型。详见 [IContraint.md](IContraint.md)                                                                                                                 |
 | `Lighting`          | string / null   | 否     | 光照约束。取值:`DirectSun`、`Penumbra`、`Umbra`;默认 `null`                                                                                                                                    |
 | `OccultationBodies` | string[] / null | 否     | 遮挡天体名称列表;**第 1 个**为中心天体。`null` 时的默认语义见 OpenAPI 描述(地/月中心体与仅地球、其它中心天体、太阳等情形不同)                                                                                                        |
 
 
-## JSON 示例(最小:仅必填位置)
+## JSON 示例
+
+### 最小:仅必填位置
 
 以下示例使用 SGP4 位置;可按业务替换为 [IEntityPosition.md](IEntityPosition.md) 中任意 `$type`。
 
@@ -39,6 +41,52 @@ OpenAPI 中与链路/访问分析相关的**实体路径**对象,用于描述带
       "2 25730  99.0559 142.6068 0014039 175.9692 333.4962 14.16181681132327"
     ]
   }
+}
+```
+
+### J2位置+Conic传感器+固定指向+距离约束
+
+```json
+{
+    "Name": "SateJ2Sensor1",
+    "Position": {
+      "$type": "J2",
+      "OrbitEpoch": "25 Apr 2022 04:00:00.000000",
+      "CoordSystem": "Inertial",
+      "CoordType": "Classical",
+      "OrbitalElements": [ 6678137, 0, 28.5, 0, 0, 0 ]
+    },
+
+    "Orientation": {
+      "$type": "VVLH"
+    },
+
+    "Sensor": {
+      "$type": "Conic",
+      "innerHalfAngle": 0,
+      "outerHalfAngle": 40,
+      "minimumClockAngle": 0,
+      "maximumClockAngle": 360
+    },
+
+    "SensorPointing": {
+      "$type": "Fixed",
+      "Text": "固定指向",
+      "Orientation": {
+        "$type": "AzEl",
+        "Azimuth": -90,
+        "Elevation": 40
+      }
+    },
+
+    "Constraints": [
+      {
+        "$type": "Range",
+        "MinimumValue": 0,
+        "MaximumValue": 1500,
+        "IsMaximumEnabled": true
+      }
+    ]
 }
 ```
 
@@ -61,5 +109,4 @@ OpenAPI 中与链路/访问分析相关的**实体路径**对象,用于描述带
 ## 注意事项
 
 - `**Position` 为必填**;未提供合法位置时请求无法按契约构造。
-
 
