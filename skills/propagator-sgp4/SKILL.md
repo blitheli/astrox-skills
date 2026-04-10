@@ -1,7 +1,7 @@
 ---
-
-## name: propagator-sgp4
+name: propagator-sgp4
 description: 通过 Astrox WebAPI 的 POST /Propagator/sgp4，依据两行根数 TLE 使用 SGP4 模型外推星历，输出 CzmlPositionOut（CZML 结构的位置序列）。当用户需要 SGP4、TLE、两行根数、NORAD 星历、近地轨道 TLE 递推时使用。
+---
 
 # SGP4 轨道递推技能 (SGP4 Propagator)
 

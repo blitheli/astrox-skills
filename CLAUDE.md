@@ -57,4 +57,4 @@ skills/
 - `orbitwizard-sso`、`orbitwizard-geo`、`orbitwizard-molniya`、`orbitwizard-walker`
 - `lighting-times`
 - `query-city`、`query-facility`、`query-tle`
-- `access`（实现目录为 `skills/acccess/`，`SKILL.md` 与 `fixtures` 在该目录下）
+- `access`（目录 `skills/access/`）

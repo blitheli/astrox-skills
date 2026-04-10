@@ -1,8 +1,7 @@
 ---
-
-## name: access
-
+name: access
 description: 计算两个对象之间的可见弧段（Access），支持站点与卫星等多态位置对象。输出按时间排序的可见窗口及可选 AER 数据。
+---
 
 # Access 计算技能 (Access Compute V2)
 

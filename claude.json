@@ -76,8 +76,8 @@
     },
     {
       "name": "access",
-      "skillFile": "skills/acccess/SKILL.md",
-      "fixturesDir": "skills/acccess/fixtures"
+      "skillFile": "skills/access/SKILL.md",
+      "fixturesDir": "skills/access/fixtures"
     }
   ]
 }
