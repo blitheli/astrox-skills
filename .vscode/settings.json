@@ -1,0 +1,10 @@
+{
+  // 本仓库以 SKILL.md / shared-docs 为主：避免保存时 Markdown 格式化改写 YAML frontmatter、表格与强调语法
+  "[markdown]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": null
+  },
+  // Markdown All in One：关闭整篇格式化与表格自动对齐（最易改坏宽表与 frontmatter）
+  "markdown.extension.format.enable": false,
+  "markdown.extension.tableFormatter.enabled": false
+}

@@ -58,6 +58,26 @@
       "name": "lighting-times",
       "skillFile": "skills/lighting-times/SKILL.md",
       "fixturesDir": "skills/lighting-times/fixtures"
+    },
+    {
+      "name": "query-city",
+      "skillFile": "skills/query-city/SKILL.md",
+      "fixturesDir": "skills/query-city/fixtures"
+    },
+    {
+      "name": "query-facility",
+      "skillFile": "skills/query-facility/SKILL.md",
+      "fixturesDir": "skills/query-facility/fixtures"
+    },
+    {
+      "name": "query-tle",
+      "skillFile": "skills/query-tle/SKILL.md",
+      "fixturesDir": "skills/query-tle/fixtures"
+    },
+    {
+      "name": "access",
+      "skillFile": "skills/access/SKILL.md",
+      "fixturesDir": "skills/access/fixtures"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # EntityPositionJ2 数据结构
 
-J2 摄动轨道位置对象，含 `$type` 判别字段（值为 `J2`）。
+J2 摄动轨道位置对象,含 `$type` 判别字段(值为 `J2`)。
 
 ## 使用场景
 
@@ -9,15 +9,15 @@ J2 摄动轨道位置对象，含 `$type` 判别字段（值为 `J2`）。
 
 | 字段名                      | 类型       | 必须  | 默认值                    | 说明                                                        |
 | ------------------------ | -------- | --- | ---------------------- | --------------------------------------------------------- |
-| `$type`                  | string   | 是   | `J2`                   | 类型标识符，必须为 `J2`                                            |
+| `$type`                  | string   | 是   | `J2`                   | 类型标识符,必须为 `J2`                                            |
 | `CentralBody`            | string   | 否   | `Earth`                | 中心天体名称                                                    |
-| `GravitationalParameter` | number   | 否   | `3.9860044150E+14`     | 引力常数 (m³/s²)；为 0 时按 `CentralBody` 自动取值                    |
-| `J2NormalizedValue`      | number   | 否   | `0.000484165143790815` | J2 归一化值（引力场 C20 的负值）；地球 EGM2008 示例：`0.000484165143790815` |
-| `RefDistance`            | number   | 否   | `6378136.3`            | 参考椭球半长轴 (m)；地球 EGM2008 示例：`6378136.3`                     |
-| `OrbitEpoch`             | string   | 是   | -                      | 轨道历元 (UTCG)，格式：`yyyy-MM-ddTHH:mm:ssZ`                     |
+| `GravitationalParameter` | number   | 否   | `3.9860044150E+14`     | 引力常数 (m³/s²);为 0 时按 `CentralBody` 自动取值                    |
+| `J2NormalizedValue`      | number   | 否   | `0.000484165143790815` | J2 归一化值(引力场 C20 的负值);地球 EGM2008 示例:`0.000484165143790815` |
+| `RefDistance`            | number   | 否   | `6378136.3`            | 参考椭球半长轴 (m);地球 EGM2008 示例:`6378136.3`                     |
+| `OrbitEpoch`             | string   | 是   | -                      | 轨道历元 (UTCG),格式:`yyyy-MM-ddTHH:mm:ssZ`                     |
 | `CoordSystem`            | string   | 否   | `Inertial`             | 轨道坐标系                                                     |
-| `CoordType`              | string   | 否   | `Classical`            | 轨道类型：`Classical` 或 `Cartesian`                            |
-| `OrbitalElements`        | number[] | 是   | -                      | 轨道根数，含义由 `CoordType` 决定                                   |
+| `CoordType`              | string   | 否   | `Classical`            | 轨道类型:`Classical` 或 `Cartesian`                            |
+| `OrbitalElements`        | number[] | 是   | -                      | 轨道根数,含义由 `CoordType` 决定                                   |
 
 
 ## CoordType 与 OrbitalElements
@@ -58,6 +58,6 @@ J2 摄动轨道位置对象，含 `$type` 判别字段（值为 `J2`）。
 
 ## 注意事项
 
-- `$type` 必须为 `J2`，否则无法作为该多态分支正确反序列化。
-- `J2NormalizedValue` 为 C20 的负值；`GravitationalParameter` 为 0 时内部由中心天体名称解析。
+- `$type` 必须为 `J2`,否则无法作为该多态分支正确反序列化。
+- `J2NormalizedValue` 为 C20 的负值;`GravitationalParameter` 为 0 时内部由中心天体名称解析。
 
