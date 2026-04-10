@@ -1,0 +1,83 @@
+{
+  "Description": "Fac2-J2Sesor1 Access, SC多段姿态, 默认地球遮挡+传感器约束+距离约束",
+  "Text2": "父对象多段姿态(VVLH+LVLH+SunPoint)，锥形传感器，固定指向参数",
+  "Start": "2022-04-25T04:00:00Z",
+  "Stop": "2022-04-26T04:00:00Z",
+
+  "ComputeAER": false,
+
+  "FromObjectPath": {
+    "Name": "Fac2",
+    "Position": {
+      "$type": "SitePosition",
+      "cartographicDegrees": [ -75.5966, 30.0386, 0 ]
+    }
+  },
+
+  "ToObjectPath": {
+    "Name": "SateJ2Sensor1",
+    "Position": {
+      "$type": "J2",
+      "OrbitEpoch": "25 Apr 2022 04:00:00.000000",
+      "CoordSystem": "Inertial",
+      "CoordType": "Classical",
+      "OrbitalElements": [ 6678137, 0, 28.5, 0, 0, 0 ]
+    },
+    "Orientation": {
+      "$type": "Composite",
+      "Text": "多段姿态组合",
+      "Intervals": [
+        {
+          "$type": "VVLH",
+          "Name": "VVLH",
+          "Start": "2022-04-25T04:00:00Z",
+          "Stop": "2022-04-25T20:00:00Z"
+        },
+        {
+          "$type": "LVLH",
+          "Name": "LVLH",
+          "Start": "2022-04-25T20:00:00Z",
+          "Stop": "2022-04-25T20:59:00Z"
+        },
+        {
+          "$type": "AlignedAndConstrained",
+          "Name": "sunAndNadir",
+          "Description": "对日定向",
+          "Start": "2022-04-25T20:59:00Z",
+          "Stop": "2022-04-26T04:00:00Z",
+          "Principal": "Sun",
+          "PrincipalAxis": "-X",
+          "Reference": "Nadir(Centric)",
+          "ReferenceAxis": "+Z"
+        }
+      ]
+    },
+
+    "Sensor": {
+      "$type": "Conic",
+      "innerHalfAngle": 0,
+      "outerHalfAngle": 40,
+      "minimumClockAngle": 0,
+      "maximumClockAngle": 360
+    },
+
+    "SensorPointing": {
+      "$type": "Fixed",
+      "Text": "固定指向",
+      "Orientation": {
+        "$type": "AzEl",
+        "Azimuth": -90,
+        "Elevation": 40
+      }
+    },
+
+    "Constraints": [
+      {
+        "$type": "Range",
+        "MinimumValue": 0,
+        "MaximumValue": 1500,
+        "IsMaximumEnabled": true
+      }
+    ]
+  }
+}

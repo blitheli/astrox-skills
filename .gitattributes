@@ -1,0 +1,4 @@
+# 统一行尾，减少 Windows 上 core.autocrlf 与文档类文件的 LF/CRLF 警告和无意义 diff
+* text=auto
+*.md text eol=lf
+*.json text eol=lf
