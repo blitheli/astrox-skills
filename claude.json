@@ -58,6 +58,11 @@
       "name": "lighting-times",
       "skillFile": "skills/lighting-times/SKILL.md",
       "fixturesDir": "skills/lighting-times/fixtures"
+    },
+    {
+      "name": "access",
+      "skillFile": "skills/access/SKILL.md",
+      "fixturesDir": "skills/access/fixtures"
     }
   ]
 }
