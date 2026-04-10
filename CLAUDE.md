@@ -33,14 +33,14 @@ skills/
 
 ## 新增技能流程
 
-0. 先建git分支
-1. 在 `skills/` 下创建新目录（建议 kebab-case 命名）
-2. 新建 `SKILL.md`
-3. 新建 `fixtures/` 并至少提供一个最小可运行 JSON
-4. 如复用公共 schema，引用 `shared-docs/api-schemas/...`
-5. 在 `claude.json` 的 `skills` 数组中追加该技能配置
-6. 可参考propagator-j2的内容格式
-7. webapi的相关接口说明,首先参考astrox-web-api.json,不清楚的预留
+1. 先建git分支
+2. 在 `skills/` 下创建新目录（建议 kebab-case 命名）
+3. 新建 `SKILL.md`
+4. 新建 `fixtures/` 并至少提供一个最小可运行 JSON
+5. 如复用公共 schema，引用 `shared-docs/api-schemas/...`
+6. 在 `claude.json` 的 `skills` 数组中追加该技能配置
+7. 可参考propagator-j2的内容格式
+8. webapi的相关接口说明,首先参考astrox-web-api.json,不清楚的预留
 
 ## 编写建议
 
@@ -53,3 +53,4 @@ skills/
 
 - `propagator-sgp4`
 - `propagator-twobody`
+
