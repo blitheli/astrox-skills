@@ -23,6 +23,9 @@
 ### 注意事项
 
 - 使用英文符号:,()
+- 不要修改SKILL.md中的**YAML frontmatter**
 - 远程 API 服务器可能未开启。遇到连接失败（Connection reset / timeout）时，不代表环境配置有误，只是服务器侧未运行。
 - 技能目录结构与注册信息参见 `CLAUDE.md` 和 `claude.json`。
 - `raw/` 目录下的 C# 文件是上游参考代码，不需要在本地编译。
+- 使用技能时禁止查询astrox-web-api.json。这个文档是在创建技能时使用的。
+

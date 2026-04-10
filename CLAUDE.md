@@ -51,5 +51,10 @@ skills/
 
 ## 当前已注册技能
 
-- `propagator-sgp4`
-- `propagator-twobody`
+以 `claude.json` 的 `skills[]` 为准，当前包括：
+
+- `propagator-sgp4`、`propagator-twobody`、`propagator-simple-ascent`、`propagator-ballistic`、`propagator-j2`、`propagator-hpop`
+- `orbitwizard-sso`、`orbitwizard-geo`、`orbitwizard-molniya`、`orbitwizard-walker`
+- `lighting-times`
+- `query-city`、`query-facility`、`query-tle`
+- `access`（实现目录为 `skills/acccess/`，`SKILL.md` 与 `fixtures` 在该目录下）
