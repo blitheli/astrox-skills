@@ -2,23 +2,24 @@
 
 OpenAPI 中与链路/访问分析相关的**实体路径**对象，用于描述带位置（及可选姿态、传感器、约束等）的分析对象。
 
-在 `IEntityObject` 等多态分支中，单对象形式对应 `IEntityObjectEntityPath`：`$type` 固定为 `**EntityPath`**，其余字段与下表一致。
+在 `IEntityObject` 等多态分支中，单对象形式对应 `IEntityObjectEntityPath`:`$type` 固定为 `**EntityPath`**，其余字段与下表一致。
 
 ## 字段说明
 
-| 字段名                 | 类型              | 必须    | 说明                                                                                                                                                                                  |
-| ------------------- | --------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `$type`             | string          | 见下文   | 仅在使用 `**IEntityObjectEntityPath`**(`IEntityObject` 的 `EntityPath` 分支）时出现，取值必须为 `EntityPath`。|
-| `Name`              | string          | 否     | 对象名称; 默认示例：`Satellite/Sat1`                                                                                                                                                  |
-| `Description`       | string          | 否     | 对象描述                                                                                                                                                                                |
-| `Vgt`               | object          | 否     | VGT 提供者（`CrdnProvider`），用于自定义点、向量、坐标轴等                                                                                                                                              |
-| `Position`          | object          | **是** | 对象位置，多态类型 `**IEntityPosition`**；通过 `**$type`** 区分具体实现（如 `SGP4`、`J2`、`SitePosition` 等）。详见 [IEntityPosition.md](IEntityPosition.md)                                                   |
-| `Orientation`       | object / null   | 否     | 对象姿态（`CrdnAxes`）；若 `Sensor` 非空，则表示**传感器**的姿态                                                                                                                                       |
-| `Sensor`            | object / null   | 否     | 传感器（`ISensor`）；非空时服务端可能默认施加传感器相关约束                                                                                                                                                  |
-| `SensorPointing`    | object / null   | 否     | 传感器指向（`ISensorPointing`）；仅当存在 `Sensor` 时有效                                                                                                                                          |
-| `Constraints`       | array / null    | 否     | 约束集合，元素为 **`IContraint`** 多态类型（`Range` / `AzElMask` / `ElevationAngle`）。详见 [IConstraint.md](IConstraint.md)                                                                       |
-| `Lighting`          | string / null   | 否     | 光照约束。取值：`DirectSun`、`Penumbra`、`Umbra`；默认 `null`                                                                                                                                    |
-| `OccultationBodies` | string[] / null | 否     | 遮挡天体名称列表；**第 1 个**为中心天体。`null` 时的默认（地/月中心体与仅地球、其它中心天体、太阳等情形不同）                                                                                                        |
+
+| 字段名                 | 类型              | 必须    | 说明                                                                                                                                |
+| ------------------- | --------------- | ----- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `$type`             | string          | 见下文   | 仅在使用 `**IEntityObjectEntityPath`**(`IEntityObject` 的 `EntityPath` 分支）时出现，取值必须为 `EntityPath`。                                      |
+| `Name`              | string          | 否     | 对象名称; 默认示例：`Satellite/Sat1`                                                                                                       |
+| `Description`       | string          | 否     | 对象描述                                                                                                                              |
+| `Vgt`               | object          | 否     | VGT 提供者（`CrdnProvider`），用于自定义点、向量、坐标轴等。详见(TBD)                                                                                    |
+| `Position`          | object          | **是** | 对象位置，多态类型 `**IEntityPosition`**；通过 `**$type`** 区分具体实现（如 `SGP4`、`J2`、`SitePosition` 等）。详见 [IEntityPosition.md](IEntityPosition.md) |
+| `Orientation`       | object / null   | 否     | 对象姿态（参见[CrdnAxes.md](CrdnAxes.md) 中 `CrdnAxes` 多态）；若 `Sensor` 非空，则表示**传感器**的姿态。传感器字段见 [AgSensor.md](AgSensor.md)                  |
+| `Sensor`            | object / null   | 否     | 传感器（参见 [AgSensor.md](AgSensor.md)；非空时服务端可能默认施加传感器相关约束                                                                             |
+| `SensorPointing`    | object / null   | 否     | 传感器指向（`ISensorPointing`）；仅当存在 `Sensor` 时有效                                                                                        |
+| `Constraints`       | array / null    | 否     | 约束集合，元素为 `**IContraint`** 多态类型（`Range` / `AzElMask` / `ElevationAngle`）。详见 [IConstraint.md](IConstraint.md)                       |
+| `Lighting`          | string / null   | 否     | 光照约束。取值：`DirectSun`、`Penumbra`、`Umbra`；默认 `null`                                                                                  |
+| `OccultationBodies` | string[] / null | 否     | 遮挡天体名称列表；**第 1 个**为中心天体。`null`时则表示: 地球或月球中心天体，则为地月；其它中心天体则为自身中心天体；太阳中心天体则无）                                                       |
 
 
 ## JSON 示例（最小：仅必填位置）

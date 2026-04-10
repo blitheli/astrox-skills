@@ -1,0 +1,28 @@
+{
+    "Description": "site-to-satellite access minimal case",
+    "Start": "2024-05-01T12:00:00Z",
+    "Stop": "2024-05-01T16:00:00Z",
+    "OutStep": 60,
+    "ComputeAER": true,
+    "UseLightTimeDelay": false,
+    "FromObjectPath": {
+      "Name": "Facility/Beijing",
+      "Position": {
+        "$type": "SitePosition",
+        "CentralBody": "Earth",
+        "cartographicDegrees": [116.4, 39.9, 50],
+        "clampToGround": false
+      }
+    },
+    "ToObjectPath": {
+      "Name": "Satellite/Sat1",
+      "Position": {
+        "$type": "TwoBody",
+        "CentralBody": "Earth",
+        "CoordSystem": "Inertial",
+        "CoordType": "Classical",
+        "OrbitalElements": [6878137, 0.001, 53, 0, 0, 0],
+        "OrbitEpoch": "2024-05-01T12:00:00Z"
+      }
+    }
+  }
