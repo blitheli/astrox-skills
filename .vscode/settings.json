@@ -1,5 +1,7 @@
 {
-  // 本仓库以 SKILL.md / shared-docs 为主：避免保存时 Markdown 格式化改写 YAML frontmatter、表格与强调语法
+  // 全工作区：关闭保存时自动格式化；需要时用「格式化文档」或快捷键手动调用 Prettier
+  "editor.formatOnSave": false,
+  // 本仓库以 SKILL.md / shared-docs 为主：避免 Markdown 被默认成 Prettier 等（手动格式化时可用命令选格式化器）
   "[markdown]": {
     "editor.formatOnSave": false,
     "editor.defaultFormatter": null
