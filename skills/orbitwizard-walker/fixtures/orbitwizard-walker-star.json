@@ -1,0 +1,14 @@
+{
+  "SeedKepler": {
+    "SemimajorAxis": 7158137,
+    "Eccentricity": 0.001,
+    "Inclination": 86.4,
+    "ArgumentOfPeriapsis": 0,
+    "RightAscensionOfAscendingNode": 0,
+    "TrueAnomaly": 0
+  },
+  "WalkerType": "Star",
+  "NumPlanes": 6,
+  "NumSatsPerPlane": 11,
+  "InterPlanePhaseIncrement": 0
+}
