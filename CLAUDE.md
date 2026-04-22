@@ -58,4 +58,5 @@ skills/
 - `lighting-times`
 - `query-city`、`query-facility`、`query-tle`
 - `access`(目录 `skills/access/`)
+- `celestial-ephemeris`(目录 `skills/celestial-ephemeris/`)
 

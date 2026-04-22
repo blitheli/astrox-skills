@@ -78,6 +78,11 @@
       "name": "access",
       "skillFile": "skills/access/SKILL.md",
       "fixturesDir": "skills/access/fixtures"
+    },
+    {
+      "name": "celestial-ephemeris",
+      "skillFile": "skills/celestial-ephemeris/SKILL.md",
+      "fixturesDir": "skills/celestial-ephemeris/fixtures"
     }
   ]
 }

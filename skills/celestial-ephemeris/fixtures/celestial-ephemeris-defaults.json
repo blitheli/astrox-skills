@@ -1,0 +1,8 @@
+{
+  "TargetName": "Earth",
+  "ObserverName": "Sun",
+  "ObserverFrame": "MEANECLPJ2000",
+  "Start": "",
+  "Stop": "",
+  "Step": 86400
+}
