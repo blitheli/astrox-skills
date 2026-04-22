@@ -9,7 +9,7 @@
 | ------------------------ | -------- | --- | ----------------- | ---------------------------------- |
 | `$type`                  | string   | 是   | `TwoBody`         | 类型标识符,必须为 `TwoBody`                |
 | `CentralBody`            | string   | 否   | `Earth`           | 中心天体名称                             |
-| `GravitationalParameter` | number   | 否   | `398600441500000` | 引力常数 (m³/s²);为 0 时按中心天体解析          |
+| GravitationalParameter  | number | 否    | `398600441500000`    | 中心天体引力常数 (m³/s²)；为 0 时内部根据 CentralBody 自动取值（地球典型值：3.986004415E14） |
 | `OrbitEpoch`             | string   | 是   | -                 | 轨道历元 (UTCG):`yyyy-MM-ddTHH:mm:ssZ` |
 | `CoordSystem`            | string   | 否   | `Inertial`        | 轨道坐标系                              |
 | `CoordType`              | string   | 否   | `Classical`       | `Classical` 或 `Cartesian`          |
