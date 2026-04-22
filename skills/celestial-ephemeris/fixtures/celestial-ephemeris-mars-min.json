@@ -1,0 +1,8 @@
+{
+  "TargetName": "Mars",
+  "ObserverName": "Sun",
+  "ObserverFrame": "MEANECLPJ2000",
+  "Start": "2026-01-01T00:00:00Z",
+  "Stop": "2026-01-08T00:00:00Z",
+  "Step": 86400
+}
