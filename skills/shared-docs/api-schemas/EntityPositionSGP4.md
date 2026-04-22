@@ -8,8 +8,8 @@ SGP4/TLE 卫星位置对象,含 `$type` 判别字段(值为 `SGP4`)。
 | 字段名               | 类型       | 必须   | 默认值            | 说明                            |
 | ----------------- | -------- | ---- | -------------- | ----------------------------- |
 | `$type`           | string   | 是    | `SGP4`         | 类型标识符,必须为 `SGP4`              |
-| `SatelliteNumber` | string   | null | 否              | `25730`                       |
-| `TLEs`            | string[] | 是    | (见 OpenAPI 示例) | 两行 TLE 字符串数组 `[line1, line2]` |
+| SatelliteNumber | string    | 否   | `25730`          | 卫星编号（如有）                   |
+| TLEs            | string[]  | 是   | 见 OpenAPI 示例   | 两行 TLE 字符串数组 `[line1, line2]` |
 
 
 ## JSON 示例

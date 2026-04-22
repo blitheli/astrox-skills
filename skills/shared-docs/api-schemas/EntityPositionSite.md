@@ -11,7 +11,7 @@
 | `CentralBody`         | string   | 否   | `Earth`        | 中心天体(`Earth`、`Moon` 等)                                         |
 | `cartographicDegrees` | number[] | 是   | `[100, 30, 0]` | 椭球大地坐标 [经度(deg), 纬度(deg), 高度(m)];地球为 WGS84,月球为半径 1737.4 km 的圆球 |
 | `clampToGround`       | boolean  | 否   | `false`        | 是否贴地表;为 `true` 时,`cartographicDegrees` 中的高度按实际地形/椭球面强制         |
-| `HeightAboveGround`   | number   | 否   | `0`            | 相对地面高度 (m)                                                     |
+| HeightAboveGround | number    | 否   | 0                   | 相对地面高度 (m)，默认0                           |
 
 
 ## JSON 示例

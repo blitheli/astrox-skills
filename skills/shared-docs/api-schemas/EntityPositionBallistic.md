@@ -10,15 +10,16 @@
 | `$type`                  | string | 是   | `Ballistic`       | 类型标识符                                 |
 | `Start`                  | string | 是   | -                 | 发射时刻 (UTCG),格式:`yyyy-MM-ddTHH:mm:ssZ` |
 | `CentralBody`            | string | 否   | `Earth`           | 中心天体名称                                |
-| `GravitationalParameter` | number | 否   | `398600441500000` | 中心天体引力常数 (m³/s²)                      |
+| GravitationalParameter  | number | 否   | 398600441500000      | 中心天体引力常数 (m³/s²)，为0时将按 CentralBody 内部默认                 |
 | `LaunchLatitude`         | number | 否   | `0`               | 发射点大地纬度 (deg)                         |
 | `LaunchLongitude`        | number | 否   | `0`               | 发射点地理经度 (deg)                         |
 | `LaunchAltitude`         | number | 否   | `0`               | 发射点高度 (m)                             |
-| `BallisticType`          | string | 否   | `DeltaV`          | 弹道类型                                  |
-| `BallisticTypeValue`     | number | 否   | `6901.943`        | 弹道类型对应的数值                             |
+| BallisticType           | string | 否   | DeltaV               | 弹道类型（DeltaV、DeltaV_MinEcc、ApogeeAlt、TimeOfFlight），与下表配合   |
+| BallisticTypeValue      | number | 否   | 6901.943             | 弹道类型对应数值，见下表及BallisticType                                 |
 | `ImpactLatitude`         | number | 否   | `20`              | 关机点大地纬度 (deg)                         |
 | `ImpactLongitude`        | number | 否   | `20`              | 关机点地理经度 (deg)                         |
-| `ImpactAltitude`         | number | 否   | `0`               | 关机点高度 (m)                             |
+| Step                    | number | 否   | 5                    | 积分步长 (s)，缺省为5                                                   |
+| Stop                    | string/null | 否 | -                   | 结束时刻（仅返回结果时有值，不必设置，格式同 Start）                     |
 
 
 ## BallisticType 说明
