@@ -12,6 +12,7 @@ description: 根据目标天体、观测者和时间步长计算天体星历,并
 1. **输入解析**:识别目标天体、观测者、观测者坐标系、分析开始/结束时刻和积分步长。
 2. **参数处理**:若 `ObserverName`、`ObserverFrame`、`Step` 未提供,使用缺省值;`Start`/`Stop` 可空。
 3. **API 调用逻辑**:向 `{BASE_URL}/celestial/ephemeris` 发送 `POST`,`Content-Type: application/json`。
+4. **用户仅需要1个时刻点的位置速度数据时,Start设置为要求的时刻,Stop设置为Start+1天即可。结果取cartesianVelocity数组1-6即为Start时刻对应的位置和速度。**
 
 ## API 规范 (Tool Definition)
 
