@@ -21,14 +21,16 @@ description: 根据目标天体、观测者和时间步长计算天体星历,并
 
 ### 输入参数结构 (JSON)
 
-| 参数名 | 类型 | 必须 | 缺省值 | 说明 |
-| :--- | :--- | :--- | :--- | :--- |
-| `TargetName` | string | 是 | `Earth` | 目标名称,如 `Moon`、`Mars`、`Venus`、`Mercury`、`Jupiter`、`Saturn`、`Uranus`、`Neptune` |
-| `ObserverName` | string | 否 | `Sun` | 观测者名称 |
-| `ObserverFrame` | string | 否 | `MEANECLPJ2000` | 观测者坐标系,可选:`FIXED`、`INERTIAL`、`MEANECLPJ2000`、`J2000` |
-| `Start` | string | 否 | 当年 1 月 1 日 | 分析开始时刻(UTCG),格式:`yyyy-MM-ddTHH:mm:ssZ` |
-| `Stop` | string | 否 | 当年 12 月 31 日 | 分析结束时刻(UTCG),格式:`yyyy-MM-ddTHH:mm:ssZ` |
-| `Step` | number | 否 | `86400` | 积分步长(s) |
+
+| 参数名             | 类型     | 必须  | 缺省值             | 说明                                                                           |
+| --------------- | ------ | --- | --------------- | ---------------------------------------------------------------------------- |
+| `TargetName`    | string | 是   | `Earth`         | 目标名称,如 `Moon`、`Mars`、`Venus`、`Mercury`、`Jupiter`、`Saturn`、`Uranus`、`Neptune` |
+| `ObserverName`  | string | 否   | `Sun`           | 观测者名称                                                                        |
+| `ObserverFrame` | string | 否   | `MEANECLPJ2000` | 观测者坐标系,可选:`FIXED`、`INERTIAL`、`MEANECLPJ2000`、`J2000`                         |
+| `Start`         | string | 否   | 当年 1 月 1 日      | 分析开始时刻(UTCG),格式:`yyyy-MM-ddTHH:mm:ssZ`                                       |
+| `Stop`          | string | 否   | 当年 12 月 31 日    | 分析结束时刻(UTCG),格式:`yyyy-MM-ddTHH:mm:ssZ`                                       |
+| `Step`          | number | 否   | `86400`         | 积分步长(s)                                                                      |
+
 
 ### 输出说明
 
@@ -45,16 +47,16 @@ description: 根据目标天体、观测者和时间步长计算天体星历,并
 ## 标准执行流程
 
 1. 参数预检
-   - 检查 `TargetName` 必填。
-   - 若 `Start`、`Stop` 非空,检查时间格式且 `Start < Stop`。
-   - 检查 `Step > 0`。
+  - 检查 `TargetName` 必填。
+  - 若 `Start`、`Stop` 非空,检查时间格式且 `Start < Stop`。
+  - 检查 `Step > 0`。
 2. 请求构造
-   - 按接口字段名构造 JSON,未提供参数可省略或传默认值。
+  - 按接口字段名构造 JSON,未提供参数可省略或传默认值。
 3. 结果判定
-   - 先判 HTTP 状态是否为 200。
-   - 再检查响应 JSON 结构是否为合法 CZML(数组/对象)。
+  - 先判 HTTP 状态是否为 200。
+  - 再检查响应 JSON 结构是否为合法 CZML(数组/对象)。
 4. 输出归一化
-   - 返回请求摘要(目标、观测者、坐标系、时间区间、步长)与 CZML 结果。
+  - 返回请求摘要(目标、观测者、坐标系、时间区间、步长)与 CZML 结果。
 
 ## 调用示例
 
@@ -85,3 +87,4 @@ curl "${BASE_URL}/celestial/ephemeris"   --request POST   --header 'Content-Type
 
 - `skills/celestial-ephemeris/fixtures/celestial-ephemeris-min.json`:最小可运行请求。
 - `skills/celestial-ephemeris/fixtures/celestial-ephemeris-defaults.json`:包含默认值字段的请求模板。
+

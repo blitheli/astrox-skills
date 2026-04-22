@@ -2,7 +2,7 @@
   "TargetName": "Earth",
   "ObserverName": "Sun",
   "ObserverFrame": "MEANECLPJ2000",
-  "Start": "",
-  "Stop": "",
+  "Start": "2026-01-01T00:00:00.000Z",
+  "Stop": "2027-01-01T00:00:00.000Z",
   "Step": 86400
 }
