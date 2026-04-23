@@ -59,4 +59,5 @@ skills/
 - `query-city`、`query-facility`、`query-tle`
 - `access`(目录 `skills/access/`)
 - `celestial-ephemeris`(目录 `skills/celestial-ephemeris/`)
+- `celestial-mpc`(目录 `skills/celestial-mpc/`)
 
