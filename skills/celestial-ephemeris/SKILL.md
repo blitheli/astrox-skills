@@ -1,6 +1,6 @@
 ---
 name: celestial-ephemeris
-description: 根据目标天体、观测者和时间步长计算天体星历,并输出 CZML。用户需要行星/月球相对位置时使用。
+description: 根据目标天体、观测者和时间步长计算天体星历,并输出 CZML Position格式。用户需要行星/月球相对位置时使用。
 ---
 
 # 天体星历计算技能 (Celestial Ephemeris)
