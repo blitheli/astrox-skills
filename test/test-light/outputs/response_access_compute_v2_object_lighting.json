@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "status": 200,
+  "json": {
+    "IsSuccess": true,
+    "Message": "OK",
+    "Passes": [
+      {
+        "AccessStart": "2026-04-24T21:18:09.422Z",
+        "AccessStop": "2026-04-24T21:19:03.961Z",
+        "Duration": 54.53886360515753
+      }
+    ]
+  }
+}

@@ -24,8 +24,29 @@
   },
   "raw_counts": {
     "access_passes": 22,
+    "access_passes_with_object_lighting": 1,
     "shanghai_umbra_intervals": 3,
     "tiangong_sunlight_intervals": 48
+  },
+  "access_with_object_lighting_constraints": {
+    "description": "Use object-level lighting in Access request, no interval intersection.",
+    "passes": [
+      {
+        "start": "2026-04-24T21:18:09Z",
+        "stop": "2026-04-24T21:19:03Z",
+        "duration_seconds": 54.539
+      }
+    ],
+    "summary": {
+      "count": 1,
+      "total_duration_seconds": 54.539,
+      "min_duration_seconds": 54.539,
+      "max_duration_seconds": 54.539
+    },
+    "lighting": {
+      "from_object": "Umbra",
+      "to_object": "DirectSun"
+    }
   },
   "constrained_passes": [
     {

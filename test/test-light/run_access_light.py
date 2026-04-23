@@ -262,6 +262,24 @@ def main() -> int:
         "FromObjectPath": {"Name": "Facility/Shanghai", "Position": shanghai_position},
         "ToObjectPath": {"Name": "Satellite/Tiangong", "Position": tiangong_position},
     }
+    access_with_obj_lighting_payload = {
+        "Description": "Shanghai(Umbra) to Tiangong(DirectSun) access with object lighting constraints",
+        "Start": START_UTC,
+        "Stop": STOP_UTC,
+        "OutStep": 60,
+        "ComputeAER": False,
+        "UseLightTimeDelay": False,
+        "FromObjectPath": {
+            "Name": "Facility/Shanghai",
+            "Position": shanghai_position,
+            "Lighting": "Umbra",
+        },
+        "ToObjectPath": {
+            "Name": "Satellite/Tiangong",
+            "Position": tiangong_position,
+            "Lighting": "DirectSun",
+        },
+    }
     lighting_sh_payload = {
         "Description": "Shanghai lighting for night(Umbra) intervals",
         "Start": START_UTC,
@@ -276,14 +294,20 @@ def main() -> int:
     }
 
     save_json(INPUTS_DIR / "access_request.json", access_payload)
+    save_json(INPUTS_DIR / "access_request_with_object_lighting.json", access_with_obj_lighting_payload)
     save_json(INPUTS_DIR / "lighting_shanghai_request.json", lighting_sh_payload)
     save_json(INPUTS_DIR / "lighting_tiangong_request.json", lighting_tg_payload)
 
     access_body = expect_api_success(http_post("/access/AccessComputeV2", access_payload, "access_compute_v2"), "AccessComputeV2")
+    access_obj_light_body = expect_api_success(
+        http_post("/access/AccessComputeV2", access_with_obj_lighting_payload, "access_compute_v2_object_lighting"),
+        "AccessComputeV2(ObjectLighting)",
+    )
     light_sh_body = expect_api_success(http_post("/Lighting/LightingTimes", lighting_sh_payload, "lighting_shanghai"), "LightingTimes(Shanghai)")
     light_tg_body = expect_api_success(http_post("/Lighting/LightingTimes", lighting_tg_payload, "lighting_tiangong"), "LightingTimes(Tiangong)")
 
     access_intervals = to_intervals_from_access(access_body)
+    access_obj_light_intervals = to_intervals_from_access(access_obj_light_body)
     sh_night_intervals = to_intervals_from_lighting(light_sh_body, "Umbra")
     tg_sunlight_intervals = to_intervals_from_lighting(light_tg_body, "SunLight")
 
@@ -293,8 +317,15 @@ def main() -> int:
         "input_sources": {"shanghai": city_source, "tiangong": tle_source},
         "raw_counts": {
             "access_passes": len(access_intervals),
+            "access_passes_with_object_lighting": len(access_obj_light_intervals),
             "shanghai_umbra_intervals": len(sh_night_intervals),
             "tiangong_sunlight_intervals": len(tg_sunlight_intervals),
+        },
+        "access_with_object_lighting_constraints": {
+            "description": "Use object-level lighting in Access request, no interval intersection.",
+            "passes": [x.to_json() for x in access_obj_light_intervals],
+            "summary": summarize(access_obj_light_intervals),
+            "lighting": {"from_object": "Umbra", "to_object": "DirectSun"},
         },
         "constrained_passes": [x.to_json() for x in constrained],
         "summary": summarize(constrained),
