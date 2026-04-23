@@ -85,6 +85,9 @@
       "fixturesDir": "skills/celestial-ephemeris/fixtures"
     },
     {
+      "name": "lambert",
+      "skillFile": "skills/lambert/SKILL.md",
+      "fixturesDir": "skills/lambert/fixtures"
       "name": "celestial-mpc",
       "skillFile": "skills/celestial-mpc/SKILL.md",
       "fixturesDir": "skills/celestial-mpc/fixtures"
