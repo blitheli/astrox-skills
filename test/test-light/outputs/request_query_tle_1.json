@@ -1,0 +1,7 @@
+{
+  "method": "GET",
+  "url": "http://astrox.cn:8765/ssc?sscName=TIANGONG",
+  "params": {
+    "sscName": "TIANGONG"
+  }
+}

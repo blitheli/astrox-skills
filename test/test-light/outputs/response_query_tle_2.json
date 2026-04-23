@@ -1,0 +1,34 @@
+{
+  "ok": true,
+  "status": 200,
+  "json": {
+    "IsSuccess": true,
+    "Message": "Success",
+    "TotalCount": 1,
+    "TLEs": [
+      {
+        "Active": true,
+        "CommonName": "TIANHE",
+        "OfficialName": "CSS",
+        "SatelliteNumber": "48274",
+        "TleEpoch": "2026-04-21T11:55:53.949Z",
+        "RevolutionNumber": 28430,
+        "TLE_Line1": "1 48274U 21035A   26111.49715219  .00023096  00000-0  25250-3 0  9992",
+        "TLE_Line2": "2 48274  41.4677 307.2849 0006600 248.2463 111.7674 15.62743674284309",
+        "InternationalDesignator": "2021-035A",
+        "Owner": "PRC",
+        "Mission": "Unknown",
+        "LaunchSite": "WSC",
+        "LaunchDateString": "202104290000",
+        "OrbitDescription": "",
+        "Mass": 0,
+        "Apogee": 385000,
+        "Perigee": 376000,
+        "Period": 5532,
+        "Inclination": 0.7243116395776468,
+        "LastDatabaseUpdate": "2026-04-21T00:00:00",
+        "WriteUp": ""
+      }
+    ]
+  }
+}

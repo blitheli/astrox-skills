@@ -1,0 +1,19 @@
+{
+  "method": "POST",
+  "url": "http://astrox.cn:8765/Lighting/LightingTimes",
+  "json": {
+    "Description": "Shanghai lighting for night(Umbra) intervals",
+    "Start": "2026-04-23T00:00:00Z",
+    "Stop": "2026-04-26T00:00:00Z",
+    "Position": {
+      "$type": "SitePosition",
+      "CentralBody": "Earth",
+      "cartographicDegrees": [
+        121.36805600000001,
+        31.109444,
+        0
+      ],
+      "clampToGround": false
+    }
+  }
+}

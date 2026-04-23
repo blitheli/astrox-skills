@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "status": 200,
+  "json": {
+    "IsSuccess": true,
+    "Message": "Success",
+    "Cities": [
+      {
+        "CityName": "Shanghai",
+        "TypeOfCity": "PopulatedPlace",
+        "ProvinceName": "Shanghai",
+        "CountryName": "CHINA",
+        "ProvinceRank": 0,
+        "Population": 0,
+        "Latitude": 0.5429622262647948,
+        "Longitude": 2.118272183944859,
+        "CentralBodyName": "Earth"
+      }
+    ]
+  }
+}

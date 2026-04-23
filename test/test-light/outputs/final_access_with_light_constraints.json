@@ -1,0 +1,43 @@
+{
+  "window": {
+    "start": "2026-04-23T00:00:00Z",
+    "stop": "2026-04-26T00:00:00Z"
+  },
+  "input_sources": {
+    "shanghai": {
+      "mode": "query-city",
+      "city_name": "Shanghai",
+      "country_name": "CHINA",
+      "latitude_rad": 0.5429622262647948,
+      "longitude_rad": 2.118272183944859,
+      "latitude_deg": 31.109444,
+      "longitude_deg": 121.36805600000001
+    },
+    "tiangong": {
+      "mode": "query-tle",
+      "query_name": "TIANHE",
+      "official_name": "CSS",
+      "common_name": "TIANHE",
+      "satellite_number": "48274",
+      "tle_epoch": "2026-04-21T11:55:53.949Z"
+    }
+  },
+  "raw_counts": {
+    "access_passes": 22,
+    "shanghai_umbra_intervals": 3,
+    "tiangong_sunlight_intervals": 48
+  },
+  "constrained_passes": [
+    {
+      "start": "2026-04-24T21:18:09Z",
+      "stop": "2026-04-24T21:19:03Z",
+      "duration_seconds": 54.539
+    }
+  ],
+  "summary": {
+    "count": 1,
+    "total_duration_seconds": 54.539,
+    "min_duration_seconds": 54.539,
+    "max_duration_seconds": 54.539
+  }
+}

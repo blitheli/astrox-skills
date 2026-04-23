@@ -1,0 +1,17 @@
+{
+  "method": "POST",
+  "url": "http://astrox.cn:8765/Lighting/LightingTimes",
+  "json": {
+    "Description": "Tiangong lighting for SunLight intervals",
+    "Start": "2026-04-23T00:00:00Z",
+    "Stop": "2026-04-26T00:00:00Z",
+    "Position": {
+      "$type": "SGP4",
+      "SatelliteNumber": "48274",
+      "TLEs": [
+        "1 48274U 21035A   26111.49715219  .00023096  00000-0  25250-3 0  9992",
+        "2 48274  41.4677 307.2849 0006600 248.2463 111.7674 15.62743674284309"
+      ]
+    }
+  }
+}

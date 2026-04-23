@@ -1,0 +1,32 @@
+{
+  "Description": "Shanghai to Tiangong access with fixed window",
+  "Start": "2026-04-23T00:00:00Z",
+  "Stop": "2026-04-26T00:00:00Z",
+  "OutStep": 60,
+  "ComputeAER": false,
+  "UseLightTimeDelay": false,
+  "FromObjectPath": {
+    "Name": "Facility/Shanghai",
+    "Position": {
+      "$type": "SitePosition",
+      "CentralBody": "Earth",
+      "cartographicDegrees": [
+        121.36805600000001,
+        31.109444,
+        0
+      ],
+      "clampToGround": false
+    }
+  },
+  "ToObjectPath": {
+    "Name": "Satellite/Tiangong",
+    "Position": {
+      "$type": "SGP4",
+      "SatelliteNumber": "48274",
+      "TLEs": [
+        "1 48274U 21035A   26111.49715219  .00023096  00000-0  25250-3 0  9992",
+        "2 48274  41.4677 307.2849 0006600 248.2463 111.7674 15.62743674284309"
+      ]
+    }
+  }
+}
