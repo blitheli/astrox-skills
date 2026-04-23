@@ -1,7 +1,7 @@
 ---
-
-## name: access
-description: 计算两对象间可见性/访问弧段。当用户需要测站对卫星可见窗口、Access 弧段、AER 采样时使用。
+name: access
+description: 计算两对象间可见性/访问弧段。当用户需要测站对卫星可见窗口、卫星与卫星之间Access弧段、AER 采样时使用。
+---
 
 # 访问计算技能 (Access V2)
 
@@ -10,6 +10,7 @@ description: 计算两对象间可见性/访问弧段。当用户需要测站对
 1. **输入解析**:识别分析时间范围、`FromObjectPath`(转发端)、`ToObjectPath`(接收端),以及可选的 `OutStep`、`ComputeAER`、`UseLightTimeDelay`。
 2. **位置对象匹配**:`Position` 使用 `IEntityPosition` 多态(如 `SitePosition`、`SGP4`、`J2`、`TwoBody`、`CzmlPosition`、`CzmlPositions`、`CentralBody` 等),详见 `skills/shared-docs/api-schemas/IEntityPosition.md`。
 3. **API 调用逻辑**:向 `{BASE_URL}/access/AccessComputeV2` 发送 `POST`,`Content-Type: application/json`。若无特别指定,可用 `curl`;亦可用与用户环境一致的 HTTP 客户端。
+4. **约束**:可对FromObjectPath和ToObjectPath分别添加约束,例如地面站最小仰角,光照约束等。
 
 ## API 规范 (Tool Definition)
 
@@ -34,13 +35,11 @@ De430 精密历表,可光延迟;`FromObjectPath` 为转发端,`ToObjectPath` 为
 | `UseLightTimeDelay` | boolean | 否   | 是否使用光延迟,缺省 `false`                                           |
 
 
-### 位置类型 (FromObjectPath / ToObjectPath)
+### 对象类型 (FromObjectPath / ToObjectPath)
 
-`Position` 采用 `IEntityPosition` 多态结构,不在本技能文档内展开字段定义。  
-统一引用:`skills/shared-docs/api-schemas/IEntityPosition.md`。
+`EntityPath`的定义不在本技能文档内展开字段定义。统一引用:`skills/shared-docs/api-schemas/EntityPath.md`。
 
 ### 响应数据结构(AccessOutput)
-
 
 | 字段名         | 类型      | 说明                           |
 | ----------- | ------- | ---------------------------- |
