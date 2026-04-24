@@ -10,7 +10,7 @@ description: 计算两对象间可见性/访问弧段。当用户需要测站对
 1. **输入解析**:识别分析时间范围、`FromObjectPath`(转发端)、`ToObjectPath`(接收端),以及可选的 `OutStep`、`ComputeAER`、`UseLightTimeDelay`。
 2. **位置对象匹配**:`Position` 使用 `IEntityPosition` 多态(如 `SitePosition`、`SGP4`、`J2`、`TwoBody`、`CzmlPosition`、`CzmlPositions`、`CentralBody` 等),详见 `skills/shared-docs/api-schemas/IEntityPosition.md`。
 3. **API 调用逻辑**:向 `{BASE_URL}/access/AccessComputeV2` 发送 `POST`,`Content-Type: application/json`。若无特别指定,可用 `curl`;亦可用与用户环境一致的 HTTP 客户端。
-4. **约束**:可对FromObjectPath和ToObjectPath分别添加约束,例如地面站最小仰角,光照约束等。
+4. **约束**:可对FromObjectPath和ToObjectPath分别添加约束,例如地面站最小仰角,光照条件约束(使用字段"Lighting")。
 
 ## API 规范 (Tool Definition)
 
