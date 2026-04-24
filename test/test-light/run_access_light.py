@@ -11,8 +11,8 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 BASE_URL = "http://astrox.cn:8765"
-START_UTC = "2026-04-23T00:00:00Z"
-STOP_UTC = "2026-04-26T00:00:00Z"
+START_UTC = "2026-04-24T00:00:00Z"
+STOP_UTC = "2026-04-30T00:00:00Z"
 
 WORK_DIR = Path(__file__).resolve().parent
 INPUTS_DIR = WORK_DIR / "inputs"
@@ -198,34 +198,6 @@ def to_intervals_from_access(body: Dict[str, Any]) -> List[Interval]:
     return intervals
 
 
-def to_intervals_from_lighting(body: Dict[str, Any], key: str) -> List[Interval]:
-    intervals: List[Interval] = []
-    block = body.get(key) or {}
-    for item in block.get("Intervals") or []:
-        start = item.get("Start")
-        stop = item.get("Stop")
-        if start and stop:
-            intervals.append(Interval(parse_utc(start), parse_utc(stop)))
-    return intervals
-
-
-def intersect_two(a: List[Interval], b: List[Interval]) -> List[Interval]:
-    i, j = 0, 0
-    result: List[Interval] = []
-    a_sorted = sorted(a, key=lambda x: x.start)
-    b_sorted = sorted(b, key=lambda x: x.start)
-    while i < len(a_sorted) and j < len(b_sorted):
-        left = max(a_sorted[i].start, b_sorted[j].start)
-        right = min(a_sorted[i].stop, b_sorted[j].stop)
-        if left < right:
-            result.append(Interval(left, right))
-        if a_sorted[i].stop <= b_sorted[j].stop:
-            i += 1
-        else:
-            j += 1
-    return result
-
-
 def summarize(intervals: List[Interval]) -> Dict[str, Any]:
     if not intervals:
         return {"count": 0, "total_duration_seconds": 0, "min_duration_seconds": 0, "max_duration_seconds": 0}
@@ -252,18 +224,8 @@ def main() -> int:
 
     tiangong_position, tle_source = pick_tiangong_tle()
 
-    access_payload = {
-        "Description": "Shanghai to Tiangong access with fixed window",
-        "Start": START_UTC,
-        "Stop": STOP_UTC,
-        "OutStep": 60,
-        "ComputeAER": False,
-        "UseLightTimeDelay": False,
-        "FromObjectPath": {"Name": "Facility/Shanghai", "Position": shanghai_position},
-        "ToObjectPath": {"Name": "Satellite/Tiangong", "Position": tiangong_position},
-    }
     access_with_obj_lighting_payload = {
-        "Description": "Shanghai(Umbra) to Tiangong(DirectSun) access with object lighting constraints",
+        "Description": "Shanghai(Umbra+MinEl10deg) to Tiangong(DirectSun) access with object constraints",
         "Start": START_UTC,
         "Stop": STOP_UTC,
         "OutStep": 60,
@@ -273,6 +235,12 @@ def main() -> int:
             "Name": "Facility/Shanghai",
             "Position": shanghai_position,
             "Lighting": "Umbra",
+            "Constraints": [
+                {
+                    "$type": "ElevationAngle",
+                    "MinimumValue": 10.0,
+                }
+            ],
         },
         "ToObjectPath": {
             "Name": "Satellite/Tiangong",
@@ -280,55 +248,26 @@ def main() -> int:
             "Lighting": "DirectSun",
         },
     }
-    lighting_sh_payload = {
-        "Description": "Shanghai lighting for night(Umbra) intervals",
-        "Start": START_UTC,
-        "Stop": STOP_UTC,
-        "Position": shanghai_position,
-    }
-    lighting_tg_payload = {
-        "Description": "Tiangong lighting for SunLight intervals",
-        "Start": START_UTC,
-        "Stop": STOP_UTC,
-        "Position": tiangong_position,
-    }
-
-    save_json(INPUTS_DIR / "access_request.json", access_payload)
     save_json(INPUTS_DIR / "access_request_with_object_lighting.json", access_with_obj_lighting_payload)
-    save_json(INPUTS_DIR / "lighting_shanghai_request.json", lighting_sh_payload)
-    save_json(INPUTS_DIR / "lighting_tiangong_request.json", lighting_tg_payload)
-
-    access_body = expect_api_success(http_post("/access/AccessComputeV2", access_payload, "access_compute_v2"), "AccessComputeV2")
     access_obj_light_body = expect_api_success(
         http_post("/access/AccessComputeV2", access_with_obj_lighting_payload, "access_compute_v2_object_lighting"),
         "AccessComputeV2(ObjectLighting)",
     )
-    light_sh_body = expect_api_success(http_post("/Lighting/LightingTimes", lighting_sh_payload, "lighting_shanghai"), "LightingTimes(Shanghai)")
-    light_tg_body = expect_api_success(http_post("/Lighting/LightingTimes", lighting_tg_payload, "lighting_tiangong"), "LightingTimes(Tiangong)")
 
-    access_intervals = to_intervals_from_access(access_body)
     access_obj_light_intervals = to_intervals_from_access(access_obj_light_body)
-    sh_night_intervals = to_intervals_from_lighting(light_sh_body, "Umbra")
-    tg_sunlight_intervals = to_intervals_from_lighting(light_tg_body, "SunLight")
-
-    constrained = intersect_two(intersect_two(access_intervals, sh_night_intervals), tg_sunlight_intervals)
     result = {
         "window": {"start": START_UTC, "stop": STOP_UTC},
         "input_sources": {"shanghai": city_source, "tiangong": tle_source},
         "raw_counts": {
-            "access_passes": len(access_intervals),
             "access_passes_with_object_lighting": len(access_obj_light_intervals),
-            "shanghai_umbra_intervals": len(sh_night_intervals),
-            "tiangong_sunlight_intervals": len(tg_sunlight_intervals),
         },
         "access_with_object_lighting_constraints": {
-            "description": "Use object-level lighting in Access request, no interval intersection.",
+            "description": "Use object-level lighting and elevation constraints in Access request, no interval intersection.",
             "passes": [x.to_json() for x in access_obj_light_intervals],
             "summary": summarize(access_obj_light_intervals),
             "lighting": {"from_object": "Umbra", "to_object": "DirectSun"},
+            "from_constraints": [{"type": "ElevationAngle", "minimum_deg": 10.0}],
         },
-        "constrained_passes": [x.to_json() for x in constrained],
-        "summary": summarize(constrained),
     }
     save_json(OUTPUTS_DIR / "final_access_with_light_constraints.json", result)
     print(json.dumps(result, ensure_ascii=False, indent=2))

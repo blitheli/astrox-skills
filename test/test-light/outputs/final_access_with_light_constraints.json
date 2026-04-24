@@ -1,7 +1,7 @@
 {
   "window": {
-    "start": "2026-04-23T00:00:00Z",
-    "stop": "2026-04-26T00:00:00Z"
+    "start": "2026-04-24T00:00:00Z",
+    "stop": "2026-04-30T00:00:00Z"
   },
   "input_sources": {
     "shanghai": {
@@ -23,42 +23,37 @@
     }
   },
   "raw_counts": {
-    "access_passes": 22,
-    "access_passes_with_object_lighting": 1,
-    "shanghai_umbra_intervals": 3,
-    "tiangong_sunlight_intervals": 48
+    "access_passes_with_object_lighting": 2
   },
   "access_with_object_lighting_constraints": {
-    "description": "Use object-level lighting in Access request, no interval intersection.",
+    "description": "Use object-level lighting and elevation constraints in Access request, no interval intersection.",
     "passes": [
       {
-        "start": "2026-04-24T21:18:09Z",
-        "stop": "2026-04-24T21:19:03Z",
-        "duration_seconds": 54.539
+        "start": "2026-04-28T20:25:20Z",
+        "stop": "2026-04-28T20:28:49Z",
+        "duration_seconds": 209.037
+      },
+      {
+        "start": "2026-04-29T20:58:51Z",
+        "stop": "2026-04-29T21:05:01Z",
+        "duration_seconds": 370.247
       }
     ],
     "summary": {
-      "count": 1,
-      "total_duration_seconds": 54.539,
-      "min_duration_seconds": 54.539,
-      "max_duration_seconds": 54.539
+      "count": 2,
+      "total_duration_seconds": 579.284,
+      "min_duration_seconds": 209.037,
+      "max_duration_seconds": 370.247
     },
     "lighting": {
       "from_object": "Umbra",
       "to_object": "DirectSun"
-    }
-  },
-  "constrained_passes": [
-    {
-      "start": "2026-04-24T21:18:09Z",
-      "stop": "2026-04-24T21:19:03Z",
-      "duration_seconds": 54.539
-    }
-  ],
-  "summary": {
-    "count": 1,
-    "total_duration_seconds": 54.539,
-    "min_duration_seconds": 54.539,
-    "max_duration_seconds": 54.539
+    },
+    "from_constraints": [
+      {
+        "type": "ElevationAngle",
+        "minimum_deg": 10.0
+      }
+    ]
   }
 }

@@ -2,9 +2,9 @@
   "method": "POST",
   "url": "http://astrox.cn:8765/access/AccessComputeV2",
   "json": {
-    "Description": "Shanghai(Umbra) to Tiangong(DirectSun) access with object lighting constraints",
-    "Start": "2026-04-23T00:00:00Z",
-    "Stop": "2026-04-26T00:00:00Z",
+    "Description": "Shanghai(Umbra+MinEl10deg) to Tiangong(DirectSun) access with object constraints",
+    "Start": "2026-04-24T00:00:00Z",
+    "Stop": "2026-04-30T00:00:00Z",
     "OutStep": 60,
     "ComputeAER": false,
     "UseLightTimeDelay": false,
@@ -20,7 +20,13 @@
         ],
         "clampToGround": false
       },
-      "Lighting": "Umbra"
+      "Lighting": "Umbra",
+      "Constraints": [
+        {
+          "$type": "ElevationAngle",
+          "MinimumValue": 10.0
+        }
+      ]
     },
     "ToObjectPath": {
       "Name": "Satellite/Tiangong",
