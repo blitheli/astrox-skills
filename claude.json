@@ -93,6 +93,11 @@
       "name": "celestial-mpc",
       "skillFile": "skills/celestial-mpc/SKILL.md",
       "fixturesDir": "skills/celestial-mpc/fixtures"
+    },
+    {
+      "name": "celestial-transfer",
+      "skillFile": "skills/celestial-transfer/SKILL.md",
+      "fixturesDir": "skills/celestial-transfer/fixtures"
     }
   ]
 }
