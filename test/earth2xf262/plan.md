@@ -40,3 +40,13 @@
 - Every result has arrival time `2029-04-10T00:00:00.000Z`.
 - The generated CSV has 94 lines including the header.
 - The generated SVG contains y-axis labels from `0` to `1000 m/s`.
+
+## Validation result
+
+- API call succeeded with `IsSuccess == true`.
+- The response message was `Success. 共 93 个转移算例.`.
+- The generated result range is `2028-06-01T00:00:00.000Z` through `2028-09-01T00:00:00.000Z`.
+- All cases use the fixed arrival time `2029-04-10T00:00:00.000Z`.
+- Minimum Earth departure delta-V is `175.140872 m/s` at `2028-08-23T00:00:00.000Z`.
+- Maximum Earth departure delta-V in this window is `464.222206 m/s` at `2028-06-01T00:00:00.000Z`.
+- Because all values are within `0-1000 m/s`, no points are clipped by the requested plot display range.

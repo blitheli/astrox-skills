@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+<style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#1f2937}
+.grid{stroke:#e5e7eb;stroke-width:1}
+.axis{stroke:#374151;stroke-width:1.5}
+.curve{fill:none;stroke:#2563eb;stroke-width:3}
+.best{fill:#dc2626;stroke:white;stroke-width:2}
+</style>
+<rect width="100%" height="100%" fill="white"/>
+<text x="600.0" y="28" text-anchor="middle" font-size="22" font-weight="700">Earth to 2015 XF261 Lambert Transfer</text>
+<text x="600.0" y="52" text-anchor="middle" font-size="14">Departure DV1 magnitude, arrival fixed at 2029-04-10, y-axis 0-1000 m/s</text>
+<line class="grid" x1="95" y1="625.00" x2="1155" y2="625.00"/>
+<text x="83" y="629.00" text-anchor="end" font-size="12">0</text>
+<line class="grid" x1="95" y1="512.40" x2="1155" y2="512.40"/>
+<text x="83" y="516.40" text-anchor="end" font-size="12">200</text>
+<line class="grid" x1="95" y1="399.80" x2="1155" y2="399.80"/>
+<text x="83" y="403.80" text-anchor="end" font-size="12">400</text>
+<line class="grid" x1="95" y1="287.20" x2="1155" y2="287.20"/>
+<text x="83" y="291.20" text-anchor="end" font-size="12">600</text>
+<line class="grid" x1="95" y1="174.60" x2="1155" y2="174.60"/>
+<text x="83" y="178.60" text-anchor="end" font-size="12">800</text>
+<line class="grid" x1="95" y1="62.00" x2="1155" y2="62.00"/>
+<text x="83" y="66.00" text-anchor="end" font-size="12">1000</text>
+<line class="grid" x1="95.00" y1="62" x2="95.00" y2="625"/>
+<text x="95.00" y="649" text-anchor="middle" font-size="12">2028-06</text>
+<line class="grid" x1="440.65" y1="62" x2="440.65" y2="625"/>
+<text x="440.65" y="649" text-anchor="middle" font-size="12">2028-07</text>
+<line class="grid" x1="797.83" y1="62" x2="797.83" y2="625"/>
+<text x="797.83" y="649" text-anchor="middle" font-size="12">2028-08</text>
+<line class="grid" x1="1155.00" y1="62" x2="1155.00" y2="625"/>
+<text x="1155.00" y="649" text-anchor="middle" font-size="12">2028-09</text>
+<line class="axis" x1="95" y1="625" x2="1155" y2="625"/>
+<line class="axis" x1="95" y1="62" x2="95" y2="625"/>
+<polyline class="curve" points="95.00,363.64 106.52,367.69 118.04,371.29 129.57,374.52 141.09,377.49 152.61,380.28 164.13,382.98 175.65,385.67 187.17,388.41 198.70,391.24 210.22,394.20 221.74,397.30 233.26,400.53 244.78,403.92 256.30,407.44 267.83,411.10 279.35,414.89 290.87,418.81 302.39,422.84 313.91,426.96 325.43,431.12 336.96,435.28 348.48,439.36 360.00,443.27 371.52,446.92 383.04,450.23 394.57,453.13 406.09,455.60 417.61,457.63 429.13,459.24 440.65,460.51 452.17,461.49 463.70,462.26 475.22,462.91 486.74,463.52 498.26,464.15 509.78,464.87 521.30,465.71 532.83,466.72 544.35,467.90 555.87,469.28 567.39,470.86 578.91,472.64 590.43,474.62 601.96,476.80 613.48,479.17 625.00,481.72 636.52,484.43 648.04,487.28 659.57,490.21 671.09,493.15 682.61,496.01 694.13,498.68 705.65,501.05 717.17,503.04 728.70,504.60 740.22,505.73 751.74,506.44 763.26,506.81 774.78,506.90 786.30,506.79 797.83,506.57 809.35,506.31 820.87,506.06 832.39,505.89 843.91,505.84 855.43,505.94 866.96,506.21 878.48,506.66 890.00,507.32 901.52,508.17 913.04,509.22 924.57,510.45 936.09,511.87 947.61,513.45 959.13,515.17 970.65,517.01 982.17,518.89 993.70,520.77 1005.22,522.53 1016.74,524.06 1028.26,525.27 1039.78,526.07 1051.30,526.40 1062.83,526.26 1074.35,525.71 1085.87,524.80 1097.39,523.63 1108.91,522.27 1120.43,520.80 1131.96,519.28 1143.48,517.74 1155.00,516.24"/>
+<circle class="best" cx="1051.30" cy="526.40" r="6"/>
+<text x="1063.30" y="516.40" font-size="13" font-weight="700">min 175.141 m/s</text>
+<text x="1063.30" y="534.40" font-size="12">2028-08-23</text>
+<text x="600.0" y="700" text-anchor="middle" font-size="14">Earth departure date (UTC)</text>
+<text transform="translate(24 360.0) rotate(-90)" text-anchor="middle" font-size="14">DV1 magnitude (m/s)</text>
+<text x="1155" y="80" text-anchor="end" font-size="12">points: 93, mean: 273.362 m/s, clipped above 1000: 0</text>
+</svg>
