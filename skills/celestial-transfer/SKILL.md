@@ -1,7 +1,8 @@
 ---
-name: celestial-transfer
-description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到达天体可为行星(Earth,Mars,Ceres 等)或小行星(MPC 编号/名称);小行星可传入历元轨道根数以避免 MPC 网络查询。用户需要日心系转移窗口与 Delta-V 时使用。
----
+
+## name: celestial-transfer
+
+description: 行星与行星(或小行星)之间的 Lambert 转移轨道计算。出发/到达天体可为行星(Earth,Mars,Ceres 等)或小行星(MPC 编号/名称);小行星可传入历元轨道根数以避免 MPC 网络查询。用户需要日心系转移轨道与Delta-V 时使用。
 
 # 天体间 Lambert 转移技能 (Celestial Transfer)
 
@@ -26,59 +27,59 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
 ### 输入参数结构 (JSON)
 
 
-| 参数名                 | 类型     | 必须  | 缺省值示例                                                                 | 说明                                                                 |
-| ------------------- | ------ | --- | --------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `DepartureCbName`   | string | 是   | `Earth`                                                               | 出发天体名称(行星或小行星 MPC 名称/编号)                                            |
-| `ArrivalCbName`     | string | 是   | `2015 XF261`                                                          | 到达天体名称(行星或小行星)                                                    |
-| `DepartureInterval` | string | 是   | `2028-06-01T00:00:00Z/2028-10-01T00:00:00Z`                           | 出发时间搜索区间 `Start/Stop`,UTC ISO8601                                           |
-| `ArrivalInterval`   | string | 是   | `2029-04-10T00:00:00Z/2029-04-10T00:00:00Z`                           | 到达时间搜索区间 `Start/Stop`,UTC ISO8601                                           |
-| `SunFrameName`      | string | 否   | `MeanEclpJ2000`                                                       | 日心结果输出参考系,例如 `MeanEclpJ2000` 或 `ICRF`                                  |
-| `MinTofDays`        | int32  | 否   | `10`                                                                  | 最小转移时间(天)                                                         |
-| `DepartureStepDay`  | number | 否   | `1`                                                                   | 出发时间步长(天)                                                         |
-| `ArrivalStepDay`    | number | 否   | `1`                                                                   | 到达时间步长(天)                                                         |
-| `DepartureElements` | object \| null | 否   | `null`                                                                | 出发小行星 MPC 轨道根数;非 `null` 时不经网络查询 MPC                                  |
-| `ArrivalElements`   | object \| null | 否   | `null`                                                                | 到达小行星 MPC 轨道根数;非 `null` 时不经网络查询 MPC                                  |
+| 参数名                 | 类型     | 必须   | 缺省值示例                                       | 说明                                    |
+| ------------------- | ------ | ---- | ------------------------------------------- | ------------------------------------- |
+| `DepartureCbName`   | string | 是    | `Earth`                                     | 出发天体名称(行星或小行星 MPC 名称/编号)              |
+| `ArrivalCbName`     | string | 是    | `2015 XF261`                                | 到达天体名称(行星或小行星)                        |
+| `DepartureInterval` | string | 是    | `2028-06-01T00:00:00Z/2028-10-01T00:00:00Z` | 出发时间搜索区间 `Start/Stop`,UTC ISO8601     |
+| `ArrivalInterval`   | string | 是    | `2029-04-10T00:00:00Z/2029-04-10T00:00:00Z` | 到达时间搜索区间 `Start/Stop`,UTC ISO8601     |
+| `SunFrameName`      | string | 否    | `MeanEclpJ2000`                             | 日心结果输出参考系,例如 `MeanEclpJ2000` 或 `ICRF` |
+| `MinTofDays`        | int32  | 否    | `10`                                        | 最小转移时间(天)                             |
+| `DepartureStepDay`  | number | 否    | `1`                                         | 出发时间步长(天)                             |
+| `ArrivalStepDay`    | number | 否    | `1`                                         | 到达时间步长(天)                             |
+| `DepartureElements` | object | null | 否                                           | `出发天体为小行星时的轨道参数`                      |
+| `ArrivalElements`   | object | null | 否                                           | `到达天体为小行星时的轨道参数`                      |
 
 
 #### DepartureElements / ArrivalElements 子字段(小行星历元根数)
 
 
-| 子字段名             | 类型     | 单位  | 说明                                      |
-| ---------------- | ------ | --- | --------------------------------------- |
-| `EpochMjdTdt`    | number | MJD | 轨道根数历元(TDT)                             |
-| `SemimajorAxis`  | number | AU  | 半长轴                                     |
-| `Eccentricity`   | number | —   | 偏心率                                     |
-| `Inclination`    | number | deg | 轨道倾角                                    |
-| `Raan`           | number | deg | 升交点赤经/黄经                               |
-| `ArgOfPeriapsis` | number | deg | 近日点幅角                                   |
-| `MeanAnomaly`    | number | deg | 平近点角                                    |
-| `PeriTimeMjdTdt` | number | MJD | 近日点时刻(TDT),可选                          |
-| `Q`              | number | AU  | 近日点距,可选                                |
+| 子字段名             | 类型     | 单位  | 说明            |
+| ---------------- | ------ | --- | ------------- |
+| `EpochMjdTdt`    | number | MJD | 轨道根数历元(TDT)   |
+| `SemimajorAxis`  | number | AU  | 半长轴           |
+| `Eccentricity`   | number | —   | 偏心率           |
+| `Inclination`    | number | deg | 轨道倾角          |
+| `Raan`           | number | deg | 升交点赤经/黄经      |
+| `ArgOfPeriapsis` | number | deg | 近日点幅角         |
+| `MeanAnomaly`    | number | deg | 平近点角          |
+| `PeriTimeMjdTdt` | number | MJD | 近日点时刻(TDT),可选 |
+| `Q`              | number | AU  | 近日点距,可选       |
 
 
 ### 输出说明
 
 
-| 字段名               | 类型       | 说明                           |
-| ----------------- | -------- | ---------------------------- |
-| `IsSuccess`       | boolean  | 结果(True:成功;False:失败)        |
-| `Message`         | string   | 结果信息(失败原因等)                 |
-| `TransferResults` | array    | 转移结果列表,元素类型见下表             |
+| 字段名               | 类型      | 说明                   |
+| ----------------- | ------- | -------------------- |
+| `IsSuccess`       | boolean | 结果(True:成功;False:失败) |
+| `Message`         | string  | 结果信息(失败原因等)          |
+| `TransferResults` | array   | 转移结果列表,元素类型见下表       |
 
 
 #### TransferResults[] 元素 (TransferResultData)
 
 
-| 字段名             | 类型     | 单位  | 说明                    |
-| --------------- | ------ | --- | --------------------- |
-| `DepartureTime` | string | —   | 出发时刻(UTC ISO8601 字符串) |
-| `ArrivalTime`   | string | —   | 到达时刻(UTC ISO8601 字符串) |
-| `DeltaV1`       | number[] | m/s | 出发端速度增量向量 [x,y,z]    |
-| `DeltaV2`       | number[] | m/s | 到达端速度增量向量 [x,y,z]    |
-| `DV1_Mag`       | number | m/s | 出发端速度增量模               |
-| `DV2_Mag`       | number | m/s | 到达端速度增量模               |
+| 字段名             | 类型       | 单位     | 说明                           |
+| --------------- | -------- | ------ | ---------------------------- |
+| `DepartureTime` | string   | —      | 出发时刻(UTC ISO8601 字符串)        |
+| `ArrivalTime`   | string   | —      | 到达时刻(UTC ISO8601 字符串)        |
+| `DeltaV1`       | number[] | m/s    | 出发端速度增量向量 [x,y,z]            |
+| `DeltaV2`       | number[] | m/s    | 到达端速度增量向量 [x,y,z]            |
+| `DV1_Mag`       | number   | m/s    | 出发端速度增量模                     |
+| `DV2_Mag`       | number   | m/s    | 到达端速度增量模                     |
 | `RV1`           | number[] | m, m/s | 出发时日心系位置速度(长度 6:位置 3 + 速度 3) |
-| `RV2`           | number[] | m, m/s | 到达时日心系位置速度(长度 6)         |
+| `RV2`           | number[] | m, m/s | 到达时日心系位置速度(长度 6)             |
 
 
 ## 注意事项
@@ -118,7 +119,21 @@ curl "${BASE_URL}/celestial/transfer" \
   --data-binary @skills/celestial-transfer/fixtures/transfer-with-elements.json
 ```
 
+### 示例 3:地球到小行星 Apophis(经 MPC 查询轨道根数并积分,依赖网络)
+
+对应上游测试 `Transfer_EarthToApophis_Mpc_260424`:验证「行星 → 非内置小行星(MPC)」全链路;**不传** `ArrivalElements`,服务端需访问 MPC 获取 Apophis 根数。无网络或 MPC 不可用时请求会失败。
+
+```bash
+export BASE_URL=http://astrox.cn:8765
+curl "${BASE_URL}/celestial/transfer" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/celestial-transfer/fixtures/transfer-earth2mpc.json
+```
+
 ## Fixtures
 
 - `skills/celestial-transfer/fixtures/transfer-min.json`:最小可运行请求(地球到火星,不传 `*Elements`)。
 - `skills/celestial-transfer/fixtures/transfer-with-elements.json`:含 `DepartureElements`/`ArrivalElements` 的完整模板(与公开 API 示例一致)。
+- `skills/celestial-transfer/fixtures/transfer-earth2mpc.json`:地球 → Apophis,不传 `*Elements`,依赖 MPC 网络;时间窗口为 2029 年逼近地球前后的短区间,步长 10 天(与单元测试 `Transfer_EarthToApophis_Mpc_260424` 一致)。
+
