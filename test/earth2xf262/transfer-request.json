@@ -1,0 +1,21 @@
+{
+  "SunFrameName": "MeanEclpJ2000",
+  "DepartureCbName": "Earth",
+  "ArrivalCbName": "2015 XF261",
+  "DepartureInterval": "2028-06-01T00:00:00Z/2028-09-01T00:00:00Z",
+  "ArrivalInterval": "2029-04-10T00:00:00Z/2029-04-10T00:00:00Z",
+  "MinTofDays": 10,
+  "DepartureStepDay": 1,
+  "ArrivalStepDay": 1,
+  "ArrivalElements": {
+    "EpochMjdTdt": 61000,
+    "PeriTimeMjdTdt": 1,
+    "Q": 0.6740515,
+    "SemimajorAxis": 0.9898367,
+    "Eccentricity": 0.3190276,
+    "Inclination": 0.79379,
+    "Raan": 209.81828,
+    "ArgOfPeriapsis": 100.88187,
+    "MeanAnomaly": 126.23043
+  }
+}
