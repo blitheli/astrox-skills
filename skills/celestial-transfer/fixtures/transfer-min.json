@@ -5,6 +5,6 @@
   "DepartureInterval": "2028-06-01T00:00:00Z/2028-10-01T00:00:00Z",
   "ArrivalInterval": "2029-04-01T00:00:00Z/2029-06-01T00:00:00Z",
   "MinTofDays": 10,
-  "DepartureStepDay": 1,
-  "ArrivalStepDay": 1
+  "DepartureStepDay": 5,
+  "ArrivalStepDay": 5
 }
