@@ -46,7 +46,7 @@ def build_svg(rows):
     vmax = max(values)
     span_seconds = max((t1 - t0).total_seconds(), 1.0)
     pad = (vmax - vmin) * 0.06 or 1.0
-    y0 = vmin - pad
+    y0 = max(0.0, vmin - pad)
     y1 = vmax + pad
 
     def x_for(t):
