@@ -9,8 +9,12 @@ MU_EARTH_KM3_S2 = 398600.4418
 EARTH_RADIUS_KM = 6378.137
 PERIGEE_ALTITUDE_KM = 200.0
 REFERENCE_SPEED_KM_S = 10.96
+GRID_STEP_DAYS = 2
 ARRIVAL_GAP_TARGET_DAYS = 90
-ARRIVAL_GAP_TOLERANCE_DAYS = 5
+ARRIVAL_GAP_TOLERANCE_DAYS = 2
+IMPACTOR_OUTPUT = "2025-WN6-transfer-window-1-step2-output.json"
+OBSERVER_OUTPUT = "2025-WN6-transfer-observer-early-step2-output.json"
+SUMMARY_OUTPUT = "2025-WN6-mission2-step2-summary.json"
 
 
 def vector_norm(vector: list[float]) -> float:
@@ -60,8 +64,8 @@ def load_transfers(path: Path) -> list[dict]:
 
 
 def main() -> None:
-    impactor_transfers = load_transfers(OUT_DIR / "2025-WN6-transfer-window-1-output.json")
-    observer_transfers = load_transfers(OUT_DIR / "2025-WN6-transfer-observer-early-output.json")
+    impactor_transfers = load_transfers(OUT_DIR / IMPACTOR_OUTPUT)
+    observer_transfers = load_transfers(OUT_DIR / OBSERVER_OUTPUT)
 
     impactor_feasible = [
         item
@@ -112,6 +116,7 @@ def main() -> None:
 
     summary = {
         "asteroid": "2025 WN6",
+        "grid_step_days": GRID_STEP_DAYS,
         "arrival_gap_target_days": ARRIVAL_GAP_TARGET_DAYS,
         "arrival_gap_tolerance_days": ARRIVAL_GAP_TOLERANCE_DAYS,
         "impactor_constraints": {
@@ -127,6 +132,30 @@ def main() -> None:
         "observer_feasible_count": len(observer_feasible),
         "pair_count": len(pairs),
         "pair_count_with_impactor_earth_dv_le_1": len(pairs_with_impactor_earth_dv_le_1),
+        "paired_impactor_departure_range_with_earth_dv_le_1": [
+            min(pair["impactor"]["DepartureTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+            max(pair["impactor"]["DepartureTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+        ]
+        if pairs_with_impactor_earth_dv_le_1
+        else None,
+        "paired_impactor_arrival_range_with_earth_dv_le_1": [
+            min(pair["impactor"]["ArrivalTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+            max(pair["impactor"]["ArrivalTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+        ]
+        if pairs_with_impactor_earth_dv_le_1
+        else None,
+        "paired_observer_departure_range_with_earth_dv_le_1": [
+            min(pair["observer"]["DepartureTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+            max(pair["observer"]["DepartureTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+        ]
+        if pairs_with_impactor_earth_dv_le_1
+        else None,
+        "paired_observer_arrival_range_with_earth_dv_le_1": [
+            min(pair["observer"]["ArrivalTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+            max(pair["observer"]["ArrivalTime"] for pair in pairs_with_impactor_earth_dv_le_1),
+        ]
+        if pairs_with_impactor_earth_dv_le_1
+        else None,
         "paired_impactor_departure_range": [
             min(pair["impactor"]["DepartureTime"] for pair in pairs),
             max(pair["impactor"]["DepartureTime"] for pair in pairs),
@@ -168,6 +197,15 @@ def main() -> None:
         )
         if pairs
         else None,
+        "best_pair_with_impactor_earth_dv_le_1_closest_to_90_then_combined_metric": min(
+            pairs_with_impactor_earth_dv_le_1,
+            key=lambda pair: (
+                abs(pair["arrival_gap_days"] - ARRIVAL_GAP_TARGET_DAYS),
+                pair["combined_metric_km_s"],
+            ),
+        )
+        if pairs_with_impactor_earth_dv_le_1
+        else None,
         "top_pairs_by_combined_metric": sorted(
             pairs, key=lambda pair: pair["combined_metric_km_s"]
         )[:10],
@@ -187,7 +225,7 @@ def main() -> None:
         )[:10],
     }
 
-    (OUT_DIR / "2025-WN6-mission2-summary.json").write_text(
+    (OUT_DIR / SUMMARY_OUTPUT).write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(f"impactor feasible: {len(impactor_feasible)}")
