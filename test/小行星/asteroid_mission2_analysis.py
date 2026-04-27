@@ -68,29 +68,47 @@ def main() -> None:
         for item in impactor_transfers
         if item["arrival_sunlight_angle_deg"] < 80.0 and item["DV2_Mag"] > 5000.0
     ]
+    impactor_feasible_earth_dv_le_1 = [
+        item for item in impactor_feasible if item["earth_departure_dv_km_s"] <= 1.0
+    ]
     observer_feasible = [
         item for item in observer_transfers if item["observer_total_dv_km_s"] <= 2.0
     ]
 
-    pairs = []
     lower_gap = ARRIVAL_GAP_TARGET_DAYS - ARRIVAL_GAP_TOLERANCE_DAYS
     upper_gap = ARRIVAL_GAP_TARGET_DAYS + ARRIVAL_GAP_TOLERANCE_DAYS
-    for impactor in impactor_feasible:
-        for observer in observer_feasible:
-            gap_days = (impactor["_arrival_dt"] - observer["_arrival_dt"]).total_seconds() / 86400.0
-            if lower_gap <= gap_days <= upper_gap:
-                pairs.append(
-                    {
-                        "arrival_gap_days": gap_days,
-                        "impactor": public_transfer(impactor),
-                        "observer": public_transfer(observer),
-                        "combined_metric_km_s": impactor["earth_departure_dv_km_s"]
-                        + observer["observer_total_dv_km_s"],
-                    }
-                )
 
-    for pair in pairs:
-        pair["impactor"].pop("observer_total_dv_km_s", None)
+    def build_pairs(impactors: list[dict]) -> list[dict]:
+        pairs = []
+        for impactor in impactors:
+            for observer in observer_feasible:
+                gap_days = (impactor["_arrival_dt"] - observer["_arrival_dt"]).total_seconds() / 86400.0
+                if lower_gap <= gap_days <= upper_gap:
+                    pairs.append(
+                        {
+                            "arrival_gap_days": gap_days,
+                            "impactor": public_transfer(impactor),
+                            "observer": public_transfer(observer),
+                            "combined_metric_km_s": impactor["earth_departure_dv_km_s"]
+                            + observer["observer_total_dv_km_s"],
+                        }
+                    )
+        for pair in pairs:
+            pair["impactor"].pop("observer_total_dv_km_s", None)
+        return pairs
+
+    pairs = build_pairs(impactor_feasible)
+    pairs_with_impactor_earth_dv_le_1 = build_pairs(impactor_feasible_earth_dv_le_1)
+    min_impactor_earth_dv_candidate = (
+        min(impactor_feasible, key=lambda item: item["earth_departure_dv_km_s"])
+        if impactor_feasible
+        else None
+    )
+    min_impactor_earth_dv_candidate = (
+        public_transfer(min_impactor_earth_dv_candidate) if min_impactor_earth_dv_candidate else None
+    )
+    if min_impactor_earth_dv_candidate:
+        min_impactor_earth_dv_candidate.pop("observer_total_dv_km_s", None)
 
     summary = {
         "asteroid": "2025 WN6",
@@ -104,8 +122,11 @@ def main() -> None:
             "earth_departure_dv_plus_DV2_Mag_km_s": "<=2",
         },
         "impact_feasible_count": len(impactor_feasible),
+        "impact_feasible_earth_dv_le_1_count": len(impactor_feasible_earth_dv_le_1),
+        "min_impactor_earth_dv_candidate": min_impactor_earth_dv_candidate,
         "observer_feasible_count": len(observer_feasible),
         "pair_count": len(pairs),
+        "pair_count_with_impactor_earth_dv_le_1": len(pairs_with_impactor_earth_dv_le_1),
         "paired_impactor_departure_range": [
             min(pair["impactor"]["DepartureTime"] for pair in pairs),
             max(pair["impactor"]["DepartureTime"] for pair in pairs),
@@ -157,14 +178,23 @@ def main() -> None:
                 pair["combined_metric_km_s"],
             ),
         )[:10],
+        "top_pairs_with_impactor_earth_dv_le_1": sorted(
+            pairs_with_impactor_earth_dv_le_1,
+            key=lambda pair: (
+                abs(pair["arrival_gap_days"] - ARRIVAL_GAP_TARGET_DAYS),
+                pair["combined_metric_km_s"],
+            ),
+        )[:10],
     }
 
     (OUT_DIR / "2025-WN6-mission2-summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(f"impactor feasible: {len(impactor_feasible)}")
+    print(f"impactor feasible with earth dV <= 1 km/s: {len(impactor_feasible_earth_dv_le_1)}")
     print(f"observer feasible: {len(observer_feasible)}")
     print(f"paired solutions: {len(pairs)}")
+    print(f"paired solutions with impactor earth dV <= 1 km/s: {len(pairs_with_impactor_earth_dv_le_1)}")
 
 
 if __name__ == "__main__":

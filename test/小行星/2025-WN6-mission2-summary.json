@@ -10,8 +10,47 @@
     "earth_departure_dv_plus_DV2_Mag_km_s": "<=2"
   },
   "impact_feasible_count": 46,
+  "impact_feasible_earth_dv_le_1_count": 0,
+  "min_impactor_earth_dv_candidate": {
+    "DepartureTime": "2028-05-10T00:00:00.000Z",
+    "ArrivalTime": "2029-04-18T00:00:00.000Z",
+    "DeltaV1": [
+      -4454.216486133591,
+      -4206.700409040888,
+      -274.43189501937525
+    ],
+    "DV1_Mag": 6132.836676593711,
+    "DeltaV2": [
+      -4567.955076828074,
+      -1292.2618198180062,
+      -1669.1413124548387
+    ],
+    "DV2_Mag": 5032.1155507223975,
+    "RV1": [
+      -98153033436.41592,
+      -114818539320.4897,
+      8396996.234390259,
+      17692.391246351715,
+      -23668.869434742803,
+      -273.96140702389914
+    ],
+    "RV2": [
+      -125069376536.18245,
+      -56185913727.023155,
+      564122639.9133551,
+      7015.691563065532,
+      -31665.6476733907,
+      -245.45809291473097
+    ],
+    "DepartureDate": "2028-05-10",
+    "ArrivalDate": "2029-04-18",
+    "arrival_sunlight_angle_deg": 21.26642687938919,
+    "earth_departure_dv_km_s": 1.6416327371550121,
+    "dv2_km_s": 5.032115550722398
+  },
   "observer_feasible_count": 38,
   "pair_count": 39,
+  "pair_count_with_impactor_earth_dv_le_1": 0,
   "paired_impactor_departure_range": [
     "2028-05-30T00:00:00.000Z",
     "2028-06-14T00:00:00.000Z"
@@ -1848,5 +1887,6 @@
       },
       "combined_metric_km_s": 8.700834662530157
     }
-  ]
+  ],
+  "top_pairs_with_impactor_earth_dv_le_1": []
 }
