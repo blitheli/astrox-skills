@@ -1,0 +1,21 @@
+{
+  "SunFrameName": "MeanEclpJ2000",
+  "DepartureCbName": "Earth",
+  "ArrivalCbName": "2025 WN6",
+  "DepartureInterval": "2028-03-01T00:00:00Z/2028-12-31T00:00:00Z",
+  "ArrivalInterval": "2029-04-13T00:00:00Z/2029-08-19T00:00:00Z",
+  "MinTofDays": 10,
+  "DepartureStepDay": 2,
+  "ArrivalStepDay": 2,
+  "ArrivalElements": {
+    "EpochMjdTdt": 61000,
+    "PeriTimeMjdTdt": 60730.9107275601,
+    "Q": 0.900329255645303,
+    "SemimajorAxis": 1.0113021232806347,
+    "Eccentricity": 0.109732655633451,
+    "Inclination": 2.5270169224118,
+    "Raan": 200.6824989308937,
+    "ArgOfPeriapsis": 330.2512061140936,
+    "MeanAnomaly": 260.78288151685655
+  }
+}
