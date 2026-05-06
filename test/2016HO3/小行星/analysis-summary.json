@@ -1,0 +1,30 @@
+{
+  "distance_2029_au_summary_km": {
+    "min_km": 16065868.067605672,
+    "min_epoch_seconds_tag": "2029-11-09",
+    "max_km": 43687050.52353041,
+    "max_epoch_seconds_tag": "2029-07-09",
+    "num_earth_samples": 365
+  },
+  "transfer_grid": {
+    "count": 1146,
+    "min_DV1_Mag_mps": 467.0639823127997,
+    "at_min_DV1": {
+      "DepartureTime": "2028-09-17T00:00:00.000Z",
+      "ArrivalTime": "2029-06-10T00:00:00.000Z"
+    },
+    "min_EarthDepartureDv_mps": 58.51218195713773,
+    "at_min_EarthDepartureDv": {
+      "DepartureTime": "2028-09-17T00:00:00.000Z",
+      "ArrivalTime": "2029-06-10T00:00:00.000Z",
+      "DV1_Mag": 467.0639823127997,
+      "DV2_Mag": 4402.035198624865,
+      "IlluminationAngleDeg": 64.04213277715232
+    },
+    "impactor_candidates_illum80_DV2gt5000": 119,
+    "observer_dVtotal_le_2000_mps": 0,
+    "observer_dVtotal_le_20000_mps": 626,
+    "pairs_impactor_observer_90d_dVtotal_le_20000_mps": 105,
+    "pairs_impactor_observer_90d_dVtotal_le_2000_mps": 0
+  }
+}

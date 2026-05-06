@@ -1,0 +1,21 @@
+﻿{
+  "SunFrameName": "MeanEclpJ2000",
+  "DepartureCbName": "Earth",
+  "ArrivalCbName": "2016 HO3",
+  "DepartureInterval": "2028-03-01T00:00:00Z/2028-12-31T00:00:00Z",
+  "ArrivalInterval": "2029-01-01T00:00:00Z/2029-12-31T00:00:00Z",
+  "MinTofDays": 10,
+  "DepartureStepDay": 10,
+  "ArrivalStepDay": 10,
+  "ArrivalElements": {
+    "EpochMjdTdt": 60800,
+    "PeriTimeMjdTdt": 60587.4218574219,
+    "Q": 0.898363417796334,
+    "SemimajorAxis": 1.0009052324357772,
+    "Eccentricity": 0.102449074414268,
+    "Inclination": 7.8001021636069,
+    "Raan": 65.6887722620166,
+    "ArgOfPeriapsis": 304.7066127007698,
+    "MeanAnomaly": 209.2344744661538
+  }
+}
