@@ -1,0 +1,45 @@
+{
+  "transfer_grid": {
+    "count": 7344,
+    "min_DV1_Mag_mps": 762.3512295860244,
+    "at_min_DV1": {
+      "DepartureTime": "2029-03-26T00:00:00.000Z",
+      "ArrivalTime": "2029-10-29T00:00:00.000Z"
+    },
+    "min_EarthDepartureDv_mps": 74.97355400615743,
+    "at_min_EarthDepartureDv": {
+      "DepartureTime": "2029-03-26T00:00:00.000Z",
+      "ArrivalTime": "2029-10-29T00:00:00.000Z",
+      "DV1_Mag": 762.3512295860244,
+      "DV2_Mag": 1617.3348096657687,
+      "IlluminationAngleDeg": 54.82382440463121,
+      "EarthAsteroidDistanceAtArrival_km": 48511933.506155685
+    },
+    "global_minimum_DvTotal_mps": 1100.562706601418,
+    "at_global_minimum_DvTotal": {
+      "DepartureTime": "2029-03-31T00:00:00.000Z",
+      "ArrivalTime": "2029-08-20T00:00:00.000Z",
+      "DV1_Mag": 1865.7218755531092,
+      "DV2_Mag": 894.9736017990487,
+      "IlluminationAngleDeg": 85.9431951150108,
+      "EarthAsteroidDistanceAtArrival_km": 18268790.01519615
+    },
+    "impactor_candidates_illum80_DV2gt5000_only": 417,
+    "impactor_candidates_including_earth_dv_le_1100_mps": 30,
+    "impactor_max_earth_departure_dv_mps": 1100.0,
+    "impactor_min_EarthAsteroidDistanceAtArrival_km": 16660029.951566268,
+    "at_impactor_min_arrival_distance": {
+      "DepartureTime": "2028-06-29T00:00:00.000Z",
+      "ArrivalTime": "2028-08-20T00:00:00.000Z",
+      "DV1_Mag": 3599.1595460312265,
+      "DV2_Mag": 5099.74452682244,
+      "IlluminationAngleDeg": 41.00613641567675,
+      "EarthDepartureDv_mps": 622.0296743770996,
+      "EarthAsteroidDistanceAtArrival_km": 16660029.951566268
+    },
+    "observer_dVtotal_le_2000_mps": 633,
+    "observer_dVtotal_le_20000_mps": 5208,
+    "pairs_impactor_observer_90d_dVtotal_le_20000_mps": 13,
+    "pairs_impactor_observer_90d_dVtotal_le_2000_mps": 10
+  }
+}
