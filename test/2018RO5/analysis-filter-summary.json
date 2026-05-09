@@ -1,0 +1,15 @@
+{
+  "asteroid": "2018 RO5",
+  "requirements_doc": "2018RO5要求.md",
+  "impactor_dist_max_km": 20000000.0,
+  "impactor_candidates": 1583,
+  "observer_candidates": 0,
+  "pairs_observer_before_impactor_90d": 0,
+  "impactor_breakdown": {
+    "illum_lt_80_deg": 12103,
+    "plus_DV2_gt_5000_mps": 9430,
+    "plus_dist_under_threshold_km": 2112,
+    "plus_dep_abs_le_1100_mps": 1583,
+    "min_abs_dep_mps_among_last_three_only": 67.61048511597255
+  }
+}

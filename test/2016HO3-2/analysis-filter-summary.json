@@ -1,0 +1,15 @@
+{
+  "asteroid": "2016 HO3",
+  "requirements_doc": "2016HO3要求.md",
+  "impactor_dist_max_km": 20000000.0,
+  "impactor_candidates": 3,
+  "observer_candidates": 0,
+  "pairs_observer_before_impactor_90d": 0,
+  "impactor_breakdown": {
+    "illum_lt_80_deg": 6775,
+    "plus_DV2_gt_5000_mps": 2811,
+    "plus_dist_under_threshold_km": 267,
+    "plus_dep_abs_le_1100_mps": 3,
+    "min_abs_dep_mps_among_last_three_only": 879.9841069791783
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "asteroid": "2015 MB54",
+  "requirements_doc": "2015MB54要求.md",
+  "impactor_dist_max_km": 20000000.0,
+  "impactor_candidates": 529,
+  "observer_candidates": 682,
+  "pairs_observer_before_impactor_90d": 78260,
+  "impactor_breakdown": {
+    "illum_lt_80_deg": 10822,
+    "plus_DV2_gt_5000_mps": 9621,
+    "plus_dist_under_threshold_km": 664,
+    "plus_dep_abs_le_1100_mps": 529,
+    "min_abs_dep_mps_among_last_three_only": 62.26658441298605
+  }
+}

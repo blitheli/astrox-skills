@@ -1,0 +1,8 @@
+{
+  "impactor_arrival_utc_min": "2030-02-10T00:00:00Z",
+  "impactor_arrival_utc_max": "2033-04-10T00:00:00Z",
+  "observer_arrival_utc_min": "2030-06-05T00:00:00Z",
+  "observer_arrival_utc_max": "2033-08-31T00:00:00Z",
+  "pairs_observer_before_impactor_gap0_days": 78260,
+  "note": "若要求观测器早于撞击器 ≥90 天，需 obs.arrival ≤ imp.arrival - 90d"
+}

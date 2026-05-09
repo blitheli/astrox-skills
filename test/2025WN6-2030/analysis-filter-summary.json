@@ -1,0 +1,13 @@
+{
+  "impactor_dist_max_km": 20000000.0,
+  "impactor_candidates": 0,
+  "observer_candidates": 1640,
+  "pairs_observer_before_impactor_90d": 0,
+  "impactor_breakdown": {
+    "illum_lt_80_deg": 1998,
+    "plus_DV2_gt_5000_mps": 360,
+    "plus_dist_under_threshold_km": 52,
+    "plus_dep_abs_le_1100_mps": 0,
+    "min_abs_dep_mps_among_last_three_only": 1605.2927531402602
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "observer_cost_definition": "|dV| + DV2_Mag (m/s)",
+  "grid_min_cost_mps": 2216.6446351375725,
+  "grid_count_le_2000_mps": 0,
+  "observer_DV_total_limit_mps": 2000.0
+}
