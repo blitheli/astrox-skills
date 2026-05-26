@@ -173,16 +173,16 @@ curl "${BASE_URL}/Lighting/LightingTimes" \
 
 ### 示例 4:SGP4 卫星光照计算
 
-**场景**:地球 SGP4/TLE 卫星(25730),计算 24 小时光照情况;时间与 TLE 历元对齐。
+**场景**:地球 SGP4/TLE 卫星(ISS 25544),计算 24 小时光照情况;时间与 TLE 历元对齐。
 
 ```bash
 curl "${BASE_URL}/Lighting/LightingTimes" \
   --request POST \
   --header 'Content-Type: application/json' \
   --data '{
-    "Description": "地球SGP4卫星(TLE 25730)光照计算",
-    "Start": "2021-05-01T00:00:00Z",
-    "Stop": "2021-05-02T00:00:00Z",
+    "Description": "ISS 25544 SGP4 光照时间计算",
+    "Start": "2026-05-23T00:00:00Z",
+    "Stop": "2026-05-24T00:00:00Z",
     "Position": {
       "$type": "SGP4",
       "SatelliteNumber": "25544",
