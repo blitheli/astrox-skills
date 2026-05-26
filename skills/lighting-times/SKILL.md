@@ -171,6 +171,38 @@ curl "${BASE_URL}/Lighting/LightingTimes" \
   }'
 ```
 
+### 示例 4:SGP4 卫星光照计算
+
+**场景**:地球 SGP4/TLE 卫星(25730),计算 24 小时光照情况;时间与 TLE 历元对齐。
+
+```bash
+curl "${BASE_URL}/Lighting/LightingTimes" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data '{
+    "Description": "地球SGP4卫星(TLE 25730)光照计算",
+    "Start": "2021-05-01T00:00:00Z",
+    "Stop": "2021-05-02T00:00:00Z",
+    "Position": {
+      "$type": "SGP4",
+      "SatelliteNumber": "25544",
+      "TLEs": [
+        "1 25544U 98067A   26143.80969095  .00007235  00000-0  13771-3 0  9991",
+        "2 25544  51.6325  60.7811 0007520  90.7634 269.4217 15.49334650567975"
+      ]
+    }
+  }'
+```
+
+也可直接使用 fixture:
+
+```bash
+curl "${BASE_URL}/Lighting/LightingTimes" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@lighting-times/fixtures/sgp4.json"
+```
+
 ## 本地快速验证(可选)
 
 ```bash
@@ -197,6 +229,7 @@ curl "${BASE_URL}/Lighting/LightingTimes" \
 | `lighting-times/fixtures/satellite-moon-twobody.json`            | 月球中心 TwoBody 轨道卫星        |
 | `lighting-times/fixtures/satellite-mars-twobody.json`            | 火星中心 TwoBody 轨道卫星        |
 | `lighting-times/fixtures/satellite-earth-czmlpositions-min.json` | 地球 CzmlPositions 星历(节选点) |
+| `lighting-times/fixtures/sgp4.json`                              | 地球 SGP4/TLE 卫星,24 小时计算   |
 
 
 ## 响应示例
