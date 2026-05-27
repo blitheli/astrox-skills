@@ -147,4 +147,3 @@ curl "${BASE_URL}/Rocket/TrajectoryOptim" \
 | `skills/rocket-trajectory-optim/fixtures/trajectory-optim-cz2d-optim.json` | CZ-2D LEO 轨道优化样例 |
 | `skills/rocket-trajectory-optim/fixtures/trajectory-optim-cz4b-optim.json` | CZ-4B 700km SSO 轨道优化样例 |
 | `skills/rocket-trajectory-optim/fixtures/trajectory-optim-cz4c-optim.json` | CZ-4C 800km SSO 轨道优化样例 |
-| `skills/rocket-trajectory-optim/fixtures/trajectory-optim-cz2d-optim.json` | CZ-2D LEO 入轨优化样例,运行 AlglibOptimizer Profiles |
