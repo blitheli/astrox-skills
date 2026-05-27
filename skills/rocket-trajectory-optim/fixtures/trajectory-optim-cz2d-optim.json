@@ -1,0 +1,148 @@
+{
+  "RocketInput": {
+    "$type": "CZ-2D",
+    "Name": "CZ2D_LEO_Optim",
+    "Name_FaSheDian": "xc",
+    "A0": 136.0,
+    "T1": 17,
+    "Alpham": 1.158,
+    "Sm": 8.814,
+    "Gw": 4300,
+    "FairingMass": 1400,
+    "sma0": 6892137,
+    "ecc0": 0.0,
+    "inc0": 55.0,
+    "omg0": 178,
+    "Stage1_Mass": 187766.87059,
+    "Stage1_FuelMass": 176766.87059,
+    "Stage2_Mass": 55322.45236,
+    "Stage2_FuelMass": 51322.45236,
+    "Tk_1": 152.2,
+    "Dt_k12f": 1.2,
+    "Tk_F": 64,
+    "Tk_2z": 160,
+    "Tk_2u": 500,
+    "Dt_xjfl": 32,
+    "PhicxDot_2z": -0.001,
+    "PhicxDot_2u": -0.14,
+    "PsicxDot_2": 0.0,
+    "Stage1_Engine": {
+      "Name": "一级海平面发动机",
+      "NumberOfEngines": 4,
+      "Force": 740400,
+      "Ips": 2550,
+      "Sa": 1.622
+    },
+    "Stage2_MainEngine": {
+      "Name": "二级主机",
+      "Force": 742000,
+      "Ips": 2941.999792,
+      "IsVacuum": true
+    },
+    "Stage2_VernierEngine": {
+      "Name": "二级游机",
+      "NumberOfEngines": 4,
+      "Force": 11775,
+      "Ips": 2834,
+      "IsVacuum": true
+    }
+  },
+  "Profiles": [
+    {
+      "$type": "AlglibOptimizer",
+      "Name": "CZ2D_Optim",
+      "IsActive": true,
+      "IsIterate": true,
+      "DiffStep": 0.0001,
+      "EpsX": 0.001,
+      "StepMax": 0.2,
+      "MaxIts": 100,
+      "Controls": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Object": "初始状态",
+          "CurrentValue": 4300,
+          "LowerBound": 1000,
+          "UpperBound": 8000,
+          "Scale": 1000
+        },
+        {
+          "Use": true,
+          "Name": "A0",
+          "Object": "初始状态",
+          "CurrentValue": 136,
+          "LowerBound": 120,
+          "UpperBound": 150,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "Alpham",
+          "CurrentValue": 1.158,
+          "LowerBound": 0.5,
+          "UpperBound": 3,
+          "Scale": 1,
+          "Object": "初始状态"
+        },
+        {
+          "Use": true,
+          "Name": "PhicxDot_2z",
+          "Object": "初始状态",
+          "CurrentValue": -0.001,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "PhicxDot_2u",
+          "Object": "初始状态",
+          "CurrentValue": -0.14,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        }
+      ],
+      "Results": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Goal": "Maximize",
+          "Object": "初始状态",
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "gs_r",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "Scale": 100000
+        },
+        {
+          "Use": true,
+          "Name": "gs_Va",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "Scale": 1000
+        },
+        {
+          "Use": true,
+          "Name": "gs_thetaba",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "gs_ir",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "Scale": 1
+        }
+      ]
+    }
+  ],
+  "RunProfiles": true,
+  "GetKeyData": false
+}

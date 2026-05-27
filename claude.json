@@ -98,6 +98,11 @@
       "name": "celestial-transfer",
       "skillFile": "skills/celestial-transfer/SKILL.md",
       "fixturesDir": "skills/celestial-transfer/fixtures"
+    },
+    {
+      "name": "rocket-trajectory-optim",
+      "skillFile": "skills/rocket-trajectory-optim/SKILL.md",
+      "fixturesDir": "skills/rocket-trajectory-optim/fixtures"
     }
   ]
 }

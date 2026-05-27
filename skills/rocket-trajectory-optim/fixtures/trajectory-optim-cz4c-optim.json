@@ -1,0 +1,181 @@
+{
+  "RocketInput": {
+    "$type": "CZ-4C",
+    "Name": "CZ4C_SSO(800km)_250403",
+    "Text": "CZ-4C SSO方案弹道. 大整流罩1650kg; 运载能力: 3192 kg",
+    "Text2": "运载火箭大全（第2版），抛弃质量: 1级-14t,2级-4.6t,3级-2t。飞行时序网上查，参考CZ4CY44",
+    "Text3": "三级2次工作段：325s+35s，滑行固定600s。三级二次工作时间短，时间和程序角均不优化。三级关机后14s末速修正，暂时推力为0",
+    "Name_FaSheDian": "ty",
+    "A0": 192.96594720942002,
+    "T1": 20,
+    "Alpham": 1.4092235084146163,
+    "Sm": 8.814,
+    "Gw": 3192.2410040700684,
+    "FairingMass": 1650,
+    "sma0": 7178137,
+    "ecc0": 0.0,
+    "inc0": 98.8,
+    "omg0": 163,
+    "Stage1_Mass": 191928.28235294,
+    "Stage1_FuelMass": 177928.28235294,
+    "Stage2_Mass": 39131.077964,
+    "Stage2_FuelMass": 34531.077964,
+    "Stage3_Mass": 14219.88556042,
+    "Stage3_FuelMass": 12219.88556042,
+    "Tk_1": 153.2,
+    "Dt_k12f": 1.2,
+    "Tk_F": 46,
+    "Tk_2z": 127.8,
+    "Tk_2u": 9.8,
+    "Dt_k23f": 1,
+    "Tk_3": 325,
+    "Dt_hx": 600,
+    "Tk_3b": 35,
+    "Dt_msxz": 14,
+    "Dt_xjfl": 66,
+    "PhicxDot_2z": 0.08322005035451016,
+    "PsicxDot_2z": 0.0,
+    "PhicxDot_3": -0.10147856401851918,
+    "PsicxDot_3": 0.0,
+    "Phicx_DotHx": -0.10068549400698126,
+    "Stage1_Engine": {
+      "Name": "一级 4xYF-21",
+      "NumberOfEngines": 4,
+      "Force": 740400,
+      "Ips": 2550,
+      "Sa": 1.622
+    },
+    "Stage2_MainEngine": {
+      "Name": "二级主机 YF-22",
+      "Force": 742040,
+      "Ips": 2942.00053144,
+      "IsVacuum": true
+    },
+    "Stage2_VernierEngine": {
+      "Name": "二级游机 4xYF-23",
+      "NumberOfEngines": 4,
+      "Force": 11525,
+      "Ips": 2761.6,
+      "IsVacuum": true
+    },
+    "Stage3_Engine": {
+      "Name": "三级 2xYF-40",
+      "NumberOfEngines": 2,
+      "Force": 50424,
+      "Ips": 2971,
+      "IsVacuum": true
+    }
+  },
+  "Profiles": [
+    {
+      "$type": "AlglibOptimizer",
+      "Name": "CZ4C_SSO_Optim",
+      "IsActive": true,
+      "IsIterate": true,
+      "DiffStep": 0.0001,
+      "EpsX": 0.001,
+      "StepMax": 0.2,
+      "MaxIts": 100,
+      "Controls": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Object": "初始状态",
+          "CurrentValue": 3192.2410040700684,
+          "LowerBound": 1500,
+          "UpperBound": 5000,
+          "Scale": 10000
+        },
+        {
+          "Use": true,
+          "Name": "A0",
+          "Object": "初始状态",
+          "CurrentValue": 192.96594720942002,
+          "LowerBound": 185,
+          "UpperBound": 200,
+          "Scale": 100
+        },
+        {
+          "Use": true,
+          "Name": "Alpham",
+          "Object": "初始状态",
+          "CurrentValue": 1.4092235084146163,
+          "LowerBound": 0.05,
+          "UpperBound": 3,
+          "Scale": 100
+        },
+        {
+          "Use": true,
+          "Name": "PhicxDot_2z",
+          "Object": "初始状态",
+          "CurrentValue": 0.08322005035451016,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "PhicxDot_3",
+          "Object": "初始状态",
+          "CurrentValue": -0.10147856401851918,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "Phicx_DotHx",
+          "Object": "初始状态",
+          "CurrentValue": -0.10068549400698126,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        }
+      ],
+      "Results": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Goal": "Maximize",
+          "Object": "初始状态",
+          "DesiredValue": 0,
+          "Scale": 1000000
+        },
+        {
+          "Use": true,
+          "Name": "gs_r",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 100000
+        },
+        {
+          "Use": true,
+          "Name": "gs_Va",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 1000
+        },
+        {
+          "Use": true,
+          "Name": "gs_thetaba",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "gs_ir",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 1
+        }
+      ]
+    }
+  ],
+  "RunProfiles": true,
+  "GetKeyData": false
+}
