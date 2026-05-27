@@ -1,0 +1,167 @@
+{
+  "RocketInput": {
+    "$type": "CZ-4B",
+    "Name": "CZ4B_SSO(700km)_250328",
+    "Text": "CZ-4B SSO方案弹道. 大整流罩1650kg; 运载能力: 2800 kg",
+    "Name_FaSheDian": "ty",
+    "A0": 192.18870594161143,
+    "T1": 20,
+    "Alpham": 0.9641525991985648,
+    "Sm": 8.814,
+    "Gw": 2801.8667135056885,
+    "FairingMass": 1650,
+    "sma0": 7078137,
+    "ecc0": 0.0,
+    "inc0": 98.2,
+    "omg0": 163,
+    "Stage1_Mass": 191928.28959948296,
+    "Stage1_FuelMass": 177928.28959948296,
+    "Stage2_Mass": 39265.56042493445,
+    "Stage2_FuelMass": 34665.56042493445,
+    "Stage3_Mass": 15917.122356862044,
+    "Stage3_FuelMass": 13917.122356862046,
+    "Tk_1": 153.2,
+    "Dt_k12f": 1.2,
+    "Tk_F": 23,
+    "Tk_2z": 128.3,
+    "Tk_2u": 9.8,
+    "Dt_k23f": 1,
+    "Tk_3": 410,
+    "Dt_msxz": 14,
+    "Dt_xjfl": 86,
+    "PhicxDot_2z": -0.031186289797317447,
+    "PsicxDot_2": 0.0,
+    "PhicxDot_3": -0.1784244917475546,
+    "PsicxDot_3": 0.0,
+    "Stage1_Engine": {
+      "Name": "一级 4×YF-21C",
+      "NumberOfEngines": 4,
+      "Force": 739495,
+      "Ips": 2546.883,
+      "Sa": 1.622
+    },
+    "Stage2_MainEngine": {
+      "Name": "二级主机 YF-22C",
+      "Force": 742040,
+      "Ips": 2942.0,
+      "IsVacuum": true
+    },
+    "Stage2_VernierEngine": {
+      "Name": "二级游机 YF-23C",
+      "NumberOfEngines": 4,
+      "Force": 11350,
+      "Ips": 2719.645,
+      "IsVacuum": true
+    },
+    "Stage3_Engine": {
+      "Name": "三级 2×YF-40",
+      "NumberOfEngines": 2,
+      "Force": 50355,
+      "Ips": 2966.928,
+      "IsVacuum": true
+    }
+  },
+  "Profiles": [
+    {
+      "$type": "AlglibOptimizer",
+      "Name": "CZ4B_SSO_Optim",
+      "IsActive": true,
+      "IsIterate": true,
+      "DiffStep": 0.0001,
+      "EpsX": 0.001,
+      "StepMax": 0.2,
+      "MaxIts": 100,
+      "Controls": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Object": "初始状态",
+          "CurrentValue": 2801.8667135056885,
+          "LowerBound": 1500,
+          "UpperBound": 5000,
+          "Scale": 10000
+        },
+        {
+          "Use": true,
+          "Name": "A0",
+          "Object": "初始状态",
+          "CurrentValue": 192.18870594161143,
+          "LowerBound": 185,
+          "UpperBound": 200,
+          "Scale": 100
+        },
+        {
+          "Use": true,
+          "Name": "Alpham",
+          "Object": "初始状态",
+          "CurrentValue": 0.9641525991985648,
+          "LowerBound": 0.05,
+          "UpperBound": 3,
+          "Scale": 100
+        },
+        {
+          "Use": true,
+          "Name": "PhicxDot_2z",
+          "Object": "初始状态",
+          "CurrentValue": -0.031186289797317447,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "PhicxDot_3",
+          "Object": "初始状态",
+          "CurrentValue": -0.1784244917475546,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        }
+      ],
+      "Results": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Goal": "Maximize",
+          "Object": "初始状态",
+          "DesiredValue": 0,
+          "Scale": 1000000
+        },
+        {
+          "Use": true,
+          "Name": "gs_r",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 100000
+        },
+        {
+          "Use": true,
+          "Name": "gs_Va",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 1000
+        },
+        {
+          "Use": true,
+          "Name": "gs_thetaba",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "gs_ir",
+          "Goal": "Equality",
+          "Object": "星箭分离",
+          "DesiredValue": 0,
+          "Scale": 1
+        }
+      ]
+    }
+  ],
+  "RunProfiles": true,
+  "GetKeyData": false
+}
