@@ -1,0 +1,140 @@
+﻿{
+  "Text1": "测试-Target-微分修正：Follow段-积分终止条件",
+  "Text2": "自变量:StoppingConditions.Duration，约束: Epoch",
+  "Entities": [
+    {
+      "$type": "EntityPath",
+      "Name": "LeaderSate",
+      "Position": {
+        "$type": "AstrogatorMCS",
+        "MainSequence": [
+          {
+            "$type": "InitialState",
+            "Name": "初始段",
+            "InitialState": {
+              "CoordSystemName": "Earth Inertial",
+              "Element": {
+                "$type": "Keplerian",
+                "GravitationalParameter": 3.986004415E14,
+                "SemiMajorAxis": 6678137,
+                "Eccentricity": 0,
+                "Inclination": 28.5,
+                "RAAN": 0,
+                "ArgOfPeriapsis": 0,
+                "TrueAnomaly": 0
+              },
+              "Epoch": "2018-12-01T00:00:00.000Z"
+            }
+          },
+          {
+            "$type": "Propagate",
+            "Name": "轨道递推段",
+            "PropagatorName": "Earth_Point_Mass",
+            "StopConditions": [
+              {
+                "$type": "Duration",
+                "Name": "Duration",
+                "Active": true,
+                "Description": "积分固定的时长",
+                "Trip": 86400
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "Follow",
+          "Name": "Follow",
+          "Text": "初始质量等参数采用缺省值,连接和分离均采用指定时长",
+          "LeaderName": "LeaderSate",
+          "Joining": "Specify",
+          "Separation": "Specify",
+          "JoiningConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Trip": 43200.0
+            }
+          ],
+          "SeparationConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Trip": 30.0
+            }
+          ]
+        },
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "ImpulsiveManeuver",
+          "AttitudeControl": {
+            "$type": "VelocityVector",
+            "DeltaVMagnitude": 500.0
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Apoapsis",
+              "Name": "Apoapsis",
+              "Active": true,
+              "Tolerance": 0.000001,
+              "CentralBodyName": "Earth",
+              "Mu": 3.986004415E14
+            }
+          ],
+          "Results": [
+            {
+              "$type": "Cartographic",
+              "Name": "Latitude",
+              "ComponentName": "Latitude",
+              "CentralBodyName": "Earth"
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: Duration",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "StopConditions.Duration",
+              "InitialValue": "20.0",
+              "MaxStep": 600.0,
+              "Perturbation": 0.1,
+              "Tolerance": 0.001,
+              "ControlType": "ParameterizedDouble",
+              "ParentName": "Follow"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Latitude",
+              "ParentName": "Propagate",
+              "DesiredValue": "-2",
+              "Tolerance": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

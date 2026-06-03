@@ -1,0 +1,157 @@
+﻿{
+  "Text1": "Target-微分修正：有限推力(VNC姿态),远地点点火满足半长轴",
+  "Text2": "自变量:StopConditions.Duration，约束: 点火结束时半长轴17 Jan 2026 04:00:00.000Z",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 6678137.0,
+          "Y": 0,
+          "Z": 0,
+          "Vx": 0,
+          "Vy": 6789.5303002727,
+          "Vz": 3686.4141744009
+        },
+        "Epoch": "2026-01-17T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "ManeuverFinite",
+          "Name": "dv1",
+          "AttitudeControl": {
+            "$type": "Attitude",
+            "AttitudeUpdate": "DuringBurn",
+            "RefAxesName": "VNC(Earth)",
+            "CoordType": "Quaternion",
+            "QS": 1,
+            "QX": 0,
+            "QY": 0,
+            "QZ": 0
+          },
+          "PropagatorName": "Earth_Point_Mass",
+          "PropulsionMethodValue": "Constant_Thrust_Isp",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Description": "积分固定的时长",
+              "Trip": 500
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Apoapsis",
+              "Name": "Apoapsis",
+              "Active": true,
+              "Tolerance": 0.000001,
+              "CentralBodyName": "Earth",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "ManeuverFinite",
+          "Name": "dv2",
+          "AttitudeControl": {
+            "$type": "Attitude",
+            "AttitudeUpdate": "DuringBurn",
+            "RefAxesName": "VNC(Earth)",
+            "CoordType": "Quaternion",
+            "QS": 1,
+            "QX": 0,
+            "QY": 0,
+            "QZ": 0
+          },
+          "PropagatorName": "Earth_Point_Mass",
+          "PropulsionMethodValue": "Constant_Thrust_Isp",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Description": "积分固定的时长",
+              "Trip": 100
+            }
+          ],
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "TrueAnomaly",
+              "ComponentName": "TrueAnomaly",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "SemimajorAxis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "SemimajorAxis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC:sma_finiteManv",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "FiniteMnvr.StopConditions.Duration",
+              "InitialValue": "100.0",
+              "MaxStep": 600.0,
+              "Perturbation": 0.1,
+              "ParentName": "dv2"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "SemimajorAxis",
+              "ParentName": "dv2",
+              "DesiredValue": "7650000",
+              "Tolerance": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "EngineModels": [
+    {
+      "$type": "EngineConstant",
+      "Name": "Constant_Thrust_Isp",
+      "Description": "常值推力、比冲 发动机",
+      "UserComment": "常值推力、比冲 发动机",
+      "Thrust": 500.0,
+      "Isp": 300.0
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+﻿{
+  "Text1": "测试-Target-微分修正：初始段-脉冲机动段",
+  "Text2": "自变量:ImpulsiveMnvr.Spherical.Magnitude,约束: SemimajorAxis",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "Initial_State",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Cartesian",
+              "X": 8000000.0,
+              "Y": 0.0,
+              "Z": 0.0,
+              "Vx": 1500.0,
+              "Vy": 7500.0,
+              "Vz": 0.0
+            },
+            "Epoch": "2000-01-01T11:58:55.816Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "Maneuver1",
+          "AttitudeControl": {
+            "$type": "VelocityVector",
+            "DeltaVMagnitude": 1000.0
+          },
+          "Results": [
+            {
+              "$type": "SphericalElement",
+              "Name": "Vel",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "VelocityMagnitude"
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "Sma",              
+              "ComponentName": "SemimajorAxis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: AlongVelocityDv_Sma",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Spherical.Magnitude",
+              "MaxStep": 500.0,
+              "Perturbation": 1.0,
+              "ParentName": "Maneuver1"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Sma",
+              "ParentName": "Maneuver1",
+              "DesiredValue": "20000000.0",
+              "Tolerance": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,725 @@
+﻿{
+    "IsSuccess":  true,
+    "Message":  "Success",
+    "MainSequenceResults":  [
+                                {
+                                    "TypeName":  "InitialState",
+                                    "Name":  "Initial_State",
+                                    "Description":  "初始段参数",
+                                    "UserComment":  "初始段参数",
+                                    "InitialState":  {
+                                                         "Epoch":  "2026-01-01T00:00:00Z",
+                                                         "CoordSystemName":  "Earth Inertial",
+                                                         "Cartesian":  {
+                                                                           "X":  6678136.999332186,
+                                                                           "Y":  0,
+                                                                           "Z":  0,
+                                                                           "Vx":  0,
+                                                                           "Vy":  6789.530298396604,
+                                                                           "Vz":  3686.414173382293
+                                                                       },
+                                                         "Keplerian":  {
+                                                                           "ElementType":  "Osculating",
+                                                                           "GravitationalParameter":  398600441500000,
+                                                                           "SemiMajorAxis":  6678136.999999999,
+                                                                           "Eccentricity":  1.0000006283220241E-10,
+                                                                           "Inclination":  28.5,
+                                                                           "RAAN":  0,
+                                                                           "ArgOfPeriapsis":  0,
+                                                                           "MeanAnomaly":  0,
+                                                                           "TrueAnomaly":  0,
+                                                                           "AnomalyType":  "True",
+                                                                           "Period":  5431.177131191048
+                                                                       },
+                                                         "Spherical":  {
+                                                                           "RightAscension":  0,
+                                                                           "Declination":  0,
+                                                                           "RadiusMagnitude":  6678136.999332186,
+                                                                           "HorizFPA":  0,
+                                                                           "VelocityAzimuth":  61.50000000000001,
+                                                                           "VelocityMagnitude":  7725.76022994238
+                                                                       },
+                                                         "DryMass":  500,
+                                                         "FuelMass":  500,
+                                                         "Cd":  2.2,
+                                                         "Cr":  1,
+                                                         "DragArea":  20,
+                                                         "SRPArea":  20,
+                                                         "Geodetic_Latitude":  0.14628090947309821,
+                                                         "Geodetic_Longitude":  -100.32771661765287,
+                                                         "Geodetic_Altitude":  300000.1375989147,
+                                                         "Geocentric_Latitude":  0.14534564453440021,
+                                                         "Geocentric_Longitude":  -100.32771661765287
+                                                     },
+                                    "FinalState":  {
+                                                       "Epoch":  "2026-01-01T00:00:00Z",
+                                                       "CoordSystemName":  "Earth Inertial",
+                                                       "Cartesian":  {
+                                                                         "X":  6678136.999332186,
+                                                                         "Y":  0,
+                                                                         "Z":  0,
+                                                                         "Vx":  0,
+                                                                         "Vy":  6789.530298396604,
+                                                                         "Vz":  3686.414173382293
+                                                                     },
+                                                       "Keplerian":  {
+                                                                         "ElementType":  "Osculating",
+                                                                         "GravitationalParameter":  398600441500000,
+                                                                         "SemiMajorAxis":  6678136.999999999,
+                                                                         "Eccentricity":  1.0000006283220241E-10,
+                                                                         "Inclination":  28.5,
+                                                                         "RAAN":  0,
+                                                                         "ArgOfPeriapsis":  0,
+                                                                         "MeanAnomaly":  0,
+                                                                         "TrueAnomaly":  0,
+                                                                         "AnomalyType":  "True",
+                                                                         "Period":  5431.177131191048
+                                                                     },
+                                                       "Spherical":  {
+                                                                         "RightAscension":  0,
+                                                                         "Declination":  0,
+                                                                         "RadiusMagnitude":  6678136.999332186,
+                                                                         "HorizFPA":  0,
+                                                                         "VelocityAzimuth":  61.50000000000001,
+                                                                         "VelocityMagnitude":  7725.76022994238
+                                                                     },
+                                                       "DryMass":  500,
+                                                       "FuelMass":  500,
+                                                       "Cd":  2.2,
+                                                       "Cr":  1,
+                                                       "DragArea":  20,
+                                                       "SRPArea":  20,
+                                                       "Geodetic_Latitude":  0.14628090947309821,
+                                                       "Geodetic_Longitude":  -100.32771661765287,
+                                                       "Geodetic_Altitude":  300000.1375989147,
+                                                       "Geocentric_Latitude":  0.14534564453440021,
+                                                       "Geocentric_Longitude":  -100.32771661765287
+                                                   },
+                                    "DurationSec":  0,
+                                    "Results":  {
+
+                                                }
+                                },
+                                {
+                                    "$type":  "TargetSequenceResult",
+                                    "OperatorResults":  [
+                                                            {
+                                                                "$type":  "DifferentialCorrectorResults",
+                                                                "Converged":  true,
+                                                                "TotalIterations":  9,
+                                                                "ControlParameters":  [
+                                                                                          {
+                                                                                              "Enable":  true,
+                                                                                              "Name":  "ImpulsiveMnvr.Cartesian.X",
+                                                                                              "InitialValue":  "400",
+                                                                                              "FinalValue":  "241.2821960682887",
+                                                                                              "Correction":  -158.7178039317113,
+                                                                                              "LastUpdate":  -3.1263880373444408E-13,
+                                                                                              "Dimension":  "",
+                                                                                              "MaxStep":  400,
+                                                                                              "ParentName":  "DV1",
+                                                                                              "Perturbation":  0.1,
+                                                                                              "ScalingMethod":  "NoScaling",
+                                                                                              "ScalingValue":  1,
+                                                                                              "Tolerance":  0.0001,
+                                                                                              "Unit":  "",
+                                                                                              "Values":  [
+                                                                                                             400,
+                                                                                                             240.90781906429325,
+                                                                                                             241.28219513056285,
+                                                                                                             241.282196068289,
+                                                                                                             241.2821960682887,
+                                                                                                             241.282196068289,
+                                                                                                             241.2821960682887,
+                                                                                                             241.282196068289,
+                                                                                                             241.2821960682887
+                                                                                                         ]
+                                                                                          },
+                                                                                          {
+                                                                                              "Enable":  true,
+                                                                                              "Name":  "ImpulsiveMnvr.Cartesian.X",
+                                                                                              "InitialValue":  "200",
+                                                                                              "FinalValue":  "118.39892166398644",
+                                                                                              "Correction":  -81.60107833601356,
+                                                                                              "LastUpdate":  -0.0005108202320798227,
+                                                                                              "Dimension":  "",
+                                                                                              "MaxStep":  400,
+                                                                                              "ParentName":  "DV2",
+                                                                                              "Perturbation":  0.1,
+                                                                                              "ScalingMethod":  "NoScaling",
+                                                                                              "ScalingValue":  1,
+                                                                                              "Tolerance":  0.0001,
+                                                                                              "Unit":  "",
+                                                                                              "Values":  [
+                                                                                                             200,
+                                                                                                             164.96098309892932,
+                                                                                                             119.22580255998199,
+                                                                                                             118.40646323655137,
+                                                                                                             118.39792810163972,
+                                                                                                             118.39666732815094,
+                                                                                                             118.38834864549281,
+                                                                                                             118.39943248421852,
+                                                                                                             118.39892166398644
+                                                                                                         ]
+                                                                                          },
+                                                                                          {
+                                                                                              "Enable":  true,
+                                                                                              "Name":  "ImpulsiveMnvr.Cartesian.Z",
+                                                                                              "InitialValue":  "0",
+                                                                                              "FinalValue":  "-390.40705206788283",
+                                                                                              "Correction":  -390.40705206788283,
+                                                                                              "LastUpdate":  -0.009588859345399214,
+                                                                                              "Dimension":  "",
+                                                                                              "MaxStep":  400,
+                                                                                              "ParentName":  "DV2",
+                                                                                              "Perturbation":  0.1,
+                                                                                              "ScalingMethod":  "NoScaling",
+                                                                                              "ScalingValue":  1,
+                                                                                              "Tolerance":  0.0001,
+                                                                                              "Unit":  "",
+                                                                                              "Values":  [
+                                                                                                             0,
+                                                                                                             -369.680663595948,
+                                                                                                             -399.80734094596164,
+                                                                                                             -390.4203962260423,
+                                                                                                             -390.42574035034113,
+                                                                                                             -390.44943508223963,
+                                                                                                             -390.6058352941688,
+                                                                                                             -390.39746320853743,
+                                                                                                             -390.40705206788283
+                                                                                                         ]
+                                                                                          }
+                                                                                      ],
+                                                                "Results":  [
+                                                                                {
+                                                                                    "Enable":  true,
+                                                                                    "Name":  "RadiusMagnitude",
+                                                                                    "DesiredValue":  "7378137.0",
+                                                                                    "ParentName":  "Transfer_2000s",
+                                                                                    "CurrentValue":  "7378136.999999999",
+                                                                                    "Unit":  "",
+                                                                                    "Difference":  -9.3132257461547852E-10,
+                                                                                    "ScalingMethod":  "NoScaling",
+                                                                                    "ScalingValue":  1,
+                                                                                    "Tolerance":  1,
+                                                                                    "Weight":  1,
+                                                                                    "Values":  [
+                                                                                                   7837377.692150623,
+                                                                                                   7377051.66927675,
+                                                                                                   7378136.997281514,
+                                                                                                   7378137.000000001,
+                                                                                                   7378136.999999999,
+                                                                                                   7378137.000000001,
+                                                                                                   7378136.999999999,
+                                                                                                   7378137.000000001,
+                                                                                                   7378136.999999999
+                                                                                               ]
+                                                                                },
+                                                                                {
+                                                                                    "Enable":  true,
+                                                                                    "Name":  "RadiusOfApoapsis",
+                                                                                    "DesiredValue":  "7378137.0",
+                                                                                    "ParentName":  "DV2",
+                                                                                    "CurrentValue":  "7378137.995014282",
+                                                                                    "Unit":  "",
+                                                                                    "Difference":  0.9950142819434404,
+                                                                                    "ScalingMethod":  "NoScaling",
+                                                                                    "ScalingValue":  1,
+                                                                                    "Tolerance":  1,
+                                                                                    "Weight":  1,
+                                                                                    "Values":  [
+                                                                                                   8635814.095756993,
+                                                                                                   7565639.835986397,
+                                                                                                   7390563.168043263,
+                                                                                                   7378173.966786186,
+                                                                                                   7378154.792344793,
+                                                                                                   7378178.610308967,
+                                                                                                   7378335.834072663,
+                                                                                                   7378147.6356290495,
+                                                                                                   7378137.995014282
+                                                                                               ]
+                                                                                },
+                                                                                {
+                                                                                    "Enable":  true,
+                                                                                    "Name":  "Eccentricity",
+                                                                                    "DesiredValue":  "0.0",
+                                                                                    "ParentName":  "DV2",
+                                                                                    "CurrentValue":  "1.3483376220488172E-07",
+                                                                                    "Unit":  "",
+                                                                                    "Difference":  1.3483376220488172E-07,
+                                                                                    "ScalingMethod":  "NoScaling",
+                                                                                    "ScalingValue":  1,
+                                                                                    "Tolerance":  1E-06,
+                                                                                    "Weight":  1,
+                                                                                    "Values":  [
+                                                                                                   0.094636778447909,
+                                                                                                   0.012806737532814395,
+                                                                                                   0.00132138801931556,
+                                                                                                   2.7682171865143357E-06,
+                                                                                                   2.4113325333725639E-06,
+                                                                                                   5.6396050348266885E-06,
+                                                                                                   2.6948221444886808E-05,
+                                                                                                   1.4412657309167271E-06,
+                                                                                                   1.3483376220488172E-07
+                                                                                               ]
+                                                                                }
+                                                                            ],
+                                                                "TypeName":  "DifferentialCorrector",
+                                                                "Name":  "Solve_Transfer",
+                                                                "Description":  "描述",
+                                                                "UserComment":  "用户注释"
+                                                            }
+                                                        ],
+                                    "SegmentResults":  [
+                                                           {
+                                                               "$type":  "ManeuverImpulsiveResult",
+                                                               "ManeuverInformation":  {
+                                                                                           "Start":  "2026-01-01T00:00:00Z",
+                                                                                           "Stop":  "2026-01-01T00:00:00Z",
+                                                                                           "UpdateMass":  false,
+                                                                                           "Duration":  0,
+                                                                                           "FuelUsed":  0,
+                                                                                           "EstimatedFuelUsed":  78.74013053384743,
+                                                                                           "DeltaV_Mag":  241.2821960682887,
+                                                                                           "ManeuverAttitudeName":  "AgVAAttitudeControlImpulsiveThrustVector",
+                                                                                           "DeltaV_Inertial":  [
+                                                                                                                   0,
+                                                                                                                   212.04292288547185,
+                                                                                                                   115.12991354866017,
+                                                                                                                   90,
+                                                                                                                   28.49999999999993,
+                                                                                                                   241.28219606828873
+                                                                                                               ],
+                                                                                           "DeltaV_VNC":  [
+                                                                                                              241.2821960682887,
+                                                                                                              -2.5579538487363607E-13,
+                                                                                                              0,
+                                                                                                              -6.0742136017511559E-14,
+                                                                                                              0,
+                                                                                                              241.2821960682887
+                                                                                                          ]
+                                                                                       },
+                                                               "TypeName":  "ManeuverImpulsive",
+                                                               "Name":  "DV1",
+                                                               "Description":  "轨道机动段",
+                                                               "UserComment":  "轨道机动段",
+                                                               "InitialState":  {
+                                                                                    "Epoch":  "2026-01-01T00:00:00Z",
+                                                                                    "CoordSystemName":  "Earth Inertial",
+                                                                                    "Cartesian":  {
+                                                                                                      "X":  6678136.999332186,
+                                                                                                      "Y":  0,
+                                                                                                      "Z":  0,
+                                                                                                      "Vx":  0,
+                                                                                                      "Vy":  6789.530298396604,
+                                                                                                      "Vz":  3686.414173382293
+                                                                                                  },
+                                                                                    "Keplerian":  {
+                                                                                                      "ElementType":  "Osculating",
+                                                                                                      "GravitationalParameter":  398600441500000,
+                                                                                                      "SemiMajorAxis":  6678136.999999999,
+                                                                                                      "Eccentricity":  1.0000006283220241E-10,
+                                                                                                      "Inclination":  28.5,
+                                                                                                      "RAAN":  0,
+                                                                                                      "ArgOfPeriapsis":  0,
+                                                                                                      "MeanAnomaly":  0,
+                                                                                                      "TrueAnomaly":  0,
+                                                                                                      "AnomalyType":  "True",
+                                                                                                      "Period":  5431.177131191048
+                                                                                                  },
+                                                                                    "Spherical":  {
+                                                                                                      "RightAscension":  0,
+                                                                                                      "Declination":  0,
+                                                                                                      "RadiusMagnitude":  6678136.999332186,
+                                                                                                      "HorizFPA":  0,
+                                                                                                      "VelocityAzimuth":  61.50000000000001,
+                                                                                                      "VelocityMagnitude":  7725.76022994238
+                                                                                                  },
+                                                                                    "DryMass":  500,
+                                                                                    "FuelMass":  500,
+                                                                                    "Cd":  2.2,
+                                                                                    "Cr":  1,
+                                                                                    "DragArea":  20,
+                                                                                    "SRPArea":  20,
+                                                                                    "Geodetic_Latitude":  0.14628090947309821,
+                                                                                    "Geodetic_Longitude":  -100.32771661765287,
+                                                                                    "Geodetic_Altitude":  300000.1375989147,
+                                                                                    "Geocentric_Latitude":  0.14534564453440021,
+                                                                                    "Geocentric_Longitude":  -100.32771661765287
+                                                                                },
+                                                               "FinalState":  {
+                                                                                  "Epoch":  "2026-01-01T00:00:00Z",
+                                                                                  "CoordSystemName":  "Earth Inertial",
+                                                                                  "Cartesian":  {
+                                                                                                    "X":  6678136.999332186,
+                                                                                                    "Y":  0,
+                                                                                                    "Z":  0,
+                                                                                                    "Vx":  0,
+                                                                                                    "Vy":  7001.573221282076,
+                                                                                                    "Vz":  3801.544086930953
+                                                                                                },
+                                                                                  "Keplerian":  {
+                                                                                                    "ElementType":  "Osculating",
+                                                                                                    "GravitationalParameter":  398600441500000,
+                                                                                                    "SemiMajorAxis":  7130473.584576659,
+                                                                                                    "Eccentricity":  0.0634371027224452,
+                                                                                                    "Inclination":  28.5,
+                                                                                                    "RAAN":  0,
+                                                                                                    "ArgOfPeriapsis":  0,
+                                                                                                    "MeanAnomaly":  0,
+                                                                                                    "TrueAnomaly":  0,
+                                                                                                    "AnomalyType":  "True",
+                                                                                                    "Period":  5992.23095363652
+                                                                                                },
+                                                                                  "Spherical":  {
+                                                                                                    "RightAscension":  0,
+                                                                                                    "Declination":  0,
+                                                                                                    "RadiusMagnitude":  6678136.999332186,
+                                                                                                    "HorizFPA":  0,
+                                                                                                    "VelocityAzimuth":  61.50000000000001,
+                                                                                                    "VelocityMagnitude":  7967.042426010668
+                                                                                                },
+                                                                                  "DryMass":  500,
+                                                                                  "FuelMass":  500,
+                                                                                  "Cd":  2.2,
+                                                                                  "Cr":  1,
+                                                                                  "DragArea":  20,
+                                                                                  "SRPArea":  20,
+                                                                                  "Geodetic_Latitude":  0.14628090947309821,
+                                                                                  "Geodetic_Longitude":  -100.32771661765287,
+                                                                                  "Geodetic_Altitude":  300000.1375989147,
+                                                                                  "Geocentric_Latitude":  0.14534564453440021,
+                                                                                  "Geocentric_Longitude":  -100.32771661765287
+                                                                              },
+                                                               "DurationSec":  0,
+                                                               "Results":  {
+
+                                                                           }
+                                                           },
+                                                           {
+                                                               "$type":  "PropagateResult",
+                                                               "StoppedOnMaximumDuration":  false,
+                                                               "StoppingConditionName":  "Duration_2000s",
+                                                               "TypeName":  "Propagate",
+                                                               "Name":  "Transfer_2000s",
+                                                               "Description":  "轨道递推段",
+                                                               "UserComment":  "轨道递推段",
+                                                               "InitialState":  {
+                                                                                    "Epoch":  "2026-01-01T00:00:00Z",
+                                                                                    "CoordSystemName":  "Earth Inertial",
+                                                                                    "Cartesian":  {
+                                                                                                      "X":  6678136.999332186,
+                                                                                                      "Y":  0,
+                                                                                                      "Z":  0,
+                                                                                                      "Vx":  0,
+                                                                                                      "Vy":  7001.573221282076,
+                                                                                                      "Vz":  3801.544086930953
+                                                                                                  },
+                                                                                    "Keplerian":  {
+                                                                                                      "ElementType":  "Osculating",
+                                                                                                      "GravitationalParameter":  398600441500000,
+                                                                                                      "SemiMajorAxis":  7130473.584576659,
+                                                                                                      "Eccentricity":  0.0634371027224452,
+                                                                                                      "Inclination":  28.5,
+                                                                                                      "RAAN":  0,
+                                                                                                      "ArgOfPeriapsis":  0,
+                                                                                                      "MeanAnomaly":  0,
+                                                                                                      "TrueAnomaly":  0,
+                                                                                                      "AnomalyType":  "True",
+                                                                                                      "Period":  5992.23095363652
+                                                                                                  },
+                                                                                    "Spherical":  {
+                                                                                                      "RightAscension":  0,
+                                                                                                      "Declination":  0,
+                                                                                                      "RadiusMagnitude":  6678136.999332186,
+                                                                                                      "HorizFPA":  0,
+                                                                                                      "VelocityAzimuth":  61.50000000000001,
+                                                                                                      "VelocityMagnitude":  7967.042426010668
+                                                                                                  },
+                                                                                    "DryMass":  500,
+                                                                                    "FuelMass":  500,
+                                                                                    "Cd":  2.2,
+                                                                                    "Cr":  1,
+                                                                                    "DragArea":  20,
+                                                                                    "SRPArea":  20,
+                                                                                    "Geodetic_Latitude":  0.14628090947309821,
+                                                                                    "Geodetic_Longitude":  -100.32771661765287,
+                                                                                    "Geodetic_Altitude":  300000.1375989147,
+                                                                                    "Geocentric_Latitude":  0.14534564453440021,
+                                                                                    "Geocentric_Longitude":  -100.32771661765287
+                                                                                },
+                                                               "FinalState":  {
+                                                                                  "Epoch":  "2026-01-01T00:33:20Z",
+                                                                                  "CoordSystemName":  "Earth Inertial",
+                                                                                  "Cartesian":  {
+                                                                                                    "X":  -4356414.873723999,
+                                                                                                    "Y":  5233099.8575464655,
+                                                                                                    "Z":  2841341.3944319454,
+                                                                                                    "Vx":  -6046.431305428995,
+                                                                                                    "Vy":  -3469.79955252769,
+                                                                                                    "Vz":  -1883.9474436478067
+                                                                                                },
+                                                                                  "Keplerian":  {
+                                                                                                    "ElementType":  "Osculating",
+                                                                                                    "GravitationalParameter":  398600441500000,
+                                                                                                    "SemiMajorAxis":  7130473.584576784,
+                                                                                                    "Eccentricity":  0.0634371027225178,
+                                                                                                    "Inclination":  28.5,
+                                                                                                    "RAAN":  4.3046451762292294E-15,
+                                                                                                    "ArgOfPeriapsis":  359.99999999996635,
+                                                                                                    "MeanAnomaly":  120.15558238174829,
+                                                                                                    "TrueAnomaly":  126.18888920467785,
+                                                                                                    "AnomalyType":  "True",
+                                                                                                    "Period":  5992.230953636679
+                                                                                                },
+                                                                                  "Spherical":  {
+                                                                                                    "RightAscension":  129.77647101944012,
+                                                                                                    "Declination":  22.650123848730928,
+                                                                                                    "RadiusMagnitude":  7378136.999999999,
+                                                                                                    "HorizFPA":  3.044740469933828,
+                                                                                                    "VelocityAzimuth":  107.77521355625514,
+                                                                                                    "VelocityMagnitude":  7221.364028798177
+                                                                                                },
+                                                                                  "DryMass":  500,
+                                                                                  "FuelMass":  500,
+                                                                                  "Cd":  2.2,
+                                                                                  "Cr":  1,
+                                                                                  "DragArea":  20,
+                                                                                  "SRPArea":  20,
+                                                                                  "Geodetic_Latitude":  22.67648621414363,
+                                                                                  "Geodetic_Longitude":  21.1395837194355,
+                                                                                  "Geodetic_Altitude":  1003158.2475170011,
+                                                                                  "Geocentric_Latitude":  22.558478425487184,
+                                                                                  "Geocentric_Longitude":  21.1395837194355
+                                                                              },
+                                                               "DurationSec":  2000,
+                                                               "Results":  {
+                                                                               "RadiusMagnitude":  7378136.999999999
+                                                                           }
+                                                           },
+                                                           {
+                                                               "$type":  "ManeuverImpulsiveResult",
+                                                               "ManeuverInformation":  {
+                                                                                           "Start":  "2026-01-01T00:33:20Z",
+                                                                                           "Stop":  "2026-01-01T00:33:20Z",
+                                                                                           "UpdateMass":  false,
+                                                                                           "Duration":  0,
+                                                                                           "FuelUsed":  0,
+                                                                                           "EstimatedFuelUsed":  129.48451295373408,
+                                                                                           "DeltaV_Mag":  407.9656492347479,
+                                                                                           "ManeuverAttitudeName":  "AgVAAttitudeControlImpulsiveThrustVector",
+                                                                                           "DeltaV_Inertial":  [
+                                                                                                                   114.31885804080775,
+                                                                                                                   -344.16341825785184,
+                                                                                                                   -186.8654895502268,
+                                                                                                                   -71.62534634668567,
+                                                                                                                   -27.26084718508143,
+                                                                                                                   407.9656492347479
+                                                                                                               ],
+                                                                                           "DeltaV_VNC":  [
+                                                                                                              118.39892166398674,
+                                                                                                              -6.9405814429046586E-11,
+                                                                                                              -390.40705206788266,
+                                                                                                              -3.3586963331796427E-11,
+                                                                                                              -73.12899998380567,
+                                                                                                              407.96564923474784
+                                                                                                          ]
+                                                                                       },
+                                                               "TypeName":  "ManeuverImpulsive",
+                                                               "Name":  "DV2",
+                                                               "Description":  "轨道机动段",
+                                                               "UserComment":  "轨道机动段",
+                                                               "InitialState":  {
+                                                                                    "Epoch":  "2026-01-01T00:33:20Z",
+                                                                                    "CoordSystemName":  "Earth Inertial",
+                                                                                    "Cartesian":  {
+                                                                                                      "X":  -4356414.873723999,
+                                                                                                      "Y":  5233099.8575464655,
+                                                                                                      "Z":  2841341.3944319454,
+                                                                                                      "Vx":  -6046.431305428995,
+                                                                                                      "Vy":  -3469.79955252769,
+                                                                                                      "Vz":  -1883.9474436478067
+                                                                                                  },
+                                                                                    "Keplerian":  {
+                                                                                                      "ElementType":  "Osculating",
+                                                                                                      "GravitationalParameter":  398600441500000,
+                                                                                                      "SemiMajorAxis":  7130473.584576784,
+                                                                                                      "Eccentricity":  0.0634371027225178,
+                                                                                                      "Inclination":  28.5,
+                                                                                                      "RAAN":  4.3046451762292294E-15,
+                                                                                                      "ArgOfPeriapsis":  359.99999999996635,
+                                                                                                      "MeanAnomaly":  120.15558238174829,
+                                                                                                      "TrueAnomaly":  126.18888920467785,
+                                                                                                      "AnomalyType":  "True",
+                                                                                                      "Period":  5992.230953636679
+                                                                                                  },
+                                                                                    "Spherical":  {
+                                                                                                      "RightAscension":  129.77647101944012,
+                                                                                                      "Declination":  22.650123848730928,
+                                                                                                      "RadiusMagnitude":  7378136.999999999,
+                                                                                                      "HorizFPA":  3.044740469933828,
+                                                                                                      "VelocityAzimuth":  107.77521355625514,
+                                                                                                      "VelocityMagnitude":  7221.364028798177
+                                                                                                  },
+                                                                                    "DryMass":  500,
+                                                                                    "FuelMass":  500,
+                                                                                    "Cd":  2.2,
+                                                                                    "Cr":  1,
+                                                                                    "DragArea":  20,
+                                                                                    "SRPArea":  20,
+                                                                                    "Geodetic_Latitude":  22.67648621414363,
+                                                                                    "Geodetic_Longitude":  21.1395837194355,
+                                                                                    "Geodetic_Altitude":  1003158.2475170011,
+                                                                                    "Geocentric_Latitude":  22.558478425487184,
+                                                                                    "Geocentric_Longitude":  21.1395837194355
+                                                                                },
+                                                               "FinalState":  {
+                                                                                  "Epoch":  "2026-01-01T00:33:20Z",
+                                                                                  "CoordSystemName":  "Earth Inertial",
+                                                                                  "Cartesian":  {
+                                                                                                    "X":  -4356414.873723999,
+                                                                                                    "Y":  5233099.8575464655,
+                                                                                                    "Z":  2841341.3944319454,
+                                                                                                    "Vx":  -5932.112447388187,
+                                                                                                    "Vy":  -3813.962970785542,
+                                                                                                    "Vz":  -2070.8129331980335
+                                                                                                },
+                                                                                  "Keplerian":  {
+                                                                                                    "ElementType":  "Osculating",
+                                                                                                    "GravitationalParameter":  398600441500000,
+                                                                                                    "SemiMajorAxis":  7378137.0001923125,
+                                                                                                    "Eccentricity":  1.3483376220488172E-07,
+                                                                                                    "Inclination":  28.500000000000316,
+                                                                                                    "RAAN":  359.9999999999991,
+                                                                                                    "ArgOfPeriapsis":  36.19995745267774,
+                                                                                                    "MeanAnomaly":  89.98891630115652,
+                                                                                                    "TrueAnomaly":  89.98893175196726,
+                                                                                                    "AnomalyType":  "True",
+                                                                                                    "Period":  6307.119409318516
+                                                                                                },
+                                                                                  "Spherical":  {
+                                                                                                    "RightAscension":  129.77647101944012,
+                                                                                                    "Declination":  22.650123848730928,
+                                                                                                    "RadiusMagnitude":  7378136.999999999,
+                                                                                                    "HorizFPA":  7.7254053674305014E-06,
+                                                                                                    "VelocityAzimuth":  107.77521355625568,
+                                                                                                    "VelocityMagnitude":  7350.138626943126
+                                                                                                },
+                                                                                  "DryMass":  500,
+                                                                                  "FuelMass":  500,
+                                                                                  "Cd":  2.2,
+                                                                                  "Cr":  1,
+                                                                                  "DragArea":  20,
+                                                                                  "SRPArea":  20,
+                                                                                  "Geodetic_Latitude":  22.67648621414363,
+                                                                                  "Geodetic_Longitude":  21.1395837194355,
+                                                                                  "Geodetic_Altitude":  1003158.2475170011,
+                                                                                  "Geocentric_Latitude":  22.558478425487184,
+                                                                                  "Geocentric_Longitude":  21.1395837194355
+                                                                              },
+                                                               "DurationSec":  0,
+                                                               "Results":  {
+                                                                               "RadiusOfApoapsis":  7378137.995014282,
+                                                                               "Eccentricity":  1.3483376220488172E-07
+                                                                           }
+                                                           }
+                                                       ],
+                                    "TypeName":  "TargetSequence",
+                                    "Name":  "Fixed_Time_Transfer",
+                                    "Description":  "目标轨道段",
+                                    "UserComment":  "目标轨道段",
+                                    "InitialState":  {
+                                                         "Epoch":  "2026-01-01T00:00:00Z",
+                                                         "CoordSystemName":  "Earth Inertial",
+                                                         "Cartesian":  {
+                                                                           "X":  6678136.999332186,
+                                                                           "Y":  0,
+                                                                           "Z":  0,
+                                                                           "Vx":  0,
+                                                                           "Vy":  6789.530298396604,
+                                                                           "Vz":  3686.414173382293
+                                                                       },
+                                                         "Keplerian":  {
+                                                                           "ElementType":  "Osculating",
+                                                                           "GravitationalParameter":  398600441500000,
+                                                                           "SemiMajorAxis":  6678136.999999999,
+                                                                           "Eccentricity":  1.0000006283220241E-10,
+                                                                           "Inclination":  28.5,
+                                                                           "RAAN":  0,
+                                                                           "ArgOfPeriapsis":  0,
+                                                                           "MeanAnomaly":  0,
+                                                                           "TrueAnomaly":  0,
+                                                                           "AnomalyType":  "True",
+                                                                           "Period":  5431.177131191048
+                                                                       },
+                                                         "Spherical":  {
+                                                                           "RightAscension":  0,
+                                                                           "Declination":  0,
+                                                                           "RadiusMagnitude":  6678136.999332186,
+                                                                           "HorizFPA":  0,
+                                                                           "VelocityAzimuth":  61.50000000000001,
+                                                                           "VelocityMagnitude":  7725.76022994238
+                                                                       },
+                                                         "DryMass":  500,
+                                                         "FuelMass":  500,
+                                                         "Cd":  2.2,
+                                                         "Cr":  1,
+                                                         "DragArea":  20,
+                                                         "SRPArea":  20,
+                                                         "Geodetic_Latitude":  0.14628090947309821,
+                                                         "Geodetic_Longitude":  -100.32771661765287,
+                                                         "Geodetic_Altitude":  300000.1375989147,
+                                                         "Geocentric_Latitude":  0.14534564453440021,
+                                                         "Geocentric_Longitude":  -100.32771661765287
+                                                     },
+                                    "FinalState":  {
+                                                       "Epoch":  "2026-01-01T00:33:20Z",
+                                                       "CoordSystemName":  "Earth Inertial",
+                                                       "Cartesian":  {
+                                                                         "X":  -4356414.873723999,
+                                                                         "Y":  5233099.8575464655,
+                                                                         "Z":  2841341.3944319454,
+                                                                         "Vx":  -5932.112447388187,
+                                                                         "Vy":  -3813.962970785542,
+                                                                         "Vz":  -2070.8129331980335
+                                                                     },
+                                                       "Keplerian":  {
+                                                                         "ElementType":  "Osculating",
+                                                                         "GravitationalParameter":  398600441500000,
+                                                                         "SemiMajorAxis":  7378137.0001923125,
+                                                                         "Eccentricity":  1.3483376220488172E-07,
+                                                                         "Inclination":  28.500000000000316,
+                                                                         "RAAN":  359.9999999999991,
+                                                                         "ArgOfPeriapsis":  36.19995745267774,
+                                                                         "MeanAnomaly":  89.98891630115652,
+                                                                         "TrueAnomaly":  89.98893175196726,
+                                                                         "AnomalyType":  "True",
+                                                                         "Period":  6307.119409318516
+                                                                     },
+                                                       "Spherical":  {
+                                                                         "RightAscension":  129.77647101944012,
+                                                                         "Declination":  22.650123848730928,
+                                                                         "RadiusMagnitude":  7378136.999999999,
+                                                                         "HorizFPA":  7.7254053674305014E-06,
+                                                                         "VelocityAzimuth":  107.77521355625568,
+                                                                         "VelocityMagnitude":  7350.138626943126
+                                                                     },
+                                                       "DryMass":  500,
+                                                       "FuelMass":  500,
+                                                       "Cd":  2.2,
+                                                       "Cr":  1,
+                                                       "DragArea":  20,
+                                                       "SRPArea":  20,
+                                                       "Geodetic_Latitude":  22.67648621414363,
+                                                       "Geodetic_Longitude":  21.1395837194355,
+                                                       "Geodetic_Altitude":  1003158.2475170011,
+                                                       "Geocentric_Latitude":  22.558478425487184,
+                                                       "Geocentric_Longitude":  21.1395837194355
+                                                   },
+                                    "DurationSec":  2000,
+                                    "Results":  {
+
+                                                }
+                                }
+                            ]
+}

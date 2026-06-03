@@ -1,0 +1,64 @@
+﻿{
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 6678137.0,
+          "Y": 0,
+          "Z": 0,
+          "Vx": 0,
+          "Vy": 6789.5303002727,
+          "Vz": 3686.4141744009
+        },
+        "Epoch": "2017-06-28T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "ManeuverFinite",
+      "Name": "ManeuverFinite",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "AttitudeUpdate": "DuringBurn",
+        "ThrustAxesName": "VNC(Earth)",
+        "CoordType": "Cartesian",
+        "X": 0.6330222216,
+        "Y": 0.7544065067,
+        "Z": 0.1736481777
+      },
+      "PropagatorName": "Earth_Point_Mass",
+      "PropulsionMethodValue": "Constant_Thrust_Isp",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 500
+        }
+      ]
+    }
+  ],
+
+  "EngineModels": [
+    {
+      "$type": "EngineConstant",
+      "Name": "Constant_Thrust_Isp",
+      "Description": "常值推力、比冲 发动机",
+      "UserComment": "常值推力、比冲 发动机",
+      "Thrust": 500.0,
+      "Isp": 300.0
+    }
+  ]
+}

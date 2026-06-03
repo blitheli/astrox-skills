@@ -1,0 +1,62 @@
+{
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "Entities": [
+    {
+      "Name": "卫星1",
+      "Position": {
+        "$type": "TwoBody",
+        "CentralBody": "Earth",
+        "GravitationalParameter": 3.986004415E14,
+        "OrbitEpoch": "2022-06-20T04:00:00.000Z",
+        "CoordSystem": "Inertial",
+        "CoordType": "Classical",
+        "OrbitalElements": [11500000, 0, 28.5, 0, 40, 340]
+      }
+    }
+  ],
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 100,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 8000000.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "Vx": 1500.0,
+          "Vy": 7500.0,
+          "Vz": 2000.0
+        },
+        "Epoch": "2022-06-20T04:00:00.000Z",
+        "FuelMass": 900,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Scalar",
+          "Name": "CrossXY",
+          "Active": true,
+          "Trip": 0,
+          "Tolerance": 1e-3,
+          "UserCalcObject": {
+            "$type": "PointElement",
+            "CoordSystemName": "卫星1 LVLH",
+            "ComponentName": "Z"
+          }
+        }
+      ]
+    }
+  ]
+}

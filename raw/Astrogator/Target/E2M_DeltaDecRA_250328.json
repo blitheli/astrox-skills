@@ -1,0 +1,182 @@
+﻿{
+  "Text1": "测试-Target-微分修正：地月转移(初始段-轨道递推段)(地月直接转移，CisLunar积分器)",
+  "Text2": "自变量:InitialState.Spherical.Decl(Right_Asc),约束: Delta_Declination,Delta_Right_Asc",
+  "Text3": "地月转移轨道的首次微分修正，将末端状态修正到月球附近",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Earth2Moon",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "InitialState",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Spherical",
+              "RightAscension": 0,
+              "Declination": 0,
+              "RadiusMagnitude": 6678137.0,
+              "HorizFPA": 0.0,
+              "VelocityAzimuth": 61.5,
+              "VelocityMagnitude": 10900.0
+            },
+            "Epoch": "2022-06-20T04:00:00.000Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Prop32wkm",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Scalar",
+              "Name": "R Magnitude",
+              "Active": true,
+              "UserComment": "Stop on a specified distance from an origin",
+              "Description": "Stop on a specified distance from an origin",
+              "Trip": 320000000,
+              "Tolerance": 0.001,
+              "UserCalcObject": {
+                "$type": "PointElement",
+                "CoordSystemName": "Earth Inertial",
+                "ComponentName": "Magnitude"
+              }
+            }
+          ],
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "TrueAnomaly",
+              "CentralBodyName": "Moon",
+              "ComponentName": "TrueAnomaly",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4.90280030555540e+012
+            },
+            {
+              "$type": "PointElement",
+              "Name": "RMagnitude",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "Magnitude"
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Prop2Moon",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration-2day",
+              "Active": true,
+              "Description": "积分固定的时刻",
+              "Trip": 250000.0
+            },
+            {
+              "$type": "Scalar",
+              "Name": "Altitude-0km",
+              "Active": true,
+              "UserComment": "Stop on a specified altitude from the central body",
+              "Description": "Stop on a specified altitude from the central body",
+              "Trip": 0,
+              "Tolerance": 1.0,
+              "UserCalcObject": {
+                "$type": "Cartographic",
+                "CentralBodyName": "Moon",
+                "ComponentName": "Height"
+              }    
+            },
+            {
+              "$type": "Periapsis",
+              "Name": "Periapsis",
+              "Active": true,
+              "Tolerance": 0.000001,
+              "CentralBodyName": "Moon",
+              "Mu": 4.90280030555540e+012              
+            }
+          ],
+          "Results": [
+            {
+              "$type": "DeltaSpherical",
+              "Name": "Delta_Declination",
+              "ComponentName": "Delta_Declination",
+              "CentralBodyName": "Moon",
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "DeltaSpherical",
+              "Name": "Delta_Right_Asc",
+              "ComponentName": "Delta_Right_Asc",
+              "CentralBodyName": "Moon",
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "Cartographic",
+              "Name": "Altitude",
+              "CentralBodyName": "Moon",
+              "ComponentName": "Height"
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "TrueAnomaly",
+              "CentralBodyName": "Moon",
+              "ComponentName": "TrueAnomaly",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4.90280030555540e+012
+            }
+          ]
+        }      
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "Coarse_Solving_For_Lunar_Approach",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Right_Asc",
+              "MaxStep": 30.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Decl",
+              "MaxStep": 30.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Delta_Declination",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "0.0",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Delta_Right_Asc",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "0.0",
+              "Tolerance": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

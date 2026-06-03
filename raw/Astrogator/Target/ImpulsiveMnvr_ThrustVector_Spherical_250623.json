@@ -1,0 +1,127 @@
+﻿{
+  "Description": "脉冲机动速度大小优化，推力方向为：Thrust Vetor, Spherical坐标方式， 目标：改变轨道倾角",
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 100,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 8000000.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "Vx": 1500.0,
+          "Vy": 7500.0,
+          "Vz": 2000.0
+        },
+        "Epoch": "2022-06-20T04:00:00.000Z",
+        "FuelMass": 900,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Duration",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时刻",
+          "Trip": 3000.0
+        }
+      ]
+    },
+    {
+      "$type": "TargetSequence",
+      "Name": "Target轨道倾角",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "DV1",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC",
+            "CoordType": "Spherical",
+            "Azimuth": 90.0,
+            "Elevation": 0.0,
+            "Magnitude": 1000.0
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "Inc",
+              "CentralBodyName": "Earth",
+              "ComponentName": "Inclination",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "远地点",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Apoapsis",
+              "Name": "Apoapsis",
+              "Active": true,
+              "Tolerance": 1e-8,
+              "CentralBodyName": "Earth",
+              "Mu": 3.986004415E14
+            }
+          ],
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC_Inc",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Spherical.Magnitude",
+              "MaxStep": 1000.0,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001,
+              "ParentName": "DV1"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Inc",
+              "Description": "轨道倾角",
+              "ParentName": "DV1",
+              "DesiredValue": "30.0",
+              "Tolerance": 0.01
+            }
+          ]
+        }
+      ]
+    }
+  ]
+
+}

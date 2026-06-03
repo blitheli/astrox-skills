@@ -1,0 +1,114 @@
+﻿{
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": -3943860.9934800892916,
+          "Y": -5140058.1250612303847,
+          "Z": -1603813.3403060419369,
+          "Vx": 5989.0302360225034,
+          "Vy": -4827.1079836186574,
+          "Vz": 743.0494598292248
+        },
+        "Epoch": "2009-07-01T15:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "ParkingOrbit",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 3200
+        }
+      ]
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "Maneuver",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "ThrustAxesName": "VNC",
+        "CoordType": "Cartesian",
+        "X": 4000,
+        "Y": 0.0,
+        "Z": 0.0
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "TransferOrbitToMoonSOI",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 63545
+        }
+      ]
+    },
+    {
+      "$type": "Propagate",
+      "Name": "TransferOrbit",
+      "PropagatorName": "CisLunarMoonCentered",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 15380
+        }
+      ]
+    }
+  ],
+
+  "Propagators": [
+    {
+      "Name": "CisLunarMoonCentered",
+      "CentralBodyName": "Moon",
+
+      "GravityModel": {
+        "$type": "GravityField",
+        "GravityFileName": "GL0900D.grv",
+        "Degree": 8,
+        "Order": 8,
+        "SolidTideType": "Permanent tide only"
+      },
+      "ThirdBodyForce": [
+        {
+          "ThirdBodyName": "Earth",
+          "GravSource": "CbFile",
+          "Mu": 3.986004415E14
+        },
+        {
+          "ThirdBodyName": "Sun",
+          "GravSource": "CbFile",
+          "Mu": 1.3271244004193938E20
+        }
+      ],
+      "NumericalIntegrator": {
+        "$type": "RKF7th8th",
+        "MaxAbsErr": 1e-10
+      }
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "Initial_State",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Cartesian",
+              "X": 8000000.0,
+              "Y": 0.0,
+              "Z": 0.0,
+              "Vx": 1500.0,
+              "Vy": 7500.0,
+              "Vz": 0.0
+            },
+            "Epoch": "2000-01-01T11:58:55.816Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Trip": 43200
+            }
+          ],
+          "Results": [
+            {
+              "$type": "Epoch",
+              "Name": "Epoch"
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC_Duration_Epoch",
+          "Active": true,
+          "MaximumIterations": 50,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "StopConditions.Duration",
+              "InitialValue": "43200.0",
+              "MaxStep": 20000.0,
+              "Perturbation": 0.1,
+              "Tolerance": 0.001,
+              "ControlType": "ParameterizedDouble",
+              "ParentName": "Propagate"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Epoch",
+              "Dimension": "DateFormat",
+              "ParentName": "Propagate",
+              "DesiredValue": "2000-01-02T11:58:55.816Z",
+              "Tolerance": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

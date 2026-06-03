@@ -1,0 +1,69 @@
+double earthGm = WorldGeodeticSystem1984.GravitationalParameter;
+Motion<Cartesian> initialConditions = new ModifiedKeplerianElements(17000000, 1.0 / 17200000.0, Trig.DegreesToRadians(23),
+                                                                    0, 0, Trig.DegreesToRadians(5), earthGm).ToCartesian();
+
+PropagationNewtonianPoint propagationPoint = CreatePropagatedNewtonianPoint(SatelliteMotionIdentification, initialConditions);
+NumericalPropagatorDefinition basePropagator = CreateNumericalPropagator(propagationPoint);
+
+double initialActualFuelMass = 5000;
+double initialDryMass = 1000;
+PropagationScalar fuelMassElement = ConfigureDefaultMassesAndReturnFuelElement(propagationPoint, basePropagator, initialActualFuelMass, initialDryMass);
+
+ScalarStoppingCondition outOfFuelStoppingCondition = new ScalarStoppingCondition(fuelMassElement.IntegrationValue, 0.00000001, 0.000000001,
+                                                                                 StopType.ThresholdDecreasing);
+outOfFuelStoppingCondition.Enabled = StoppingConditionEnabled.Enabled;
+ScalarFixed fuelFlow = new ScalarFixed(-0.005);
+fuelMassElement.ScalarDerivative = fuelFlow;
+
+
+PropagationScalar fuelMassScalar = new PropagationScalar(fuelMass); 
+fuelMassScalar.Identification = "Fuel Mass";
+
+AuxiliaryStateScalar dryMassScalar = new AuxiliaryStateScalar(dryMass);
+dryMassScalar.Identification = "Dry Mass";
+propagationPoint.Mass = fuelMassScalar.IntegrationValue + dryMassScalar.AuxiliaryScalar;
+
+basePropagator.IntegrationElements.Add(fuelMassScalar);
+basePropagator.AuxiliaryElements.Add(dryMassScalar);
+
+
+// create the continuous thrust force model
+ContinuousThrustForceModel thrust = new ContinuousThrustForceModel();
+thrust.IntegrationAxes = propagationPoint.IntegrationFrame.Axes;
+
+// use the constant thrust/isp thrust vector
+double isp = 1000;
+Vector thrustVector = ContinuousThrustForceModel.CreateIspThrustVector(isp,
+                                                                       fuelFlow,
+                                                                       propagationPoint.IntegrationFrame.Axes,
+                                                                       new Cartesian(0, 0, 1)); // thrust along the negative Z
+thrust.ThrustVector = thrustVector;
+
+Vector velocityVector = new VectorVelocity(propagationPoint.IntegrationPoint, propagationPoint.IntegrationFrame);
+
+ScalarSwitchingOnVelocityVector switchingScalar = new ScalarSwitchingOnVelocityVector(velocityVector);
+thrust.ThrustVector = thrustVector * switchingScalar; // switch the thrust back and forth
+
+propagationPoint.AppliedForces.Add(thrust);
+
+FiniteManeuverSegment segment = new FiniteManeuverSegment();
+segment.PropagatorDefinition = basePropagator;
+
+// a time condition just in case
+segment.StoppingConditions.Add(new DurationStoppingCondition(Duration.FromDays(10.0)));
+
+// don't forget the out of fuel stopping condition we made
+segment.StoppingConditions.Add(outOfFuelStoppingCondition);
+
+// don't keep going once we've hit our flat orbit
+ScalarStoppingCondition inclinationStoppingCondition = new ScalarStoppingCondition(new ScalarModifiedKeplerianElement(earthGm,
+                                                                                                                      propagationPoint.IntegrationPoint,
+                                                                                                                      KeplerianElement.Inclination,
+                                                                                                                      propagationPoint.IntegrationFrame),
+                                                                                   0,
+                                                                                   Trig.DegreesToRadians(0.05),
+                                                                                   StopType.AnyThreshold);
+segment.StoppingConditions.Add(inclinationStoppingCondition);
+
+SegmentList list = new SegmentList();
+list.Segments.Add(segment);

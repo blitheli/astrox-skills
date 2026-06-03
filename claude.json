@@ -103,6 +103,11 @@
       "name": "rocket-trajectory-optim",
       "skillFile": "skills/rocket-trajectory-optim/SKILL.md",
       "fixturesDir": "skills/rocket-trajectory-optim/fixtures"
+    },
+    {
+      "name": "astrogator",
+      "skillFile": "skills/astrogator/SKILL.md",
+      "fixturesDir": "skills/astrogator/fixtures"
     }
   ]
 }

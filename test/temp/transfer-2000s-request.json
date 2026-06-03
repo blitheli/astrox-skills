@@ -1,0 +1,162 @@
+{
+  "Description": "Fixed-time transfer (2000s): 300km to 1000km, DV1 tangential, 3-constraint DC",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415e14,
+  "ComputeCzmlPositions": false,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Epoch": "2026-01-01T00:00:00Z",
+        "CoordSystemName": "Earth Inertial",
+        "DryMass": 500,
+        "FuelMass": 500,
+        "Cd": 2.2,
+        "DragArea": 20,
+        "Cr": 1,
+        "SRPArea": 20,
+        "Element": {
+          "$type": "Keplerian",
+          "SemiMajorAxis": 6678137.0,
+          "Eccentricity": 1e-10,
+          "Inclination": 28.5,
+          "RAAN": 0,
+          "ArgOfPeriapsis": 0,
+          "TrueAnomaly": 0,
+          "GravitationalParameter": 3.986004415e14
+        }
+      }
+    },
+    {
+      "$type": "TargetSequence",
+      "Name": "Fixed_Time_Transfer",
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "Solve_Transfer",
+          "Active": true,
+          "MaximumIterations": 100,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "ParentName": "DV1",
+              "InitialValue": "400",
+              "MaxStep": 400,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001,
+              "Enable": true
+            },
+            {
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "ParentName": "DV2",
+              "InitialValue": "200",
+              "MaxStep": 400,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001,
+              "Enable": true
+            },
+            {
+              "Name": "ImpulsiveMnvr.Cartesian.Z",
+              "ParentName": "DV2",
+              "InitialValue": "0",
+              "MaxStep": 400,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001,
+              "Enable": true
+            }
+          ],
+          "Results": [
+            {
+              "Name": "RadiusMagnitude",
+              "ParentName": "Transfer_2000s",
+              "DesiredValue": "7378137.0",
+              "Tolerance": 1.0,
+              "Enable": true
+            },
+            {
+              "Name": "RadiusOfApoapsis",
+              "ParentName": "DV2",
+              "DesiredValue": "7378137.0",
+              "Tolerance": 1.0,
+              "Enable": true
+            },
+            {
+              "Name": "Eccentricity",
+              "ParentName": "DV2",
+              "DesiredValue": "0.0",
+              "Tolerance": 0.000001,
+              "Enable": true
+            }
+          ]
+        }
+      ],
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "DV1",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Earth)",
+            "CoordType": "Cartesian",
+            "X": 400,
+            "Y": 0,
+            "Z": 0
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Transfer_2000s",
+          "PropagatorName": "Earth_Point_Mass",
+          "MaxPropagationTime": 8640000,
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration_2000s",
+              "Active": true,
+              "Trip": 2000,
+              "Tolerance": 1e-6
+            }
+          ],
+          "Results": [
+            {
+              "$type": "SphericalElement",
+              "Name": "RadiusMagnitude",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "RadiusMagnitude"
+            }
+          ]
+        },
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "DV2",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Earth)",
+            "CoordType": "Cartesian",
+            "X": 200,
+            "Y": 0,
+            "Z": 0
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415e14
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "Eccentricity",
+              "ComponentName": "Eccentricity",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415e14
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

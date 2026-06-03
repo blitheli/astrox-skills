@@ -1,0 +1,343 @@
+﻿{
+  "Text1": "测试-Target-微分修正：初始段-轨道递推段(时间停止，二体轨道积分器)",
+  "Text2": "自变量:InitialState.Spherical.Right_Asc(Decl,VMag),约束: X,Y,Z",
+  "Text3": "Propagate段Results包含了目前所有的Scalar变量，用于测试！",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "InitialState",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Spherical",
+              "RightAscension": 0.0,
+              "Declination": 0.0,
+              "RadiusMagnitude": 7000000.0,
+              "HorizFPA": 0.0,
+              "VelocityAzimuth": 45.0,
+              "VelocityMagnitude": 8000.0
+            },
+            "Epoch": "2000-01-01T11:58:55.816Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Description": "积分固定的时刻",
+              "Trip": 3000.0
+            }
+          ],
+          "Results": [
+            {
+              "$type": "PointElement",
+              "Name": "X",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "X"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Y",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "Y"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Z",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "Z"
+            },
+            {
+              "$type":"PointElement",
+              "Name": "Vx",
+              "CoordSystemName":"Earth Inertial",
+              "ComponentName":"Vx"
+            },
+            {
+              "$type":"PointElement",
+              "Name": "Vy",
+              "CoordSystemName":"Earth Inertial",
+              "ComponentName":"Vy"
+            },
+            {
+              "$type":"PointElement",
+              "Name": "Vz",
+              "CoordSystemName":"Earth Inertial",
+              "ComponentName":"Vz"
+            },            
+            {
+              "$type":"Duration",
+              "Name":"Duration"
+            },
+            {
+              "$type":"Epoch",
+              "Name":"Epoch"
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "Right_Asc",
+              "ComponentName": "RightAscension",
+              "CoordSystemName": "Earth Inertial"
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "Decl",
+              "ComponentName": "Declination",
+              "CoordSystemName": "Earth Inertial"
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "RMag",
+              "ComponentName": "RadiusMagnitude",
+              "CoordSystemName": "Earth Inertial"
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "Vert_FPA",
+              "ComponentName": "VerticalFPA",
+              "CoordSystemName": "Earth Inertial"
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "Horiz_FPA",
+              "ComponentName": "HorizFPA",
+              "CoordSystemName": "Earth Inertial"
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "VelAzimuth",
+              "ComponentName": "VelocityAzimuth",
+              "CoordSystemName": "Earth Inertial"
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "VelMag",
+              "ComponentName": "VelocityMagnitude",
+              "CoordSystemName": "Earth Inertial"
+            },
+            {
+              "$type": "Cartographic",
+              "Name": "Latitude",
+              "ComponentName": "Latitude",
+              "CentralBodyName": "Earth"
+            },
+            {
+              "$type":"Cartographic",
+              "Name":"Longitude",
+              "ComponentName":"Longitude",
+              "CentralBodyName":"Earth"
+            },
+            {
+              "$type":"Cartographic",
+              "Name":"Height",
+              "ComponentName":"Height",
+              "CentralBodyName":"Earth"
+            },
+            {
+              "$type":"DeltaSpherical",
+              "Name":"Delta_Decl",
+              "ComponentName":"Delta_Declination",
+              "CentralBodyName":"Moon",
+              "ParentCbName":"Earth"
+            },
+            {
+              "$type":"DeltaSpherical",
+              "Name":"Delta_RA",
+              "ComponentName":"Delta_Right_Asc",
+              "CentralBodyName":"Moon",
+              "ParentCbName":"Earth"
+            },
+            {
+              "$type":"DeltaSpherical",
+              "Name":"Delta_RMag",
+              "ComponentName":"Delta_RMag",
+              "CentralBodyName":"Moon",
+              "ParentCbName":"Earth"
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"RadiusOfPeriapsis",
+              "CentralBodyName":"Earth",
+              "ComponentName":"RadiusOfPeriapsis",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"RadiusOfApoapsis",
+              "CentralBodyName":"Earth",
+              "ComponentName":"RadiusOfApoapsis",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"SemimajorAxis",
+              "CentralBodyName":"Earth",
+              "ComponentName":"SemimajorAxis",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"Period",
+              "CentralBodyName":"Earth",
+              "ComponentName":"Period",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"Eccentricity",
+              "CentralBodyName":"Earth",
+              "ComponentName":"Eccentricity",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"Inclination",
+              "CentralBodyName":"Earth",
+              "ComponentName":"Inclination",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"ArgumentOfPeriapsis",
+              "CentralBodyName":"Earth",
+              "ComponentName":"ArgumentOfPeriapsis",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"RAAN",
+              "CentralBodyName":"Earth",
+              "ComponentName":"RAAN",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"TrueAnomaly",
+              "CentralBodyName":"Earth",
+              "ComponentName":"TrueAnomaly",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"MeanAnomaly",
+              "CentralBodyName":"Earth",
+              "ComponentName":"MeanAnomaly",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"AltitudeOfPeriapsis",
+              "CentralBodyName":"Earth",
+              "ComponentName":"AltitudeOfPeriapsis",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            },
+            {
+              "$type":"ModifiedKeplerianElement",
+              "Name":"AltitudeOfApoapsis",
+              "CentralBodyName":"Earth",
+              "ComponentName":"AltitudeOfApoapsis",
+              "CoordSystemName":"Earth Inertial",
+              "Mu":3.986004415E14
+            }
+          ]
+        }      
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: InitialState.Spherical_XYZ",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Right_Asc",
+              "InitialValue": "0.0",
+              "MaxStep": 10.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Decl",
+              "InitialValue": "0.0",
+              "MaxStep": 10.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.VMag",
+              "InitialValue": "8000.0",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "X",
+              "ParentName": "Propagate",
+              "DesiredValue": "-10000000.0",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Y",
+              "ParentName": "Propagate",
+              "DesiredValue": "10000000.0",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Z",
+              "ParentName": "Propagate",
+              "DesiredValue": "2000000.0",
+              "Tolerance": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+﻿{
+  "Text1": "测试-Target-微分修正：初始段-轨道递推段(高度停止，二体轨道积分器)",
+  "Text2": "自变量:StoppingConditions.Altitude，约束: Duration",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "Initial_State",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Cartesian",
+              "X": 8000000.0,
+              "Y": 0.0,
+              "Z": 0.0,
+              "Vx": 1500.0,
+              "Vy": 7500.0,
+              "Vz": 0.0
+            },
+            "Epoch": "2000-01-01T11:58:55.816Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Epoch",
+              "Name": "Epoch1",
+              "Active": false,
+              "Description": "积分固定的时刻",
+              "Trip": "2000-01-02T12:00:00.000Z"
+            },
+            {
+              "$type": "Scalar",
+              "Name": "Altitude",
+              "Active": true,
+              "UserComment": "Stop on a specified altitude from the central body",
+              "Description": "Stop on a specified altitude from the central body",
+              "Trip": 4000000,
+              "Tolerance": 1e-6,
+              "UserCalcObject": {
+                "$type": "Cartographic",
+                "CentralBodyName": "Earth",
+                "ComponentName": "Height"
+              }    
+            }
+          ],
+          "Results": [
+            {
+              "$type": "SphericalElement",
+              "Name": "Vel",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "VelocityMagnitude"
+            },
+            {
+              "$type": "Duration",
+              "Name": "Duration1"              
+            }
+          ]
+        }      
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: Altitude_Vmag",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "StopConditions.Altitude",
+              "InitialValue": "4000000",
+              "MaxStep": 1000000.0,
+              "Perturbation": 1.0,
+              "Tolerance": 0.001,
+              "ParentName": "Propagate"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Duration1",
+              "ParentName": "Propagate",
+              "DesiredValue": "3000.0",
+              "Tolerance": 0.001
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

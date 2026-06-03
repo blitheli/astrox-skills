@@ -1,0 +1,154 @@
+{
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 100,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 8000000.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "Vx": 1500.0,
+          "Vy": 7500.0,
+          "Vz": 0.0
+        },
+        "Epoch": "2000-01-01T11:58:55.816Z",
+        "FuelMass": 900,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate_To_Perigee",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Periapsis",
+          "Name": "Periapsis",
+          "Active": true,
+          "Tolerance": 1e-08,
+          "CentralBodyName": "Earth",
+          "Mu": 3.986004415E14
+        }
+      ]
+    },
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "First_Maneuver",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC",
+            "CoordType": "Cartesian",
+            "X": 500.0,
+            "Y": 0.0,
+            "Z": 0.0
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Transfer_Orbit",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Apoapsis",
+              "Name": "Apoapsis",
+              "Active": true,
+              "Tolerance": 1e-8,
+              "CentralBodyName": "Earth",
+              "Mu": 3.986004415E14
+            }
+          ],
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "Second_Maneuver",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC",
+            "CoordType": "Cartesian",
+            "X": 500.0,
+            "Y": 0.0,
+            "Z": 0.0
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "Eccentricity",
+              "CentralBodyName": "Earth",
+              "ComponentName": "Eccentricity",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "Solve_For_Hohmann_Transfer",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "InitialValue": "500",
+              "MaxStep": 200.0,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001,
+              "ParentName": "First_Maneuver"
+            },
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "InitialValue": "500",
+              "MaxStep": 200.0,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001,
+              "ParentName": "Second_Maneuver"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "RadiusOfApoapsis",
+              "ParentName": "Transfer_Orbit",
+              "DesiredValue": "42000000.0",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Eccentricity",
+              "ParentName": "Second_Maneuver",
+              "DesiredValue": "0.1",
+              "Tolerance": 0.000001
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

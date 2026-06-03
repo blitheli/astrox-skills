@@ -1,0 +1,274 @@
+﻿{
+  "Text1": "测试-Target-微分修正：霍曼变轨，2次Target，通过两脉冲从低轨转移到高轨",
+  "Text2": "自变量：两次脉冲速度增量(Cartesian.X)，约束:远地点高度，轨道偏心率",
+  "Text3": "与STK帮助文档示例类似。脉冲更新质量，消耗完燃料！",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "InitialState": {
+        "CoordSystemName": "Earth Inertial",
+        "Epoch": "2025-06-09T00:00:00Z",
+        "DryMass": 500,
+        "Cd": 2.2,
+        "DragArea": 20,
+        "Cr": 1,
+        "SRPArea": 20,
+        "FuelMass": 500,
+        "Element": {
+          "$type": "Keplerian",
+          "SemiMajorAxis": 6700000,
+          "Eccentricity": 7.526401473956613e-10,
+          "Inclination": 0,
+          "RAAN": 0,
+          "ArgOfPeriapsis": 0,
+          "TrueAnomaly": 0,
+          "GravitationalParameter": 398600441500000
+        }
+      },
+      "Name": "初始段",
+      "Description": "初始化状态数据",
+      "UserComment": "初始化状态数据"
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "Name": "轨道递推段",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "MaxPropagationTime": 8640000,
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "UserComment": "积分固定的时长",
+          "Trip": 7200,
+          "Tolerance": 0.000001,
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Criterion": "AnyThreshold"
+        }
+      ]
+    },
+    {
+      "$type": "TargetSequence",
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "微分修正器",
+          "Active": true,
+          "UserComment": "微分修正器",
+          "Description": "微分修正器",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "ParentName": "DV1",
+              "InitialValue": "0",
+              "Correction": 0,
+              "MaxStep": 300,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Rate",
+              "Enable": true
+            }
+          ],
+          "Results": [
+            {
+              "Name": "远地点距离",
+              "ParentName": "DV1",
+              "DesiredValue": "42238000",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "Distance"
+            }
+          ]
+        }
+      ],
+      "Name": "开始转移",
+      "Description": "运行目标配置文件的序列",
+      "UserComment": "运行目标配置文件的序列",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "PropagatorName": "Earth_Point_Mass",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Earth)",
+            "CoordType": "Cartesian",
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "PropulsionMethod": "EngineModel",
+          "PropulsionMethodValue": "Constant_Thrust_Isp",
+          "Name": "DV1",
+          "UpdateMass": true,
+          "Description": "以冲动燃烧或有限燃烧控制卫星",
+          "UserComment": "以冲动燃烧或有限燃烧控制卫星",
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "远地点距离",
+              "UserComment": "远地点距离",
+              "Description": "远地点距离",
+              "ReadOnly": true,
+              "CN": "远地点距离",
+              "Dimension": "Distance",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 398600441500000
+            }
+          ]
+        }
+      ],
+      "ReadOnly": true
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "Name": "椭圆转移",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "MaxPropagationTime": 8640000,
+      "ReadOnly": true,
+      "StopConditions": [
+        {
+          "$type": "Apoapsis",
+          "Name": "远地点",
+          "Active": true,
+          "UserComment": "在远地点处停止",
+          "Description": "在远地点处停止",
+          "Tolerance": 0.000001,
+          "CentralBodyName": "Earth",
+          "ReadOnly": true,
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Mu": 398600441500000
+        }
+      ]
+    },
+    {
+      "$type": "TargetSequence",
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "微分修正器",
+          "Active": true,
+          "UserComment": "微分修正器",
+          "Description": "微分修正器",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "ParentName": "DV2",
+              "InitialValue": "0",
+              "Correction": 0,
+              "MaxStep": 100,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Rate",
+              "Enable": true
+            }
+          ],
+          "Results": [
+            {
+              "Name": "偏心率",
+              "ParentName": "DV2",
+              "DesiredValue": "0",
+              "Tolerance": 0.0001,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": ""
+            }
+          ]
+
+        }
+      ],
+      "Name": "结束转移",
+      "Description": "运行目标配置文件的序列",
+      "UserComment": "运行目标配置文件的序列",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "PropagatorName": "Earth_Point_Mass",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Earth)",
+            "CoordType": "Cartesian",
+            "X": 0,
+            "Y": 0,
+            "Z": 0
+          },
+          "PropulsionMethod": "EngineModel",
+          "PropulsionMethodValue": "Constant_Thrust_Isp",
+          "Name": "DV2",
+          "UpdateMass": true,
+          "Description": "以冲动燃烧或有限燃烧控制卫星",
+          "UserComment": "以冲动燃烧或有限燃烧控制卫星",
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "偏心率",
+              "UserComment": "轨道偏心率",
+              "Description": "轨道偏心率",
+              "ReadOnly": true,
+              "CN": "偏心率",
+              "ComponentName": "Eccentricity",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 398600441500000
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "Name": "外层轨道",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "MaxPropagationTime": 8640000,
+      "ReadOnly": true,
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "UserComment": "积分固定的时长",
+          "Trip": 86400,
+          "Tolerance": 1e-8,
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Criterion": "AnyThreshold"
+        }
+      ]
+    }
+  ],
+
+  "EngineModels": [
+    {
+      "$type": "EngineConstant",
+      "Name": "Constant_Thrust_Isp",
+      "Description": "常值推力、比冲 发动机",
+      "UserComment": "常值推力、比冲 发动机",
+      "Thrust": 500.0,
+      "Isp": 300.0
+    }
+  ]
+}

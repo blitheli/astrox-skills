@@ -1,0 +1,139 @@
+﻿{
+  "Text1": "测试-Target-微分修正：初始段-轨道递推段(时间停止，二体轨道积分器)",
+  "Text2": "自变量:InitialState.Cartesian.Vx,Vy,Vz,约束: X,Y,Z",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "InitialState",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Cartesian",
+              "X": 8000000.0,
+              "Y": 0.0,
+              "Z": 0.0,
+              "Vx": 1500.0,
+              "Vy": 7500.0,
+              "Vz": 0.0
+            },
+            "Epoch": "2000-01-01T11:58:55.816Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Description": "积分固定的时刻",
+              "Trip": 3000.0
+            }
+          ],
+          "Results": [
+            {
+              "$type": "PointElement",
+              "Name": "X",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "X"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Y",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "Y"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Z",
+              "CoordSystemName": "Earth Inertial",
+              "ComponentName": "Z"
+            }
+          ]
+        }      
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: InitialState.VxVyVz_XYZ",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Cartesian.Vx",
+              "InitialValue": "1500.0",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Cartesian.Vy",
+              "InitialValue": "7500.0",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Cartesian.Vz",
+              "InitialValue": "0.0",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "X",
+              "ParentName": "Propagate",
+              "DesiredValue": "-2500000.0",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Y",
+              "ParentName": "Propagate",
+              "DesiredValue": "10000000.0",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Z",
+              "ParentName": "Propagate",
+              "DesiredValue": "2000000.0",
+              "Tolerance": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
