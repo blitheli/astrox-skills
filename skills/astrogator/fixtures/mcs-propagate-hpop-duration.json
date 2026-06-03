@@ -1,0 +1,42 @@
+{
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Keplerian",
+          "GravitationalParameter": 3.986004415E14,
+          "SemiMajorAxis": 6678137,
+          "Eccentricity": 0,
+          "Inclination": 28.5,
+          "RAAN": 0,
+          "ArgOfPeriapsis": 0,
+          "TrueAnomaly": 0
+        },
+        "Epoch": "2018-12-01T00:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate_Hpop_1Day",
+      "PropagatorName": "Earth_Hpop_default_v10",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Trip": 86400
+        }
+      ]
+    }
+  ]
+}

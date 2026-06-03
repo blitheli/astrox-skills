@@ -173,7 +173,7 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
 curl "${BASE_URL}/Astrogator/RunMCS" \
   --request POST \
   --header 'Content-Type: application/json' \
-  --data-binary "@astrogator/fixtures/mcs-impulsive-along-velocity-min.json"
+  --data-binary "@astrogator/fixtures/mcs-maneuver-impulsive-along-velocity-min.json"
 ```
 
 ## 霍曼转移(微分修正)
@@ -199,12 +199,49 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
 
 ## 更多示例与测试数据 (fixtures)
 
+### Propagate(轨道递推)
+
 
 | 文件 | 用途简述 |
 | --- | --- |
-| `astrogator/fixtures/mcs-propagate-duration-min.json` | 初始开普勒根数 + 质点递推 1 天 |
-| `astrogator/fixtures/mcs-impulsive-along-velocity-min.json` | 递推 + 沿速度脉冲机动 + 再递推 |
-| `astrogator/fixtures/mcs-hohmann-target-min.json` | 霍曼转移 TargetSequence + 微分修正 |
+| `mcs-propagate-duration-min.json` | 开普勒初值 + 质点递推固定时长(86400 s) |
+| `mcs-propagate-hpop-duration.json` | HPOP 积分器(`Earth_Hpop_default_v10`)递推 1 天 |
+| `mcs-propagate-periapsis.json` | 递推至近地点(Periapsis, RepeatCount=2) |
+| `mcs-propagate-apoapsis.json` | 递推至远地点(Apoapsis) |
+| `mcs-propagate-scalar-cross-lvlh.json` | 标量终止条件:穿越参考卫星 LVLH 的 XY 平面(含 `Entities`) |
+
+### ManeuverImpulsive(脉冲机动)
+
+
+| 文件 | 用途简述 |
+| --- | --- |
+| `mcs-maneuver-impulsive-along-velocity-min.json` | 沿速度方向脉冲(`VelocityVector`) |
+| `mcs-maneuver-impulsive-thrust-vector-vnc.json` | VNC 坐标系笛卡尔推力矢量 |
+| `mcs-maneuver-impulsive-thrust-vector-spherical.json` | VNC 球坐标推力矢量(Azimuth/Elevation/Magnitude) |
+
+### ManeuverFinite(有限推力机动)
+
+
+| 文件 | 用途简述 |
+| --- | --- |
+| `mcs-maneuver-finite-along-velocity.json` | 沿速度有限推力(自定义 Propagator + EngineModel) |
+| `mcs-maneuver-finite-thrust-vector.json` | VNC 推力方向有限推力(缺省质点积分器) |
+
+### TargetSequence(目标序列/微分修正)
+
+
+| 文件 | 用途简述 |
+| --- | --- |
+| `mcs-hohmann-target-min.json` | 霍曼转移:两脉冲 VNC-X 自变量,约束远地点半径与偏心率 |
+| `mcs-target-along-velocity-sma.json` | 沿速度脉冲:自变量 Delta-V 模,约束半长轴 |
+| `mcs-target-propagate-duration-epoch.json` | 递推段:自变量 Duration,约束末历元 Epoch |
+
+### Follow(跟随段)
+
+
+| 文件 | 用途简述 |
+| --- | --- |
+| `mcs-follow-twobody.json` | 跟随 TwoBody Leader + 脉冲机动 + 递推至远地点 |
 
 ## 上游参考示例 (raw/Astrogator)
 

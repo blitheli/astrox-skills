@@ -1,0 +1,66 @@
+{
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 6678137.0,
+          "Y": 0,
+          "Z": 0,
+          "Vx": 0,
+          "Vy": 6789.5303002727,
+          "Vz": 3686.4141744009
+        },
+        "Epoch": "2017-06-28T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate1",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Trip": 86400
+        }
+      ]
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "ImpulsiveManeuver",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "ThrustAxesName": "VNC",
+        "CoordType": "Cartesian",
+        "X": 5.0,
+        "Y": 4.0,
+        "Z": 3.0
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate2",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Trip": 43200
+        }
+      ]
+    }
+  ]
+}
