@@ -1,7 +1,7 @@
 ---
-
-## name: astrogator
+name: astrogator
 description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致。支持初始状态、轨道递推、脉冲/有限推力机动、目标序列(微分修正)、跟随段等。用户需要霍曼转移、地月转移、轨道设计、机动序列仿真时使用。
+---
 
 # Astrogator 轨道机动序列技能 (Astrogator MCS)
 
