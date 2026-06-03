@@ -1,0 +1,69 @@
+﻿{
+  "CentralBody": "Moon",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Moon Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 2000000.0000007153176,
+          "Y": 0.0000164806843,
+          "Z": -0.0000081583858,
+          "Vx": 0.0000000000011,
+          "Vy": 1512.3450267588159,
+          "Vz": 405.2316285972495
+        },
+        "Epoch": "2022-06-20T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate1",
+      "PropagatorName": "Moon_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 86400
+        }
+      ]
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "ImpulsiveManeuver",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "ThrustAxesName": "VVLH",
+        "CoordType": "Cartesian",
+        "X": 3.0,
+        "Y": 4.0,
+        "Z": 5.0
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate2",
+      "PropagatorName": "Moon_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 43200
+        }
+      ]
+    }
+  ]
+}

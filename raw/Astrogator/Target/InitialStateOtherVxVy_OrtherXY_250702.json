@@ -1,0 +1,120 @@
+﻿{
+  "Text1": "测试-Target-微分修正：初始段-轨道递推段(时间停止，二体轨道积分器)",
+  "Text2": "初始状态在GEO1卫星的LVLH系下表示，约束也在其表示！验证相对其它目标LVLH坐标系的参数",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Target_GEO1_LVLH_XY",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "InitialState",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "GEO1 LVLH",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Cartesian",
+              "X": 0.0,
+              "Y": 10000.0,
+              "Z": 0.0,
+              "Vx": 0.0,
+              "Vy": 0.0,
+              "Vz": 0.0
+            },
+            "Epoch": "2022-06-20T04:00:00.000Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Description": "积分固定的时刻",
+              "Trip": 43200.0
+            }
+          ],
+          "Results": [
+            {
+              "$type": "PointElement",
+              "Name": "X",
+              "CoordSystemName": "GEO1 LVLH",
+              "ComponentName": "X"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Y",
+              "CoordSystemName": "GEO1 LVLH",
+              "ComponentName": "Y"
+            }          
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: InitialState.VxVy_XY",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Cartesian.Vx",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Cartesian.Vy",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            }           
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "X",
+              "ParentName": "Propagate",
+              "DesiredValue": "0.0",
+              "Tolerance": 1
+            },
+            {
+              "Enable": true,
+              "Name": "Y",
+              "ParentName": "Propagate",
+              "DesiredValue": "-200000.0",
+              "Tolerance": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Entities": [
+    {
+      "Name": "GEO1",
+      "Position": {
+        "$type": "TwoBody",
+        "CentralBody": "Earth",
+        "GravitationalParameter": 3.986004415E14,
+        "OrbitEpoch": "2022-06-20T04:00:00.000Z",
+        "CoordSystem": "Inertial",
+        "CoordType": "Classical",
+        "OrbitalElements": [ 42166000, 0, 5.0, 0, 0, 0 ]
+      }
+    }
+  ]
+}

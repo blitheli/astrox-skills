@@ -1,0 +1,56 @@
+﻿{
+  "Text":  "地月转移轨道，测试远地点停止",
+  "Text1": "使用角度作为终止条件时，一定要设置Dimension为Angle",
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": -4348500.0,
+          "Y": -4721810.0,
+          "Z": -1835920.0,
+          "Vx": 6000.0,
+          "Vy": -7400.0,
+          "Vz": 4900.0
+        },
+        "Epoch": "2022-06-20T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "轨道递推段",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Scalar",
+          "Name": "TrueAnomaly",
+          "Active": true,
+          "UserComment": "Stop on a specified true anomaly from of the central body orbit",
+          "Description": "Stop on a specified true anomaly from of the central body orbit",
+          "Trip": 180,
+          "Tolerance": 1e-6,
+          "UserCalcObject": {
+            "$type": "ModifiedKeplerianElement",
+            "CentralBodyName": "Earth",
+            "ComponentName": "TrueAnomaly",
+            "CoordSystemName": "Earth Inertial",
+            "Dimension": "Angle",
+            "Mu": 3.986004415E14
+          }
+
+        }
+      ]
+    }
+  ]
+}

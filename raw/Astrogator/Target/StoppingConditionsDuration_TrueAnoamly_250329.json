@@ -1,0 +1,103 @@
+﻿{
+  "Text1": "测试-Target-微分修正：初始段-轨道递推段(积分时长，二体轨道积分器)",
+  "Text2": "自变量:StoppingConditions.Duration，约束: Epoch",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Inner_Target_List",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "Initial_State",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Cartesian",
+              "X": 8000000.0,
+              "Y": 0.0,
+              "Z": 0.0,
+              "Vx": 1500.0,
+              "Vy": 7500.0,
+              "Vz": 0.0
+            },
+            "Epoch": "2000-01-01T11:58:55.816Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          },
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "RadiusOfApoapsis",
+              "CentralBodyName": "Earth",
+              "ComponentName": "RadiusOfApoapsis",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Propagate",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Description": "积分固定的时长",
+              "Trip": 5000.0
+            }
+          ],
+          "Results": [
+            {
+              "$type": "Epoch",
+              "Name": "Epoch"
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "TrueAnomaly",
+              "Dimension": "Angle",
+              "ComponentName": "TrueAnomaly",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        }      
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: Duration_TrueAnomaly",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "StopConditions.Duration",
+              "InitialValue": "5000.0",
+              "MaxStep": 2000.0,
+              "Perturbation": 0.1,
+              "ParentName": "Propagate"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "TrueAnomaly",
+              "ParentName": "Propagate",
+              "DesiredValue": "300.0",
+              "Tolerance": 0.000001
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

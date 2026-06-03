@@ -1,0 +1,85 @@
+﻿{
+  "Description": "脉冲机动，推力方向为：NorthEastDown。GTO变轨至GEO，第1次变轨，考虑质量更新",
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 6500,
+        "Element": {
+          "$type": "Keplerian",
+          "GravitationalParameter": 3.986004415E14,
+          "SemiMajorAxis": 24478654.9,
+          "Eccentricity": 0.731262139,
+          "Inclination": 20.0,
+          "RAAN": 277.6,
+          "ArgOfPeriapsis": 179.6002,
+          "TrueAnomaly": 13.5587298
+        },
+        "Epoch": "2029-03-01T08:30:00.000Z",
+        "FuelMass": 6000,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate",
+      "PropagatorName": "Earth_Hpop_default_v10",
+      "StopConditions": [
+        {
+          "$type": "Epoch",
+          "Name": "Epoch",
+          "Active": true,
+          "Trip": "2029-03-02T00:14:10.500Z"
+        }
+      ]
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "DV1",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "ThrustAxesName": "NorthEastDown",
+        "CoordType": "Spherical",
+        "Azimuth": 105.4,
+        "Elevation": 0.0,
+        "Magnitude": 492.3
+      },
+      "PropulsionMethodValue": "490x4",
+      "UpdateMass": true
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate2",
+      "PropagatorName": "Earth_Hpop_default_v10",
+      "StopConditions": [
+        {
+          "$type": "Epoch",
+          "Name": "Epoch",
+          "Active": true,
+          "Trip": "2029-03-03T00:36:40.500Z"
+        }
+      ]
+    }
+  ],
+
+  "EngineModels": [
+    {
+      "$type": "EngineConstant",
+      "Name": "490x4",
+      "Description": "常值推力、比冲 发动机",
+      "UserComment": "常值推力、比冲 发动机",
+      "Thrust": 1960,
+      "Isp": 315,
+      "g": 9.80665,
+      "ReadOnly": true
+    }
+  ]
+
+}

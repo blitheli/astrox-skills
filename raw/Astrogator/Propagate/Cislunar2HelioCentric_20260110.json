@@ -1,0 +1,62 @@
+﻿{
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 8248691.548001449,
+          "Y": -8171573.9944618875,
+          "Z": -1505233.408960216,
+          "Vx": 4056.8221567706023,
+          "Vy": 5038.530626118252,
+          "Vz": -5121.631736745521
+        },
+        "Epoch": "2028-02-16T21:22:01.605Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "递推10天",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 864000
+        }
+      ]
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "Heliocentric",
+      "Name": "递推至深空机动",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "MaxPropagationTime": 86400000,
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "UserComment": "积分固定的时长",
+          "Trip": 14688000,
+          "Tolerance": 1e-8
+        }
+      ]
+    }
+  ]
+}

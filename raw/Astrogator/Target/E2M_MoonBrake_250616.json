@@ -1,0 +1,834 @@
+﻿{
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Action": "RunNominalSequence",
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-Delta赤经赤纬",
+          "Active": false,
+          "UserComment": "微分修正器",
+          "Description": "微分修正器",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Name": "InitialState.Spherical.Decl",
+              "ParentName": "初始段",
+              "InitialValue": "-15.962503524725385",
+              "Correction": 0,
+              "MaxStep": 30,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Angle",
+              "Enable": true
+            },
+            {
+              "Name": "InitialState.Spherical.Right_Asc",
+              "ParentName": "初始段",
+              "InitialValue": "227.35699012366285",
+              "Correction": 0,
+              "MaxStep": 30,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Angle",
+              "Enable": true
+            },
+            {
+              "Name": "InitialState.Spherical.VMag",
+              "ParentName": "初始段",
+              "InitialValue": "10838.591500284552",
+              "Correction": 0,
+              "MaxStep": 100,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Rate",
+              "Enable": false
+            }
+          ],
+          "Results": [
+            {
+              "Name": "BDotR",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Distance"
+            },
+            {
+              "Name": "BDotT",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Distance"
+            },
+            {
+              "Name": "历元",
+              "ParentName": "近月点",
+              "DesiredValue": "2020-01-01T00:00:00Z",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "DateFormat"
+            },
+            {
+              "Name": "赤纬差值",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "赤经差值",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "轨道倾角",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "高度",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Distance"
+            }
+          ]
+        },
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-BPlane",
+          "Active": false,
+          "UserComment": "微分修正器",
+          "Description": "微分修正器",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Name": "InitialState.Spherical.Decl",
+              "ParentName": "初始段",
+              "InitialValue": "-15.98632710023844",
+              "Correction": 0.02383959318574681,
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Angle",
+              "Enable": true
+            },
+            {
+              "Name": "InitialState.Spherical.Right_Asc",
+              "ParentName": "初始段",
+              "InitialValue": "227.35558926275775",
+              "Correction": 0.0013759627534897605,
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Angle",
+              "Enable": true
+            },
+            {
+              "Name": "InitialState.Spherical.VMag",
+              "ParentName": "初始段",
+              "InitialValue": "10838.587548472655",
+              "Correction": 0.003959528596537756,
+              "MaxStep": 10,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Rate",
+              "Enable": true
+            }
+          ],
+          "Results": [
+            {
+              "Name": "BDotR",
+              "ParentName": "近月点",
+              "DesiredValue": "5500000",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "Distance"
+            },
+            {
+              "Name": "BDotT",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "Distance"
+            },
+            {
+              "Name": "历元",
+              "ParentName": "近月点",
+              "DesiredValue": "2022-06-24T20:00:00Z",
+              "Tolerance": 1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "DateFormat"
+            },
+            {
+              "Name": "赤纬差值",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "赤经差值",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "轨道倾角",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "高度",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Distance"
+            }
+          ]
+        },
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-倾角高度",
+          "Active": true,
+          "UserComment": "微分修正器",
+          "Description": "微分修正器",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Name": "InitialState.Spherical.Decl",
+              "ParentName": "初始段",
+              "InitialValue": "-15.986327101048163",
+              "Correction": 0,
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Angle",
+              "Enable": true
+            },
+            {
+              "Name": "InitialState.Spherical.Right_Asc",
+              "ParentName": "初始段",
+              "InitialValue": "227.35558926420293",
+              "Correction": 0,
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Angle",
+              "Enable": true
+            },
+            {
+              "Name": "InitialState.Spherical.VMag",
+              "ParentName": "初始段",
+              "InitialValue": "10838.58754847245",
+              "Correction": 0,
+              "MaxStep": 10,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Rate",
+              "Enable": true
+            }
+          ],
+          "Results": [
+            {
+              "Name": "BDotR",
+              "ParentName": "近月点",
+              "DesiredValue": "5500000",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Distance"
+            },
+            {
+              "Name": "BDotT",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 100,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Distance"
+            },
+            {
+              "Name": "历元",
+              "ParentName": "近月点",
+              "DesiredValue": "2022-06-24T20:00:00Z",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "DateFormat"
+            },
+            {
+              "Name": "赤纬差值",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "赤经差值",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": false,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "轨道倾角",
+              "ParentName": "近月点",
+              "DesiredValue": "90",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "Angle"
+            },
+            {
+              "Name": "高度",
+              "ParentName": "近月点",
+              "DesiredValue": "100000",
+              "Tolerance": 200,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true,
+              "Dimension": "Distance"
+            }
+          ]
+        }
+      ],
+      "Name": "地月转移",
+      "Description": "运行目标配置文件的序列",
+      "UserComment": "运行目标配置文件的序列",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "InitialState": {
+            "CoordSystemName": "Earth Inertial",
+            "Epoch": "2022-06-20T04:00:00Z",
+            "DryMass": 500,
+            "Cd": 2.2,
+            "DragArea": 20,
+            "Cr": 1,
+            "SRPArea": 20,
+            "FuelMass": 500,
+            "Element": {
+              "$type": "Spherical",
+              "RightAscension": 227.35558926420296,
+              "Declination": -15.986327101048163,
+              "RadiusMagnitude": 6678137,
+              "VelocityAzimuth": 61.5,
+              "VelocityMagnitude": 10838.587548472453,
+              "HorizFPA": 0
+            }
+          },
+          "Name": "初始段",
+          "Description": "初始化状态数据",
+          "UserComment": "初始化状态数据"
+        },
+        {
+          "$type": "Propagate",
+          "PropagatorName": "CisLunar",
+          "Name": "递推32万km",
+          "Description": "轨道递推直到满足停止条件",
+          "UserComment": "轨道递推直到满足停止条件",
+          "MaxPropagationTime": 8640000,
+          "StopConditions": [
+            {
+              "$type": "Scalar",
+              "Name": "地心距离",
+              "Active": true,
+              "UserComment": "在距起点指定的距离处停止",
+              "Description": "在距起点指定的距离处停止",
+              "Trip": 320000000,
+              "Tolerance": 0.001,
+              "UserCalcObject": {
+                "$type": "PointElement",
+                "Name": "Magnitude",
+                "UserComment": "点的大小",
+                "Description": "点的大小",
+                "ComponentName": "Magnitude",
+                "Dimension": "Distance",
+                "CoordSystemName": "Earth Inertial",
+                "Mu": 398600441500000
+              },
+              "ReadOnly": true,
+              "Sequence": "STOP",
+              "RepeatCount": 1,
+              "Criterion": "AnyThreshold"
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "PropagatorName": "CisLunar",
+          "Name": "近月点",
+          "Description": "轨道递推直到满足停止条件",
+          "UserComment": "轨道递推直到满足停止条件",
+          "MaxPropagationTime": 8640000,
+          "ReadOnly": true,
+          "Results": [
+            {
+              "$type": "Cartographic",
+              "Name": "高度",
+              "UserComment": "大地坐标的高度",
+              "Description": "大地坐标的高度",
+              "ReadOnly": true,
+              "CN": "高度",
+              "Dimension": "Distance",
+              "ComponentName": "Height",
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "DeltaSpherical",
+              "Name": "赤经差值",
+              "UserComment": "本卫星和中心天体之间相对于父中心天体的赤经差值",
+              "Description": "本卫星和中心天体之间相对于父中心天体的赤经差值",
+              "ReadOnly": true,
+              "CN": "赤经差值",
+              "Dimension": "Angle",
+              "ComponentName": "Delta_Right_Asc",
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4,
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "DeltaSpherical",
+              "Name": "赤纬差值",
+              "UserComment": "本卫星与中心体之间相对于父中心天体的赤纬差值",
+              "Description": "本卫星与中心体之间相对于父中心天体的赤纬差值",
+              "ReadOnly": true,
+              "CN": "赤纬差值",
+              "Dimension": "Angle",
+              "ComponentName": "Delta_Declination",
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4,
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "Epoch",
+              "Name": "历元",
+              "UserComment": "历元的时间",
+              "Description": "历元的时间",
+              "ReadOnly": true,
+              "CN": "历元",
+              "Dimension": "DateFormat",
+              "ComponentName": "Epoch"
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "轨道倾角",
+              "UserComment": "轨道倾角",
+              "Description": "轨道倾角",
+              "ReadOnly": true,
+              "CN": "轨道倾角",
+              "Dimension": "Angle",
+              "ComponentName": "Inclination",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "BPlane",
+              "Name": "BDotR",
+              "UserComment": "B平面矢量在R方向上的分量",
+              "Description": "B平面矢量在R方向上的分量",
+              "ReadOnly": true,
+              "CN": "BDotR",
+              "Dimension": "Distance",
+              "ComponentName": "BDotR",
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "BPlane",
+              "Name": "BDotT",
+              "UserComment": "B平面矢量在T方向上的分量",
+              "Description": "B平面矢量在T方向上的分量",
+              "ReadOnly": true,
+              "CN": "BDotT",
+              "Dimension": "Distance",
+              "ComponentName": "BDotT",
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4
+            }
+          ],
+          "StopConditions": [
+            {
+              "$type": "Periapsis",
+              "Name": "近月点",
+              "Active": true,
+              "UserComment": "在近地点处停止",
+              "Description": "在近地点处停止",
+              "Tolerance": 0.000001,
+              "CentralBodyName": "Moon",
+              "ReadOnly": true,
+              "Sequence": "STOP",
+              "RepeatCount": 1,
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "Scalar",
+              "Name": "高度",
+              "Active": true,
+              "UserComment": "停在离中心天体指定的高度上",
+              "Description": "停在离中心天体指定的高度上",
+              "Trip": 0,
+              "Tolerance": 0.001,
+              "UserCalcObject": {
+                "$type": "Cartographic",
+                "Name": "高度",
+                "UserComment": "大地坐标的高度",
+                "Description": "大地坐标的高度",
+                "ComponentName": "Height",
+                "Dimension": "Distance",
+                "CentralBodyName": "Moon",
+                "Mu": 4902800305555.4
+              },
+              "ReadOnly": true,
+              "Sequence": "STOP",
+              "RepeatCount": 1,
+              "Criterion": "AnyThreshold"
+            },
+            {
+              "$type": "Duration",
+              "Name": "持续时间",
+              "Active": true,
+              "Description": "积分固定的时长",
+              "UserComment": "积分固定的时长",
+              "Trip": 345600,
+              "Tolerance": 0.0864,
+              "ReadOnly": true,
+              "Sequence": "STOP",
+              "RepeatCount": 1,
+              "Criterion": "AnyThreshold"
+            }
+          ]
+        }
+      ],
+      "ReadOnly": true
+    },
+    {
+      "$type": "TargetSequence",
+      "Action": "RunActiveOperators",
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "微分修正器",
+          "Active": true,
+          "UserComment": "微分修正器",
+          "Description": "微分修正器",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "ParentName": "DV1",
+              "InitialValue": "-826.0659925270021",
+              "Correction": 0,
+              "MaxStep": 100,
+              "Perturbation": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Tolerance": 0.0001,
+              "Dimension": "Rate",
+              "Enable": true
+            }
+          ],
+          "Results": [
+            {
+              "Name": "偏心率",
+              "ParentName": "DV1",
+              "DesiredValue": "0",
+              "Tolerance": 0.1,
+              "ScalingMethod": "NoScaling",
+              "ScalingValue": 1,
+              "Weight": 1,
+              "Enable": true
+            }
+          ]
+        }
+      ],
+      "Name": "近月制动",
+      "Description": "运行目标配置文件的序列",
+      "UserComment": "运行目标配置文件的序列",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "PropagatorName": "Moon_Hpop_default_v10",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Moon)",
+            "CoordType": "Cartesian",
+            "X": -826.0659925270021,
+            "Y": 0,
+            "Z": 0
+          },
+          "PropulsionMethod": "EngineModel",
+          "PropulsionMethodValue": "Constant_Thrust_Isp",
+          "UpdateMass": false,
+          "Name": "DV1",
+          "Description": "以冲动燃烧或有限燃烧控制卫星",
+          "UserComment": "以冲动燃烧或有限燃烧控制卫星",
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "偏心率",
+              "UserComment": "轨道偏心率",
+              "Description": "轨道偏心率",
+              "ReadOnly": true,
+              "CN": "偏心率",
+              "ComponentName": "Eccentricity",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            }
+          ]
+        }
+      ],
+      "ReadOnly": true
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "Moon_Hpop_default_v10",
+      "Name": "环月段",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "MaxPropagationTime": 8640000,
+      "ReadOnly": true,
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "UserComment": "积分固定的时长",
+          "Trip": 86400,
+          "Tolerance": 1e-8,
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Criterion": "AnyThreshold"
+        }
+      ]
+    }
+  ],
+  "Propagators": [
+    {
+      "Name": "Earth_Point_Mass",
+      "UserComment": "简单二体引力",
+      "Description": "使用 HPOP的数值积分器",
+      "CentralBodyName": "Earth",
+      "GravityModel": {
+        "$type": "TwoBody",
+        "Name": "二体引力",
+        "Description": "中心天体质点引力",
+        "UserComment": "中心天体质点引力",
+        "Mu": 398600441500000
+      },
+      "ReadOnly": true,
+      "Clonable": false
+    },
+    {
+      "Name": "CisLunar",
+      "Description": "使用 HPOP的数值递推器",
+      "UserComment": "地月转移积分器",
+      "CentralBodyName": "Earth",
+      "GravityModel": {
+        "$type": "GravityField",
+        "Name": "WGS84",
+        "Description": "中心天体引力场引力",
+        "UserComment": "中心天体引力场引力",
+        "GravityFileName": "WGS84.grv",
+        "CentralBody": "Earth",
+        "Degree": 8,
+        "Order": 8,
+        "EOPfilePath": "EOP-v1.1.txt",
+        "SolidTideType": "None"
+      },
+      "ThirdBodyForce": [
+        {
+          "Name": "月球",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ModeType": "PointMass",
+          "ThirdBodyName": "Moon",
+          "EphemSource": "DeFile",
+          "GravSource": "CbFile",
+          "Mu": 4902800305555.4
+        },
+        {
+          "Name": "太阳",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ModeType": "PointMass",
+          "ThirdBodyName": "Sun",
+          "EphemSource": "DeFile",
+          "GravSource": "CbFile",
+          "Mu": 132712440041939390000
+        }
+      ],
+      "ReadOnly": true,
+      "Clonable": false
+    },
+    {
+      "Name": "Moon_Hpop_default_v10",
+      "Description": "月球高精度轨道积分器(未测试)",
+      "UserComment": "STK的缺省积分器(光压中,太阳位置为True，STK中为Apparent)",
+      "CentralBodyName": "Moon",
+      "GravityModel": {
+        "$type": "GravityField",
+        "Name": "Gravitational Force",
+        "Description": "中心天体引力场引力",
+        "UserComment": "中心天体引力场引力",
+        "GravityFileName": "LP150Q.grv",
+        "Degree": 48,
+        "Order": 48,
+        "SolidTideType": "Permanent tide only"
+      },
+      "ThirdBodyForce": [
+        {
+          "Name": "地球",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ReadOnly": true,
+          "ModeType": "PointMass",
+          "EphemSource": "DeFile",
+          "ThirdBodyName": "Earth",
+          "GravSource": "CbFile",
+          "Mu": 3986004418000
+        },
+        {
+          "Name": "太阳",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ReadOnly": true,
+          "ModeType": "PointMass",
+          "ThirdBodyName": "Sun",
+          "EphemSource": "DeFile",
+          "GravSource": "CbFile",
+          "Mu": 132712200000000000000
+        }
+      ],
+      "SRPModel": {
+        "$type": "SRPSpherical",
+        "Name": "Spherical SRP",
+        "Description": "球形光压模型",
+        "UserComment": "球形光压模型",
+        "ShadowModel": "DualCone",
+        "SunPosition": "True",
+        "EclipsingList": [
+          "Earth"
+        ]
+      },
+      "ReadOnly": true,
+      "Clonable": false
+    }
+  ],
+  "EngineModels": [
+    {
+      "$type": "EngineConstant",
+      "Name": "Constant_Thrust_Isp",
+      "Description": "常值推力、比冲 发动机",
+      "UserComment": "常值推力、比冲 发动机",
+      "Thrust": 500,
+      "Isp": 300,
+      "g": 9.80665,
+      "ReadOnly": true
+    }
+  ]
+}

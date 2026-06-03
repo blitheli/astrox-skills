@@ -1,0 +1,90 @@
+﻿{
+  "Text1": "测试-目标VVLH相对位置-StoppingCondition: 2次Z平面穿越(二体轨道积分器)",
+  "Text2": "StoppingCondition: 1次和2次条件结果一样",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "InitialState": {
+        "CoordSystemName": "目标 VVLH",
+        "Epoch": "2025-07-24T00:00:00Z",
+        "DryMass": 500,
+        "Cd": 2.2,
+        "DragArea": 20,
+        "Cr": 1,
+        "SRPArea": 20,
+        "FuelMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": -1000,
+          "Y": 0,
+          "Z": 0,
+          "Vx": 0,
+          "Vy": 0,
+          "Vz": 2
+        }
+      },
+      "Name": "初始段",
+      "Description": "初始化状态数据",
+      "UserComment": "初始化状态数据"
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "Name": "轨道递推段",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "MaxPropagationTime": 8640000,
+      "StopConditions": [
+        {
+          "$type": "Scalar",
+          "Name": "自定义",
+          "Active": true,
+          "UserComment": "用户使用计算对象进行自定义停止条件",
+          "Description": "用户使用计算对象进行自定义停止条件",
+          "Trip": 0,
+          "Tolerance": 0.000001,
+          "UserCalcObject": {
+            "$type": "PointElement",
+            "Name": "Z",
+            "UserComment": "Z坐标",
+            "Description": "Z坐标",
+            "ComponentName": "Z",
+            "Dimension": "Distance",
+            "CoordSystemName": "目标 VVLH"
+          },         
+          "RepeatCount": 2,
+          "Criterion": "ThresholdDecreasing"
+        }
+      ]
+    }
+  ],
+  "Entities": [
+    {
+      "Name": "目标",
+      "Orientation": {
+        "$type": "VVLH"
+      },
+      "Position": {
+        "$type": "TwoBody",
+        "Start": "2025-07-24T00:00:00Z",
+        "Stop": "2025-07-25T00:00:00Z",
+        "CentralBody": "Earth",
+        "GravitationalParameter": 398600441500000,
+        "OrbitEpoch": "2025-07-24T00:00:00Z",
+        "CoordSystem": "Inertial",
+        "CoordType": "Classical",
+        "OrbitalElements": [
+          6678137,
+          0,
+          45,
+          0,
+          0,
+          0
+        ],
+        "Step": 60
+      }
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "Entities": [
+    {
+      "Name": "rocket",
+      "Position": {
+        "$type": "TwoBody",
+        "Start": "2018-12-01T00:00:00.000Z",
+        "Stop": "2018-12-02T00:00:00.000Z",
+        "OrbitEpoch": "2018-12-01T00:00:00.000Z",
+        "CoordSystem": "Inertial",
+        "CoordType": "Classical",
+        "OrbitalElements": [ 6678137, 0, 28.5, 0, 0, 0 ],
+        "Step": 60
+      }
+    }
+  ],
+  "MainSequence": [
+    {
+      "$type": "Follow",
+      "Name": "跟随段",
+      "Text": "初始质量等参数采用缺省值",
+      "LeaderName": "rocket"
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "ImpulsiveManeuver",
+      "AttitudeControl": {
+        "$type": "VelocityVector",
+        "DeltaVMagnitude": 500.0
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Apoapsis",
+          "Name": "Apoapsis",
+          "Active": true,
+          "Tolerance": 0.000001,
+          "CentralBodyName": "Earth",
+          "Mu": 3.986004415E14
+        }
+      ]
+    }
+  ]
+}

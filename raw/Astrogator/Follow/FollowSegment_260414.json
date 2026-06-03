@@ -1,0 +1,75 @@
+{
+  "Entities": [
+    {
+      "Name": "LeaderSate",
+      "Position": {
+        "$type": "AstrogatorMCS",
+        "MainSequence": [
+          {
+            "$type": "InitialState",
+            "Name": "初始段",
+            "InitialState": {
+              "CoordSystemName": "Earth Inertial",
+              "Element": {
+                "$type": "Keplerian",
+                "GravitationalParameter": 3.986004415E14,
+                "SemiMajorAxis": 6678137,
+                "Eccentricity": 0,
+                "Inclination": 28.5,
+                "RAAN": 0,
+                "ArgOfPeriapsis": 0,
+                "TrueAnomaly": 0
+              },
+              "Epoch": "2018-12-01T00:00:00.000Z"
+            }
+          },
+          {
+            "$type": "Propagate",
+            "Name": "轨道递推段",
+            "PropagatorName": "Earth_Point_Mass",
+            "StopConditions": [
+              {
+                "$type": "Duration",
+                "Name": "Duration",
+                "Active": true,
+                "Description": "积分固定的时长",
+                "Trip": 86400
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "MainSequence": [
+    {
+      "$type": "Follow",
+      "Name": "跟随段",
+      "Text": "初始质量等参数采用缺省值",
+      "LeaderName": "LeaderSate"
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "ImpulsiveManeuver",
+      "AttitudeControl": {
+        "$type": "VelocityVector",
+        "DeltaVMagnitude": 500.0
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Apoapsis",
+          "Name": "Apoapsis",
+          "Active": true,
+          "Tolerance": 0.000001,
+          "CentralBodyName": "Earth",
+          "Mu": 3.986004415E14
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+﻿{
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Keplerian",
+          "ElementType": "KozailzsakMean",
+          "GravitationalParameter": 3.986004415E14,
+          "SemiMajorAxis": 6990715.397,
+          "Eccentricity": 0.000427,
+          "Inclination": 97.78,
+          "RAAN": 174.404629,
+          "ArgOfPeriapsis": 222.868550,
+          "TrueAnomaly": 2.211408
+        },
+        "Epoch": "2025-06-18T23:02:23.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "轨道递推段",
+      "PropagatorName": "Earth_J2",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 2630
+        }
+      ]
+    }
+  ]
+
+}

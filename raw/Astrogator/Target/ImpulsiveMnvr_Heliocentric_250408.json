@@ -1,0 +1,211 @@
+﻿{
+  "Text1": "测试-Target-微分修正：深空脉冲机动-日心转移轨道(Heliocentric积分器)",
+  "Text2": "自变量:ImpulsiveMnvr.Cartesian.X(Y,Z),约束: X,Y,Z(XF261在日心惯性系下的位置,自己的Heliocentric积分器计算的)",
+  "Text3": "初始状态取自STK场景(Sun Inertial系下),撞击器的深空机动到XF261小行星(20290406T13:00撞击)",
+  "CentralBody": "Sun",
+  "GravitationalParameter": 1.3271244004193938E20,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "InitialState",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Sun Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 100,
+        "Element": {
+          "$type": "Cartesian",
+          "X": -1.3280962054172945e11,
+          "Y": 6.1970155164200217e10,
+          "Z": 2.6625044122923363e10,
+          "Vx": -14454.4938251046986,
+          "Vy": -23842.4889843919487,
+          "Vz": -10442.9685560901682
+        },
+        "Epoch": "2028-02-22T18:19:04.969Z",
+        "FuelMass": 900,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "PropDays",
+      "PropagatorName": "Heliocentric",
+      "MaxPropagationTime": 86400000,
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "140 day",
+          "Trip": 12096000.0
+        }
+      ],
+      "Results": [
+        {
+          "$type": "PointElement",
+          "Name": "X",
+          "CoordSystemName": "Sun Inertial",
+          "ComponentName": "X"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Y",
+          "CoordSystemName": "Sun Inertial",
+          "ComponentName": "Y"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Z",
+          "CoordSystemName": "Sun Inertial",
+          "ComponentName": "Z"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Vx",
+          "CoordSystemName": "Sun Inertial",
+          "ComponentName": "Vx"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Vy",
+          "CoordSystemName": "Sun Inertial",
+          "ComponentName": "Vy"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Vz",
+          "CoordSystemName": "Sun Inertial",
+          "ComponentName": "Vz"
+        }
+      ]
+    },
+    {
+      "$type": "TargetSequence",
+      "Name": "Target2XF261",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "ImpulsiveManeuver",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Sun)",
+            "CoordType": "Cartesian",
+            "X": 0.0,
+            "Y": 0.0,
+            "Z": 0.0
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Prop2Asteroid",
+          "PropagatorName": "Heliocentric",
+          "MaxPropagationTime": 86400000,
+          "StopConditions": [
+            {
+              "$type": "Epoch",
+              "Name": "Epoch",
+              "Active": true,
+              "Description": "小行星261 撞击(4月6日)",
+              "Trip": "2029-04-06T13:00:00.000Z"
+            }
+          ],
+          "Results": [
+            {
+              "$type": "PointElement",
+              "Name": "X",
+              "CoordSystemName": "Sun Inertial",
+              "ComponentName": "X"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Y",
+              "CoordSystemName": "Sun Inertial",
+              "ComponentName": "Y"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Z",
+              "CoordSystemName": "Sun Inertial",
+              "ComponentName": "Z"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Vx",
+              "CoordSystemName": "Sun Inertial",
+              "ComponentName": "Vx"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Vy",
+              "CoordSystemName": "Sun Inertial",
+              "ComponentName": "Vy"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "Vz",
+              "CoordSystemName": "Sun Inertial",
+              "ComponentName": "Vz"
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "深空机动-XF261撞击",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "MaxStep": 50.0,
+              "Perturbation": 0.1,
+              "ParentName": "ImpulsiveManeuver"
+            },
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Cartesian.Y",
+              "MaxStep": 50.0,
+              "Perturbation": 0.1,
+              "ParentName": "ImpulsiveManeuver"
+            },
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Cartesian.Z",
+              "MaxStep": 50.0,
+              "Perturbation": 0.1,
+              "ParentName": "ImpulsiveManeuver"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "X",
+              "ParentName": "Prop2Asteroid",
+              "DesiredValue": "-149753317909.90842",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Y",
+              "ParentName": "Prop2Asteroid",
+              "DesiredValue": "-35387469439.04535",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Z",
+              "ParentName": "Prop2Asteroid",
+              "DesiredValue": "-15950657491.357347",
+              "Tolerance": 0.1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

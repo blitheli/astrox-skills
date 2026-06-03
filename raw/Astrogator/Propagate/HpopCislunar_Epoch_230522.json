@@ -1,0 +1,50 @@
+﻿{
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": -4348504.5285496607903,
+          "Y": -4721813.3054333820837,
+          "Z": -1835916.3669064525948,
+          "Vx": 6043.9238667905633,
+          "Vy": -7499.6612192427978,
+          "Vz": 4972.9769780850104
+        },
+        "Epoch": "2022-06-20T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "轨道递推段",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": false,
+          "Description": "积分固定的时长",
+          "Trip": 200
+        },
+        {
+          "$type": "Epoch",
+          "Name": "Epoch",
+          "Active": true,
+          "Description": "Stop on a specified date & time",
+          "Trip": "2022-06-24T20:00:00.000Z"
+        }
+      ]
+    }
+  ]
+}

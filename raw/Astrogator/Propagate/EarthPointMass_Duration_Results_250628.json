@@ -1,0 +1,548 @@
+﻿{
+  "Text1": "测试-段结果：初始段-轨道递推段(时间停止，二体轨道积分器)",
+  "Text2": "轨道递推段Results包含了目前所有的Scalar变量，用于测试！",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415e14,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "InitialState",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 100,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 8000000.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "Vx": 1500.0,
+          "Vy": 7500.0,
+          "Vz": 2000.0
+        },
+        "Epoch": "2022-06-20T04:00:00.000Z",
+        "FuelMass": 900,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时刻",
+          "Trip": 3600.0
+        }
+      ],
+      "Results": [
+        {
+          "$type": "PointElement",
+          "Name": "X",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "X"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Y",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "Y"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Z",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "Z"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Vx",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "Vx"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Vy",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "Vy"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "Vz",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "Vz"
+        },
+        {
+          "$type": "Duration",
+          "Name": "Duration"
+        },
+        {
+          "$type": "Epoch",
+          "Name": "Epoch"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "Right_Asc",
+          "ComponentName": "RightAscension",
+          "CoordSystemName": "Earth Inertial"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "Decl",
+          "ComponentName": "Declination",
+          "CoordSystemName": "Earth Inertial"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "RMag",
+          "ComponentName": "RadiusMagnitude",
+          "CoordSystemName": "Earth Inertial"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "Vert_FPA",
+          "ComponentName": "VerticalFPA",
+          "CoordSystemName": "Earth Inertial"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "Horiz_FPA",
+          "ComponentName": "HorizFPA",
+          "CoordSystemName": "Earth Inertial"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "VelAzimuth",
+          "ComponentName": "VelocityAzimuth",
+          "CoordSystemName": "Earth Inertial"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "VelMag",
+          "ComponentName": "VelocityMagnitude",
+          "CoordSystemName": "Earth Inertial"
+        },
+        {
+          "$type": "Cartographic",
+          "Name": "Latitude",
+          "ComponentName": "Latitude",
+          "CentralBodyName": "Earth"
+        },
+        {
+          "$type": "Cartographic",
+          "Name": "Longitude",
+          "ComponentName": "Longitude",
+          "CentralBodyName": "Earth"
+        },
+        {
+          "$type": "Cartographic",
+          "Name": "Height",
+          "ComponentName": "Height",
+          "CentralBodyName": "Earth"
+        },
+        {
+          "$type": "DeltaSpherical",
+          "Name": "Delta_Decl",
+          "ComponentName": "Delta_Declination",
+          "CentralBodyName": "Moon",
+          "ParentCbName": "Earth"
+        },
+        {
+          "$type": "DeltaSpherical",
+          "Name": "Delta_RA",
+          "ComponentName": "Delta_Right_Asc",
+          "CentralBodyName": "Moon",
+          "ParentCbName": "Earth"
+        },
+        {
+          "$type": "DeltaSpherical",
+          "Name": "Delta_RMag",
+          "ComponentName": "Delta_RMag",
+          "CentralBodyName": "Moon",
+          "ParentCbName": "Earth"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "RadiusOfPeriapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "RadiusOfPeriapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "RadiusOfApoapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "RadiusOfApoapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "SemimajorAxis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "SemimajorAxis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Period",
+          "CentralBodyName": "Earth",
+          "ComponentName": "Period",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Eccentricity",
+          "CentralBodyName": "Earth",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Inclination",
+          "CentralBodyName": "Earth",
+          "ComponentName": "Inclination",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "ArgumentOfPeriapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "ArgumentOfPeriapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "ArgumentOfLatitude",
+          "CentralBodyName": "Earth",
+          "ComponentName": "ArgumentOfLatitude",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "RAAN",
+          "CentralBodyName": "Earth",
+          "ComponentName": "RAAN",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "TrueAnomaly",
+          "CentralBodyName": "Earth",
+          "ComponentName": "TrueAnomaly",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "MeanAnomaly",
+          "CentralBodyName": "Earth",
+          "ComponentName": "MeanAnomaly",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "AltitudeOfPeriapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "AltitudeOfPeriapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "AltitudeOfApoapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "AltitudeOfApoapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "Osculating",
+          "Mu": 3.986004415e14
+        },
+
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean RadiusOfPeriapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "RadiusOfPeriapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean RadiusOfApoapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "RadiusOfApoapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean SemimajorAxis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "SemimajorAxis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean Period",
+          "CentralBodyName": "Earth",
+          "ComponentName": "Period",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean Eccentricity",
+          "CentralBodyName": "Earth",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean Inclination",
+          "CentralBodyName": "Earth",
+          "ComponentName": "Inclination",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean ArgumentOfPeriapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "ArgumentOfPeriapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean ArgumentOfLatitude",
+          "CentralBodyName": "Earth",
+          "ComponentName": "ArgumentOfLatitude",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean RAAN",
+          "CentralBodyName": "Earth",
+          "ComponentName": "RAAN",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean TrueAnomaly",
+          "CentralBodyName": "Earth",
+          "ComponentName": "TrueAnomaly",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean MeanAnomaly",
+          "CentralBodyName": "Earth",
+          "ComponentName": "MeanAnomaly",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean AltitudeOfPeriapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "AltitudeOfPeriapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "Mean AltitudeOfApoapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "AltitudeOfApoapsis",
+          "CoordSystemName": "Earth Inertial",
+          "ElementType": "KozaiIzsakMean",
+          "Mu": 3.986004415e14
+        },
+
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean SemimajorAxis",
+          "Description": "相对目标的平均半长轴差值",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean SemimajorAxis",
+            "ComponentName": "SemimajorAxis",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean Period",
+          "Description": "相对目标的平均轨道周期",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean Period",
+            "ComponentName": "Period",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean Eccentricity",
+          "Description": "相对目标的平均偏心率",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean Eccentricity",
+            "ComponentName": "Eccentricity",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean Inclination",
+          "Description": "相对目标的平均倾角",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean Inclination",
+            "ComponentName": "Inclination",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean ArgumentOfPeriapsis",
+          "Description": "相对目标的平均近地点角距",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean ArgumentOfPeriapsis",
+            "ComponentName": "ArgumentOfPeriapsis",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean ArgumentOfLatitude",
+          "Description": "相对目标的平均升交点角距",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean ArgumentOfLatitude",
+            "ComponentName": "ArgumentOfLatitude",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean RAAN",
+          "Description": "相对目标的平均升交点角距",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean RAAN",
+            "ComponentName": "RAAN",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean TrueAnomaly",
+          "Description": "相对目标的平均真近点角",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean TrueAnomaly",
+            "ComponentName": "TrueAnomaly",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        },
+        {
+          "$type": "Relative",
+          "Name": "Rel Mean MeanAnomaly",
+          "Description": "相对目标的平均平近点角",
+          "CalcObject": {
+            "$type": "KeplerianElement",
+            "Name": "Mean MeanAnomaly",
+            "ComponentName": "MeanAnomaly",
+            "CoordSystemName": "Earth Inertial",
+            "ElementType": "KozaiIzsakMean",
+            "Mu": 3.986004415e14
+          },
+          "ReferenceName": "卫星1"
+        }
+      ]
+    }
+  ],
+  "Entities": [
+    {
+      "Name": "卫星1",
+      "Position": {
+        "$type": "TwoBody",
+        "CentralBody": "Earth",
+        "GravitationalParameter": 3.986004415e14,
+        "OrbitEpoch": "2022-06-20T04:00:00.000Z",
+        "CoordSystem": "Inertial",
+        "CoordType": "Cartesian",
+        "OrbitalElements": [8000000, 100000, 0, 1600, 7600, 2000]
+      }
+    }
+  ]
+}

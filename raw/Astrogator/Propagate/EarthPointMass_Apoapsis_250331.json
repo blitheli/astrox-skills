@@ -1,0 +1,75 @@
+﻿{
+  "Text1": "测试-Propagate：初始段-轨道递推段(Apoapsis停止，二体轨道积分器)",
+  "Text2": "StoppingConditions，Apoapsis",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 2.0,
+        "DragArea": 20,
+        "DryMass": 100,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 8000000.0,
+          "Y": 0.0,
+          "Z": 0.0,
+          "Vx": 1500.0,
+          "Vy": 7500.0,
+          "Vz": 0.0
+        },
+        "Epoch": "2000-01-01T11:58:55.816Z",
+        "FuelMass": 900,
+        "SRPArea": 20
+      },
+      "Results": [
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "RadiusOfApoapsis",
+          "CentralBodyName": "Earth",
+          "ComponentName": "RadiusOfApoapsis",
+          "CoordSystemName": "Earth Inertial",
+          "Mu": 3.986004415E14
+        }
+      ]
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Apoapsis",
+          "Name": "Apoapsis",
+          "Active": true,
+          "Tolerance": 0.000001,
+          "CentralBodyName" : "Earth",
+          "Mu": 3.986004415E14
+        }
+      ],
+      "Results": [
+        {
+          "$type": "SphericalElement",
+          "Name": "Vel",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "VelocityMagnitude"
+        },
+        {
+          "$type": "Duration",
+          "Name": "Duration1"
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "TrueAnomaly",
+          "ComponentName": "TrueAnomaly",
+          "CoordSystemName": "Earth Inertial",
+          "Mu": 3.986004415E14
+        }
+      ]
+    }   
+  ]
+}
