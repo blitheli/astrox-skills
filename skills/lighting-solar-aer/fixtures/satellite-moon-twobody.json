@@ -1,0 +1,15 @@
+{
+  "Description": "月球卫星的SolarAER计算",
+  "Start": "2023-02-01T00:00:00Z",
+  "Stop": "2023-02-01T01:00:00Z",
+  "Position": {
+    "$type": "TwoBody",
+    "CentralBody": "Moon",
+    "GravitationalParameter": 4.90280030555540e+012,
+    "OrbitEpoch": "2023-02-01T00:00:00Z",
+    "CoordSystem": "Inertial",
+    "CoordType": "Classical",
+    "OrbitalElements": [1937400, 0, 45, 0, 0, 0]
+  },
+  "TimeStepSec": 60
+}

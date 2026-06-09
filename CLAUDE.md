@@ -55,7 +55,7 @@ skills/
 
 - `propagator-sgp4`、`propagator-twobody`、`propagator-simple-ascent`、`propagator-ballistic`、`propagator-j2`、`propagator-hpop`
 - `orbitwizard-sso`、`orbitwizard-geo`、`orbitwizard-molniya`、`orbitwizard-walker`
-- `lighting-times`
+- `lighting-times`、`lighting-solar-aer`
 - `query-city`、`query-facility`、`query-tle`
 - `access`(目录 `skills/access/`)
 - `celestial-ephemeris`(目录 `skills/celestial-ephemeris/`)

@@ -60,6 +60,11 @@
       "fixturesDir": "skills/lighting-times/fixtures"
     },
     {
+      "name": "lighting-solar-aer",
+      "skillFile": "skills/lighting-solar-aer/SKILL.md",
+      "fixturesDir": "skills/lighting-solar-aer/fixtures"
+    },
+    {
       "name": "query-city",
       "skillFile": "skills/query-city/SKILL.md",
       "fixturesDir": "skills/query-city/fixtures"

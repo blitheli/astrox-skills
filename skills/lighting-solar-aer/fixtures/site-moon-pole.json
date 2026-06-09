@@ -1,0 +1,13 @@
+{
+  "Description": "南极坑顶部一点的太阳AER计算",
+  "Start": "2024-01-01T00:00:00Z",
+  "Stop": "2025-01-01T00:00:00Z",
+  "Position": {
+    "$type": "SitePosition",
+    "CentralBody": "Moon",
+    "cartographicDegrees": [83.492794, -89.484167, 713],
+    "clampToGround": true,
+    "HeightAboveGround": 0
+  },
+  "TimeStepSec": 3600
+}
