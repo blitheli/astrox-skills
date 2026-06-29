@@ -105,6 +105,11 @@
       "fixturesDir": "skills/celestial-transfer/fixtures"
     },
     {
+      "name": "celestial-cbaxes-rotation",
+      "skillFile": "skills/celestial-cbaxes-rotation/SKILL.md",
+      "fixturesDir": "skills/celestial-cbaxes-rotation/fixtures"
+    },
+    {
       "name": "rocket-trajectory-optim",
       "skillFile": "skills/rocket-trajectory-optim/SKILL.md",
       "fixturesDir": "skills/rocket-trajectory-optim/fixtures"
