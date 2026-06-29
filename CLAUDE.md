@@ -61,4 +61,5 @@ skills/
 - `celestial-ephemeris`(目录 `skills/celestial-ephemeris/`)
 - `celestial-mpc`(目录 `skills/celestial-mpc/`)
 - `celestial-transfer`(目录 `skills/celestial-transfer/`)
+- `celestial-cbaxes-rotation`(目录 `skills/celestial-cbaxes-rotation/`)
 
