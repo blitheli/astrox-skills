@@ -123,6 +123,16 @@
       "name": "convert-czmlPosition",
       "skillFile": "skills/convert-czml-position/SKILL.md",
       "fixturesDir": "skills/convert-czml-position/fixtures"
+    },
+    {
+      "name": "kepler2rv",
+      "skillFile": "skills/kepler2rv/SKILL.md",
+      "fixturesDir": "skills/kepler2rv/fixtures"
+    },
+    {
+      "name": "rv2kepler",
+      "skillFile": "skills/rv2kepler/SKILL.md",
+      "fixturesDir": "skills/rv2kepler/fixtures"
     }
   ]
 }
