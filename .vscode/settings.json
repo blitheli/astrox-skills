@@ -8,5 +8,10 @@
   },
   // Markdown All in One：关闭整篇格式化与表格自动对齐（最易改坏宽表与 frontmatter）
   "markdown.extension.format.enable": false,
-  "markdown.extension.tableFormatter.enabled": false
+  "markdown.extension.tableFormatter.enabled": false,
+  "http.proxy": "http://127.0.0.1:7897",
+  "http.proxySupport": "override",
+  "http.proxyStrictSSL": false,
+  "http.noProxy": [],
+  "cursor.general.disableHttp2": true
 }
