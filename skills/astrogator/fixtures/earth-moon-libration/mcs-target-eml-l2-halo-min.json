@@ -1,0 +1,104 @@
+{
+  "Text": "Moon L2 系下 Halo 类轨道设计: 微分修正 InitialState.Vy 使穿越 Z-X 平面时 Vx=0",
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Target_L2_Vy_Vx",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "初始段",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Moon L2",
+            "Cr": 1.0,
+            "DragArea": 20,
+            "DryMass": 500,
+            "Element": {
+              "$type": "Cartesian",
+              "X": 5000000,
+              "Y": 0,
+              "Z": 30000000,
+              "Vx": 0,
+              "Vy": -141,
+              "Vz": 0
+            },
+            "Epoch": "2028-01-01T00:00:00.000Z",
+            "FuelMass": 500,
+            "SRPArea": 20
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "递推至CrossZX",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Scalar",
+              "Name": "CrossZX",
+              "UserComment": "穿越 Moon L2 坐标系 Z-X 平面(Y=0), Decreasing",
+              "Active": true,
+              "Trip": 0,
+              "Tolerance": 1e-3,
+              "Criterion": "ThresholdDecreasing",
+              "UserCalcObject": {
+                "$type": "PointElement",
+                "CoordSystemName": "Moon L2",
+                "ComponentName": "Y"
+              }
+            }
+          ],
+          "Results": [
+            {
+              "$type": "PointElement",
+              "Name": "L2_Vx",
+              "CoordSystemName": "Moon L2",
+              "ComponentName": "Vx"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "L2_Vy",
+              "CoordSystemName": "Moon L2",
+              "ComponentName": "Vy"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "L2_Y",
+              "CoordSystemName": "Moon L2",
+              "ComponentName": "Y"
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: InitialState.Vy_L2_Vx",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Cartesian.Vy",
+              "InitialValue": "-141",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "初始段"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "L2_Vx",
+              "ParentName": "递推至CrossZX",
+              "DesiredValue": "0.0",
+              "Tolerance": 0.01
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
