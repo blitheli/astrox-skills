@@ -1,6 +1,6 @@
 ---
 name: astrogator
-description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致。支持初始状态、轨道递推、脉冲/有限推力机动、目标序列(微分修正)、跟随段等。用户需要霍曼转移、地月转移、轨道设计、机动序列仿真时使用。
+description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致。支持初始状态、轨道递推、脉冲/有限推力机动、目标序列(微分修正)、跟随段等。含地月平动点 L1/L2 Halo 轨道设计(递推与微分修正)、DRO、霍曼转移、地月转移。用户需要轨道设计、机动序列仿真时使用。
 ---
 
 # Astrogator 轨道机动序列技能 (Astrogator MCS)
@@ -59,7 +59,7 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 | 参数名               | 类型     | 单位  | 说明                                      |
 | ----------------- | ------ | --- | --------------------------------------- |
 | `Epoch`           | string | UTC | 历元,ISO8601 如 `2018-12-01T00:00:00.000Z` |
-| `CoordSystemName` | string | —   | 坐标系,如 `Earth Inertial`                  |
+| `CoordSystemName` | string | —   | 坐标系,如 `Earth Inertial`, `Moon L1`, `Moon L2`, `Moon Libration` |
 | `Element`         | object | —   | 轨道根数,见下表                                |
 | `DryMass`         | number | kg  | 结构质量,默认 500                             |
 | `FuelMass`        | number | kg  | 燃料质量,默认 500                             |
@@ -87,7 +87,7 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 | `Earth_Point_Mass`       | 地球质点引力                  |
 | `Earth_Hpop_default_v10` | 地球 HPOP(含阻力/光压等,版本 v10) |
 | `Moon_Point_Mass`        | 月球质点                    |
-| `CisLunar`               | 地月多体(CR3BP 等),用于地月转移、DRO 等 |
+| `CisLunar`               | 地月多体(CR3BP 等),用于地月转移、DRO、L1/L2 Halo 等 |
 | `Sun_Point_Mass`         | 日心质点                    |
 
 
@@ -211,6 +211,53 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
   --data-binary "@astrogator/fixtures/mcs-target-dro-moon-libration-min.json"
 ```
 
+## 地月平动点 L1/L2 Halo 轨道
+
+**场景**:在 **Moon L1** 或 **Moon L2** 局部坐标系下,给定 Z-X 平面上的初猜状态(`Y=0`, `Vx=Vz=0`),用 `CisLunar` 积分器递推至再次穿越 Z-X 平面,通过微分修正使该时刻 **`Vx=0`**,得到 **Halo 轨道**初值。已知收敛初值后,可仅用 Propagate 段外推轨迹。
+
+详细原理、坐标系说明与示例对照见 [docs/earth-moon-libration.md](docs/earth-moon-libration.md)。
+
+要点:
+
+- L1 坐标系:`CoordSystemName: "Moon L1"`,初值 `X=-5000 km, Z=30000 km, Vy=204 m/s`
+- L2 坐标系:`CoordSystemName: "Moon L2"`,初值 `X=+5000 km, Z=30000 km, Vy=-141 m/s`
+- 积分器:`PropagatorName: "CisLunar"`
+- 终止条件:标量 `PointElement` 的 `Y` 分量穿越 0(L1 用 `ThresholdIncreasing`, L2 用 `ThresholdDecreasing`)
+- 自变量:`InitialState.Cartesian.Vy`
+- 约束:递推末态 `L1_Vx=0` 或 `L2_Vx=0`
+
+L1 Halo 微分修正:
+
+```bash
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/earth-moon-libration/mcs-target-eml-l1-halo-min.json"
+```
+
+L2 Halo 微分修正:
+
+```bash
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/earth-moon-libration/mcs-target-eml-l2-halo-min.json"
+```
+
+L1/L2 Halo 仅递推(已知初值):
+
+```bash
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/earth-moon-libration/mcs-propagate-eml-l1-halo-min.json"
+
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/earth-moon-libration/mcs-propagate-eml-l2-halo-min.json"
+```
+
 ## 本地快速验证(可选)
 
 ```bash
@@ -265,6 +312,19 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
 | `mcs-target-dro-moon-libration-min.json`   | DRO 设计:Moon Libration 初值 + CisLunar,约束 Vx=0 |
 
 
+### Earth-Moon Libration(地月平动点 / Halo)
+
+
+| 文件 | 用途简述 |
+| --- | --- |
+| `earth-moon-libration/mcs-target-eml-l1-halo-min.json` | L1 Halo 微分修正:Moon L1 系,约束 L1_Vx=0 |
+| `earth-moon-libration/mcs-target-eml-l2-halo-min.json` | L2 Halo 微分修正:Moon L2 系,约束 L2_Vx=0 |
+| `earth-moon-libration/mcs-propagate-eml-l1-halo-min.json` | L1 Halo 仅递推:Duration 1051200 s |
+| `earth-moon-libration/mcs-propagate-eml-l2-halo-min.json` | L2 Halo 仅递推:Duration 1227600 s |
+
+专题文档:[docs/earth-moon-libration.md](docs/earth-moon-libration.md)。DRO 示例见上表 `mcs-target-dro-moon-libration-min.json`。
+
+
 ### Follow(跟随段)
 
 
@@ -278,10 +338,10 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
 
 | 子目录                  | 内容                                                   |
 | -------------------- | ---------------------------------------------------- |
-| `Propagate/`         | 各中心天体/积分器/终止条件(近地点、远地点、历元、标量等)                       |
+| `Propagate/`         | 各中心天体/积分器/终止条件;含 `EarthMoonL1_250704`, `EarthMoonL2_250704`, `EarthMoonLibration_250702` |
 | `ManeuverImpulsive/` | 脉冲机动姿态(ThrustVector VNC/VVLH/J2000、VelocityVector 等) |
 | `Maneuver/`          | 有限推力机动                                               |
-| `Target/`            | 微分修正(霍曼、地月 E2M、日心转移等)                                |
+| `Target/`            | 微分修正(霍曼、地月 E2M、L1/L2 Halo、DRO 等);含 `EarthMoonL1_250704`, `EarthMoonL2_250704`, `EarthMoonLibration_250702` |
 | `Follow/`            | 跟随 Leader 实体(含 TwoBody 定义)                           |
 
 
