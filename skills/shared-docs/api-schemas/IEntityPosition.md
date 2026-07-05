@@ -12,6 +12,7 @@
 | `TwoBody`       | 二体问题       | 二体轨道传播器         | [EntityPositionTwoBody.md](EntityPositionTwoBody.md)             |
 | `CzmlPositions` | CZML位置     | CZML格式的位置数据     | [EntityPositionCzmlPositions.md](EntityPositionCzmlPositions.md) |
 | `SGP4`          | SGP4       | SGP4/TLE卫星      | [EntityPositionSGP4.md](EntityPositionSGP4.md)                   |
+| `HPOP`          | HPOP       | 高精度轨道传播器       | [EntityPositionHPOP.md](EntityPositionHPOP.md)                   |
 | `Ballistic`     | 弹道         | 弹道传播器           | [EntityPositionBallistic.md](EntityPositionBallistic.md)         |
 | `CzmlPosition`  | CZML位置(单段) | 单段CZML位置数据      | [EntityPositionCzml.md](EntityPositionCzml.md)                   |
 | `CentralBody`   | 中心天体       | 中心天体位置          | [EntityPositionCentralBody.md](EntityPositionCentralBody.md)     |

@@ -130,7 +130,7 @@ De430 精密历表,可光延迟;`FromObjectPath` 为转发端,`ToObjectPath` 为
 
 ### 1. 地面站对 SGP4(TLE)
 
-**场景**:北京附近地面站对 TLE 卫星 25730;分析窗口与 `skills/propagator-sgp4/fixtures/sgp4-min.json` 中 TLE 历元对齐。
+**场景**:北京附近地面站对 TLE 卫星 25730;分析窗口与 `skills/propagator/fixtures/sgp4/sgp4-min.json` 中 TLE 历元对齐。
 
 ```bash
 export BASE_URL=http://astrox.cn:8765

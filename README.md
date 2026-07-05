@@ -90,7 +90,7 @@ curl "${BASE_URL}/<path>" \
 
 ## 命名建议
 
-- 技能目录:`kebab-case`(例如 `propagator-sgp4`)
+- 技能目录:`kebab-case`(例如 `propagator`)
 - fixture 文件:`<场景>-<输入类型>-<时长>.json`(例如 `moon-classical-4h.json`)
 - 公共 schema:与接口响应类型保持一致(例如 `CzmlPositionOut.md`)
 ```

@@ -16,7 +16,7 @@
 所有"测试"都是通过 `curl` 向远程 ASTROX Web API 发送 HTTP 请求完成的。
 
 - **API 地址**:`http://astrox.cn:8765`(定义在 `claude.json` → `defaultServer`)
-- **POST 端点示例**:`curl http://astrox.cn:8765/Propagator/sgp4 -X POST -H 'Content-Type: application/json' --data-binary @skills/propagator-sgp4/fixtures/sgp4-min.json`
+- **POST 端点示例**:`curl http://astrox.cn:8765/Propagator/sgp4 -X POST -H 'Content-Type: application/json' --data-binary @skills/propagator/fixtures/sgp4/sgp4-min.json`
 - **GET 端点示例**:`curl "http://astrox.cn:8765/city?cityName=Beijing"`
 - 判定标准:HTTP 200 + 响应 JSON 中 `IsSuccess` 为 `true`
 
