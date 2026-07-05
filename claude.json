@@ -5,14 +5,9 @@
   "defaultServer": "http://astrox.cn:8765/",
   "skills": [
     {
-      "name": "propagator-sgp4",
-      "skillFile": "skills/propagator-sgp4/SKILL.md",
-      "fixturesDir": "skills/propagator-sgp4/fixtures"
-    },
-    {
-      "name": "propagator-twobody",
-      "skillFile": "skills/propagator-twobody/SKILL.md",
-      "fixturesDir": "skills/propagator-twobody/fixtures"
+      "name": "propagator",
+      "skillFile": "skills/propagator/SKILL.md",
+      "fixturesDir": "skills/propagator/fixtures"
     },
     {
       "name": "propagator-simple-ascent",
@@ -23,16 +18,6 @@
       "name": "propagator-ballistic",
       "skillFile": "skills/propagator-ballistic/SKILL.md",
       "fixturesDir": "skills/propagator-ballistic/fixtures"
-    },
-    {
-      "name": "propagator-j2",
-      "skillFile": "skills/propagator-j2/SKILL.md",
-      "fixturesDir": "skills/propagator-j2/fixtures"
-    },
-    {
-      "name": "propagator-hpop",
-      "skillFile": "skills/propagator-hpop/SKILL.md",
-      "fixturesDir": "skills/propagator-hpop/fixtures"
     },
     {
       "name": "orbitwizard-sso",
@@ -105,6 +90,11 @@
       "fixturesDir": "skills/celestial-transfer/fixtures"
     },
     {
+      "name": "celestial-cbaxes-rotation",
+      "skillFile": "skills/celestial-cbaxes-rotation/SKILL.md",
+      "fixturesDir": "skills/celestial-cbaxes-rotation/fixtures"
+    },
+    {
       "name": "rocket-trajectory-optim",
       "skillFile": "skills/rocket-trajectory-optim/SKILL.md",
       "fixturesDir": "skills/rocket-trajectory-optim/fixtures"
@@ -113,6 +103,21 @@
       "name": "astrogator",
       "skillFile": "skills/astrogator/SKILL.md",
       "fixturesDir": "skills/astrogator/fixtures"
+    },
+    {
+      "name": "convert-czmlPosition",
+      "skillFile": "skills/convert-czml-position/SKILL.md",
+      "fixturesDir": "skills/convert-czml-position/fixtures"
+    },
+    {
+      "name": "kepler2rv",
+      "skillFile": "skills/kepler2rv/SKILL.md",
+      "fixturesDir": "skills/kepler2rv/fixtures"
+    },
+    {
+      "name": "rv2kepler",
+      "skillFile": "skills/rv2kepler/SKILL.md",
+      "fixturesDir": "skills/rv2kepler/fixtures"
     }
   ]
 }

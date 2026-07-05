@@ -87,6 +87,7 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 | `Earth_Point_Mass`       | 地球质点引力                  |
 | `Earth_Hpop_default_v10` | 地球 HPOP(含阻力/光压等,版本 v10) |
 | `Moon_Point_Mass`        | 月球质点                    |
+| `CisLunar`               | 地月多体(CR3BP 等),用于地月转移、DRO 等 |
 | `Sun_Point_Mass`         | 日心质点                    |
 
 
@@ -191,6 +192,25 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
   --data-binary "@astrogator/fixtures/mcs-hohmann-target-min.json"
 ```
 
+## DRO 轨道设计(地月旋转系 / Moon Libration)
+
+**场景**:在月心 **Moon Libration**(地月旋转系)下,于 X 轴负向(-150000 km)给定初始 `Vy`,用 `CisLunar` 积分器递推至再次穿越 Z-X 平面(`Y=0`),通过微分修正使该时刻 `Vx=0`,得到典型 **DRO(Distant Retrograde Orbit)** 初值。
+
+要点:
+
+- 初始状态坐标系:`CoordSystemName: "Moon Libration"`
+- 积分器:`PropagatorName: "CisLunar"`(地月多体)
+- 终止条件:标量 `PointElement` 的 `Y` 分量穿越 0(`Criterion: ThresholdIncreasing`)
+- 自变量:`InitialState.Cartesian.Vy`(初猜 850 m/s)
+- 约束:递推末态 `EM_Vx = 0`(垂直穿越 Z-X 平面)
+
+```bash
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/mcs-target-dro-moon-libration-min.json"
+```
+
 ## 本地快速验证(可选)
 
 ```bash
@@ -242,6 +262,7 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
 | `mcs-hohmann-target-min.json`              | 霍曼转移:两脉冲 VNC-X 自变量,约束远地点半径与偏心率 |
 | `mcs-target-along-velocity-sma.json`       | 沿速度脉冲:自变量 Delta-V 模,约束半长轴      |
 | `mcs-target-propagate-duration-epoch.json` | 递推段:自变量 Duration,约束末历元 Epoch   |
+| `mcs-target-dro-moon-libration-min.json`   | DRO 设计:Moon Libration 初值 + CisLunar,约束 Vx=0 |
 
 
 ### Follow(跟随段)

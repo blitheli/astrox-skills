@@ -1,0 +1,122 @@
+{
+  "Text": "月心Libration(地月旋转系)下,X轴上初始Vy,微分迭代使得运行一圈后仍然垂直穿越ZX平面(Vx=0),典型的DRO轨道设计方法",
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Target_EML_Vy_EM_Vx",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "初始段",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Moon Libration",
+            "Cr": 1.0,
+            "DragArea": 20,
+            "DryMass": 500,
+            "Element": {
+              "$type": "Cartesian",
+              "X": -150000000,
+              "Y": 0,
+              "Z": 0,
+              "Vx": 0,
+              "Vy": 850,
+              "Vz": 0
+            },
+            "Epoch": "2028-01-01T00:00:00.000Z",
+            "FuelMass": 500,
+            "SRPArea": 20
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "递推至CrossZX",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Scalar",
+              "Name": "CrossZX",
+              "UserComment": "穿越月心平动点坐标系Z-X平面(Y=0)",
+              "Active": true,
+              "Trip": 0,
+              "Tolerance": 1e-3,
+              "Criterion": "ThresholdIncreasing",
+              "UserCalcObject": {
+                "$type": "PointElement",
+                "CoordSystemName": "Moon Libration",
+                "ComponentName": "Y"
+              }
+            }
+          ],
+          "Results": [
+            {
+              "$type": "PointElement",
+              "Name": "EM_X",
+              "CoordSystemName": "Moon Libration",
+              "ComponentName": "X"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "EM_Y",
+              "CoordSystemName": "Moon Libration",
+              "ComponentName": "Y"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "EM_Z",
+              "CoordSystemName": "Moon Libration",
+              "ComponentName": "Z"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "EM_Vx",
+              "CoordSystemName": "Moon Libration",
+              "ComponentName": "Vx"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "EM_Vy",
+              "CoordSystemName": "Moon Libration",
+              "ComponentName": "Vy"
+            },
+            {
+              "$type": "PointElement",
+              "Name": "EM_Vz",
+              "CoordSystemName": "Moon Libration",
+              "ComponentName": "Vz"
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC: InitialState.Vy_EM_Vx",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Cartesian.Vy",
+              "InitialValue": "850",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "ParentName": "初始段"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "EM_Vx",
+              "ParentName": "递推至CrossZX",
+              "DesiredValue": "0.0",
+              "Tolerance": 0.01
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

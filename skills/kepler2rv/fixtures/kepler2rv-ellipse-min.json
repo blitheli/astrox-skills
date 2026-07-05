@@ -1,0 +1,9 @@
+{
+  "SemimajorAxis": 7000000,
+  "Eccentricity": 0.001,
+  "Inclination": 45,
+  "ArgumentOfPeriapsis": 30,
+  "RightAscensionOfAscendingNode": 120,
+  "TrueAnomaly": 90,
+  "GravitationalParameter": 398600441800000
+}
