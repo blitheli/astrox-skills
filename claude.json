@@ -5,14 +5,9 @@
   "defaultServer": "http://astrox.cn:8765/",
   "skills": [
     {
-      "name": "propagator-sgp4",
-      "skillFile": "skills/propagator-sgp4/SKILL.md",
-      "fixturesDir": "skills/propagator-sgp4/fixtures"
-    },
-    {
-      "name": "propagator-twobody",
-      "skillFile": "skills/propagator-twobody/SKILL.md",
-      "fixturesDir": "skills/propagator-twobody/fixtures"
+      "name": "propagator",
+      "skillFile": "skills/propagator/SKILL.md",
+      "fixturesDir": "skills/propagator/fixtures"
     },
     {
       "name": "propagator-simple-ascent",
@@ -23,16 +18,6 @@
       "name": "propagator-ballistic",
       "skillFile": "skills/propagator-ballistic/SKILL.md",
       "fixturesDir": "skills/propagator-ballistic/fixtures"
-    },
-    {
-      "name": "propagator-j2",
-      "skillFile": "skills/propagator-j2/SKILL.md",
-      "fixturesDir": "skills/propagator-j2/fixtures"
-    },
-    {
-      "name": "propagator-hpop",
-      "skillFile": "skills/propagator-hpop/SKILL.md",
-      "fixturesDir": "skills/propagator-hpop/fixtures"
     },
     {
       "name": "orbitwizard-sso",

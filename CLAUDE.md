@@ -15,12 +15,13 @@ skills/
   shared-docs/
     api-schemas/
       CzmlPositionOut.md
-  propagator-sgp4/
+  propagator/
     SKILL.md
     fixtures/
-  propagator-twobody/
-    SKILL.md
-    fixtures/
+      twobody/
+      j2/
+      hpop/
+      sgp4/
 ```
 
 ## 配置文件
@@ -39,7 +40,7 @@ skills/
 4. 新建 `fixtures/` 并至少提供一个最小可运行 JSON
 5. 如复用公共 schema,引用 `shared-docs/api-schemas/...`
 6. 在 `claude.json` 的 `skills` 数组中追加该技能配置
-7. 可参考propagator-j2的内容格式
+7. 可参考 propagator 或 propagator-j2(已合并) 的内容格式
 8. webapi的相关接口说明,首先参考astrox-web-api.json,不清楚的预留
 
 ## 编写建议
@@ -53,7 +54,7 @@ skills/
 
 以 `claude.json` 的 `skills[]` 为准,当前包括:
 
-- `propagator-sgp4`、`propagator-twobody`、`propagator-simple-ascent`、`propagator-ballistic`、`propagator-j2`、`propagator-hpop`
+- `propagator`(TwoBody/J2/HPOP/SGP4)、`propagator-simple-ascent`、`propagator-ballistic`
 - `orbitwizard-sso`、`orbitwizard-geo`、`orbitwizard-molniya`、`orbitwizard-walker`
 - `lighting-times`、`lighting-solar-aer`
 - `query-city`、`query-facility`、`query-tle`
