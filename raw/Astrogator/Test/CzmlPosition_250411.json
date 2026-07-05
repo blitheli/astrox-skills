@@ -1,0 +1,72 @@
+﻿{
+  "Text1": "测试-包含脉冲机动段返回结果的czmlPosition，分段返回(二体轨道积分器)",
+  "Text2": "StoppingConditions，Periapsis",
+  "CentralBody": "Earth",
+  "GravitationalParameter": 3.986004415E14,
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "Initial_State",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 6678137.0,
+          "Y": 0,
+          "Z": 0,
+          "Vx": 0,
+          "Vy": 6789.5302977176516,
+          "Vz": 3686.4141730136521
+        },
+        "Epoch": "2025-03-25T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate60s",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 60
+        }
+      ]
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "ImpulsiveManeuver",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "ThrustAxesName": "VNC",
+        "CoordType": "Cartesian",
+        "X": 0.0,
+        "Y": 100.0,
+        "Z": 0.0
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "Propagate600s",
+      "PropagatorName": "Earth_Point_Mass",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "Trip": 600
+        }
+      ]
+    }
+  ]
+}

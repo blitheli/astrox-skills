@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests
 {
-    public partial class AstrogatorTargetTests
+    public partial class TargetTests
     {
         /*
          测试 Astrogator 
@@ -240,7 +239,7 @@ Parameter Set Type:  Spherical
             Assert.AreEqual(262.0492345151066, (double)seg3.Results["Vy"], 1e-9);
             Assert.AreEqual(-3297.1463530619376, (double)seg3.Results["Vz"], 1e-9);
             Assert.AreEqual(3000, (double)seg3.Results["Duration"], 1e-9);
-            Assert.AreEqual("2000-01-01T12:48:55.81600000000617Z", (string)seg3.Results["Epoch"]);
+            Assert.AreEqual("2000-01-01T12:48:55.816Z", (string)seg3.Results["Epoch"]);
             Assert.AreEqual(135.0000000113306, (double)seg3.Results["Right_Asc"], 1e-9);
             Assert.AreEqual(8.049466973108665, (double)seg3.Results["Decl"], 1e-9);
             Assert.AreEqual(14282856.867558029, (double)seg3.Results["RMag"], 1e-8);

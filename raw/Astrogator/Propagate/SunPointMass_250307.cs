@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using ASTROX.Coordinates;
 using ASTROX.Extended;
 using ASTROX.Time;
@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests;
 
-public partial class AstrogatorTests
+public partial class PropagateTests
 {
     /*
         测试 Astrogator

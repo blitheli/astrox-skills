@@ -1,12 +1,10 @@
-﻿
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
 namespace ASTROX.Astrogator.Tests
 {
-    public partial class ManeuverImpulsiveTests
+    public partial class TargetTests
     {
         /*
          测试 Astrogator，Target, 脉冲机动，推力方向为：Thrust Vector: VNC, Spherical类型

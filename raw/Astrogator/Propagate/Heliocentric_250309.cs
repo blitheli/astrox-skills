@@ -1,9 +1,9 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests;
 
-public partial class AstrogatorTests
+public partial class PropagateTests
 {
     /*
         测试 Astrogator   太阳系积分器（太阳二体+行星摄动）

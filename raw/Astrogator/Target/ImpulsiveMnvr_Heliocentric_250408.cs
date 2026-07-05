@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests
 {
-    public partial class AstrogatorTargetTests
+    public partial class TargetTests
     {
         /*
          测试 Astrogator 日心转移 (微分修正，撞击器深空脉冲机动-撞击XF261小行星）

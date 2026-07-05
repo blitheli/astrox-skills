@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace ASTROX.Astrogator.Tests;
 
-public partial class AstrogatorTargetTests
+public partial class TargetTests
 {
     /*
      测试 Astrogator 

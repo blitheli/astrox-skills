@@ -6,11 +6,10 @@ using ASTROX.Propagators;
 using ASTROX.SegmentPropagation;
 using ASTROX.StoppingConditions;
 using ASTROX.Time;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests
 {
-    public partial class AstrogatorTests
+    public partial class TargetTests
     {
         /*
        

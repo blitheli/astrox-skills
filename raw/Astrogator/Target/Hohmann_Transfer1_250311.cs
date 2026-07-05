@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using ASTROX.Celestial;
+﻿using ASTROX.Celestial;
 using ASTROX.Coordinates;
 using ASTROX.Geometry;
 using ASTROX.NumericalMethods;
@@ -7,12 +6,10 @@ using ASTROX.Propagators;
 using ASTROX.SegmentPropagation;
 using ASTROX.StoppingConditions;
 using ASTROX.Time;
-using ASTROX.Extended;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests
 {
-    public partial class AstrogatorTests
+    public partial class TargetTests
     {
         /*
             霍曼转移 Target验证，采用微分修正器，约束参数采用Result

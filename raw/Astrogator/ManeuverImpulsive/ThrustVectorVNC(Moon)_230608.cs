@@ -88,6 +88,18 @@ namespace ASTROX.Astrogator.Tests
             if (!output.IsSuccess)
                 Assert.Fail(output.Message);
 
+            //  VNC(Moon) 推力 (3,4,5 m/s)：VNC 分量等于输入；惯性系 ΔV 为变换后的 Moon Inertial 分量（见注释 STK 参考值）
+            var rltImp = output.MainSequenceResults[2] as MCSManeuverImpulsiveResults;
+            double[] deltaV_Inertial = rltImp.ManeuverInformation.DeltaV_Inertial;
+            double[] deltaV_VNC = rltImp.ManeuverInformation.DeltaV_VNC;
+            Assert.AreEqual(3.0, deltaV_VNC[0], 1e-10);
+            Assert.AreEqual(4.0, deltaV_VNC[1], 1e-10);
+            Assert.AreEqual(5.0, deltaV_VNC[2], 1e-10);
+            Assert.AreEqual(3.454995698536777, deltaV_Inertial[0], 1e-10);
+            Assert.AreEqual(-5.572352733506932, deltaV_Inertial[1], 1e-10);
+            Assert.AreEqual(2.6479973067340907, deltaV_Inertial[2], 1e-10);
+
+
             //  比较当前编号的t,x,y,z,Vx,Vy,Vz(m,m/s)
             //  标准值为STK 的计算结果, 129600s 的数值            
             int id = output.Position.cartesianVelocity.Length;

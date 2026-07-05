@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using AeroSpace.OrbitCore;
@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests
 {
-    public partial class AstrogatorTests
+    public partial class PropagateTests
     {
         /*
             测试 Astrogator

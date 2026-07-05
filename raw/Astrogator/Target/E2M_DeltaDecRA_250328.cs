@@ -1,11 +1,10 @@
 ﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests
 {
-    public partial class AstrogatorTargetTests
+    public partial class TargetTests
     {
         /*
          测试 Astrogator 地月转移 (微分修正，将末端状态修正到月球附近）

@@ -1,11 +1,11 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace ASTROX.Astrogator.Tests;
 
-public partial class AstrogatorTests
+public partial class PropagateTests
 {
     /*
         测试 Astrogator 两段不同的中心天体

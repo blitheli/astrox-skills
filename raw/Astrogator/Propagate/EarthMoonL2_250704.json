@@ -1,0 +1,81 @@
+{
+  "CentralBody": "Earth",
+
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Moon L2",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": 5000000,
+          "Y": 0,
+          "Z": 30000000,
+          "Vx": 0,
+          "Vy": -141,
+          "Vz": 0
+        },
+        "Epoch": "2028-01-01T00:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "递推至15Jan2028",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Description": "积分至 15 Jan 2028 05:00:00 UTCG",
+          "Trip": 1227600
+        }
+      ],
+      "Results": [
+        {
+          "$type": "PointElement",
+          "Name": "L2_X",
+          "CoordSystemName": "Moon L2",
+          "ComponentName": "X"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "L2_Y",
+          "CoordSystemName": "Moon L2",
+          "ComponentName": "Y"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "L2_Z",
+          "CoordSystemName": "Moon L2",
+          "ComponentName": "Z"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "L2_Vx",
+          "CoordSystemName": "Moon L2",
+          "ComponentName": "Vx"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "L2_Vy",
+          "CoordSystemName": "Moon L2",
+          "ComponentName": "Vy"
+        },
+        {
+          "$type": "PointElement",
+          "Name": "L2_Vz",
+          "CoordSystemName": "Moon L2",
+          "ComponentName": "Vz"
+        }
+      ]
+    }
+  ]
+}

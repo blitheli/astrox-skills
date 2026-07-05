@@ -1,13 +1,13 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 
 namespace ASTROX.Astrogator.Tests;
 
-public partial class AstrogatorTests
+public partial class PropagateTests
 {
     /*
-     测试 Astrogator 地月转移
+     测试 Astrogator 地月转移，多个飞行段，两个积分器模型
             MCS:
             >   Initial_State       地球惯性系Cartisian
             >   Propagate1          CisLunar积分器(中心天体为地球)
@@ -46,80 +46,66 @@ public partial class AstrogatorTests
                 参考轴:    VNC
                 姿态控制类型: Thrust Vector(Cartesian)
                             [4000.0, 0.0, 0.0]
-
         @Propagate2参数
             段名称: TransferOrbitToMoonSOI
             积分器名称: CisLunar
-            停止条件: R Magnitude              320000 (km)
-                Coordinate System Name:  Earth Inertial
+            停止条件: Duration    63545 (s)
 
         @Propagate3参数
             段名称: TransferOrbit
             积分器名称: CisLunarMoonCentered
-            停止条件:
-                1.  True Anomaly    0.0 (deg)
-                    Central Body:
-                                 Moon
-                    CoordSystemName:
-                                 Moon Inertial
-                    Mu:
-                                 4.90280030555540e+012
-                2.  Altitude          1 (km)
-                    CentralBodyName:  Moon
+            停止条件: Duration    15380 (s)            
     
         与STK对比时:
             1)  第三体摄动的Mu,如果为CbFile，则需要看Stk中对应中心天体的cb文件中的Mu值
             2） 数值积分器的相对控制误差要一致
             3） EOP-All-v1.1.txt数据要一致！
 
-        STK 12.8 结果(JplDe430)
-        Parameter Set Type:  Cartesian                                                                 
-         X:  -277710.5489384502288885 km              Vx:       -3.0789567881934077 km/sec     
-         Y:  -254911.9040210688544903 km              Vy:       -3.0989819852438147 km/sec     
-         Z:   -98702.8827929350663908 km              Vz:       -1.1491487534020981 km/sec  
-
-        20230619    liumulin, 初次创建。
-
-        与STK对比精度: 时间0.002 (s)，位置～0.03 (m)，速度～3e-8 (m/s)
-
+        20230608    liumuin,初次创建。将所有积分段的终止条件调整为时间，用于测试单独积分器造成的误差。
+        20230613    liyunfei，修改
+  
+        与STK对比精度: 位置～2e-4 (m)，速度～1e-8 (m/s)
         20231212    修改json输入,不再提供Propagators,引用缺省的积分器
-        20251210    由于EOP-V1.1.txt更新了，所以重新使用STK12.8计算了标准值，精度差不多
+        20251210    由于EOP-V1.1.txt更新了,重新计算，与STK12.8比较,精度不变
+
+        STK 12.8 结果（地月转移终点）（Jplde430)
+            Parameter Set Type:  Cartesian                                                                 
+             X:  -277709.0370493304799311 km              Vx:       -3.0789579231869708 km/sec     
+             Y:  -254910.3822988028696273 km              Vy:       -3.0989828694579860 km/sec     
+             Z:   -98702.3185158189007780 km              Vz:       -1.1491481377409589 km/sec     
     */
     [TestMethod()]
-    public void E2M_RMag_TrueAnomaly_230619()
+    public void E2M_Duration_230613()
     {
         //  输入json文件的路径
         string filePath0 = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent.FullName;
-        filePath0 = Path.Combine(filePath0, @"Astrogator/Target");
+        filePath0 = Path.Combine(filePath0, @"Astrogator/Propagate");
 
         //  读取输入参数(json)
-        string fp = Path.Combine(filePath0, "E2M_RMag_TrueAnomaly_230619.json");
+        string fp = Path.Combine(filePath0, "E2M_Duration_230613.json");
 
         //  读取json文件，并序列化为类对象
         string inputStr = File.ReadAllText(fp, Encoding.UTF8);
         var input = JsonSerializer.Deserialize<AstrogatorMCS>(inputStr);
 
-        //  调用webApi        
+        //  调用webApi            
         var output = input.RunMCS();
 
-        //  比较当前编号的t,x,y,z,Vx,Vy,Vz(m,m/s)
         int id = output.Position.cartesianVelocity.Length;
         var rv = output.Position.cartesianVelocity;
         Console.WriteLine($"{rv[id - 6]}  {rv[id - 5]}  {rv[id - 4]}");
         Console.WriteLine($"{rv[id - 3]}  {rv[id - 2]}  {rv[id - 1]}");
-        Assert.AreEqual(82125.4909557879873319, output.Position.cartesianVelocity[id - 7], 0.002);
-        Assert.AreEqual(-277710548.9384502288885,rv[id - 6], 0.03);
-        Assert.AreEqual(-254911904.0210688544903,rv[id - 5], 0.03);
-        Assert.AreEqual(-98702882.7929350663908,rv[id - 4], 0.03);
-        Assert.AreEqual(-3078.9567881934077,rv[id - 3], 3e-8);
-        Assert.AreEqual(-3098.9819852438147,rv[id - 2], 3e-8);
-        Assert.AreEqual(-1149.1487534020981,rv[id - 1], 3e-8);
-
-        Assert.IsTrue(output.IsSuccess);
+        //  与STK结果对比
+        Assert.AreEqual(-277709037.0493304799311, rv[id - 6], 2e-4);
+        Assert.AreEqual(-254910382.2988028696273, rv[id - 5], 2e-4);
+        Assert.AreEqual(-98702318.5158189007780, rv[id - 4], 2e-4);
+        Assert.AreEqual(-3078.9579231869708, rv[id - 3], 1e-8);
+        Assert.AreEqual(-3098.9828694579860, rv[id - 2], 1e-8);
+        Assert.AreEqual(-1149.1481377409589, rv[id - 1], 1e-8);
     }
 
     /**
-        -277710548.96234274  -254911904.04524523  -98702882.80179593
-        -3078.956788170578  -3098.981985227933  -1149.148753404584
+        -277709037.04918015  -254910382.29883283  -98702318.51576984
+        -3078.957923184082  -3098.982869457509  -1149.1481377357936
       */
 }

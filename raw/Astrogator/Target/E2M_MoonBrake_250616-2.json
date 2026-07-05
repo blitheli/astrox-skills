@@ -1,0 +1,425 @@
+﻿{
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "InitialState": {
+        "CoordSystemName": "Earth Inertial",
+        "Epoch": "2031-09-01T00:00:00Z",
+        "DryMass": 500,
+        "Cd": 2.2,
+        "DragArea": 20,
+        "Cr": 1,
+        "SRPArea": 20,
+        "FuelMass": 500,
+        "Element": {
+          "$type": "Spherical",
+          "RightAscension": 218.42704268623203,
+          "Declination": -16.010803049572104,
+          "RadiusMagnitude": 6578137,
+          "VelocityAzimuth": 90,
+          "VelocityMagnitude": 10917.460678896163,
+          "HorizFPA": 0
+        }
+      },
+      "Name": "初始段",
+      "Description": "初始化状态数据",
+      "UserComment": "初始化状态数据"
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "CisLunar",
+      "Name": "MoonPeri",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "oldName": "轨道递推段",
+      "Results": [
+        {
+          "$type": "BPlane",
+          "Name": "BDotR",
+          "UserComment": "B平面矢量在R方向上的分量",
+          "Description": "B平面矢量在R方向上的分量",
+          "CN": "BDotR",
+          "Dimension": "Distance",
+          "ComponentName": "BDotR",
+          "CentralBodyName": "Moon",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "BPlane",
+          "Name": "BDotT",
+          "UserComment": "B平面矢量在T方向上的分量",
+          "Description": "B平面矢量在T方向上的分量",
+          "CN": "BDotT",
+          "Dimension": "Distance",
+          "ComponentName": "BDotT",
+          "CentralBodyName": "Moon",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "UserComment": "持续时间",
+          "Description": "持续时间",
+          "CN": "持续时间",
+          "Dimension": "Time",
+          "ComponentName": "Duration"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "轨道倾角",
+          "UserComment": "轨道倾角",
+          "Description": "轨道倾角",
+          "CN": "轨道倾角",
+          "Dimension": "Angle",
+          "ComponentName": "Inclination",
+          "CoordSystemName": "Earth Inertial",
+          "Mu": 398600441500000,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "近地点高度",
+          "UserComment": "近地点高度",
+          "Description": "近地点高度",
+          "CN": "近地点高度",
+          "Dimension": "Distance",
+          "ComponentName": "AltitudeOfPeriapsis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "速度方位角",
+          "UserComment": "速度方位角",
+          "Description": "速度方位角",
+          "CN": "速度方位角",
+          "Dimension": "Angle",
+          "ComponentName": "VelocityAzimuth",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        }
+      ],
+      "StopConditions": [
+        {
+          "$type": "Periapsis",
+          "Name": "近地点",
+          "Active": true,
+          "UserComment": "在近地点处停止",
+          "Description": "在近地点处停止",
+          "Tolerance": 0.000001,
+          "CentralBodyName": "Moon",
+          "category": "停止条件",
+          "ReadOnly": true,
+          "parentKey": "StopConditions",
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": false,
+          "Description": "积分固定的时长",
+          "UserComment": "积分固定的时长",
+          "Trip": 39600,
+          "Tolerance": 1e-8,
+          "category": "停止条件",
+          "ReadOnly": true,
+          "parentKey": "StopConditions",
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Criterion": "AnyThreshold"
+        },
+        {
+          "$type": "Scalar",
+          "Name": "高度",
+          "Active": true,
+          "UserComment": "停在离中心天体指定的高度上",
+          "Description": "停在离中心天体指定的高度上",
+          "Trip": 10000,
+          "Tolerance": 0.001,
+          "UserCalcObject": {
+            "$type": "Cartographic",
+            "Name": "高度",
+            "UserComment": "大地坐标的高度",
+            "Description": "大地坐标的高度",
+            "ComponentName": "Height",
+            "Dimension": "Distance",
+            "CentralBodyName": "Moon",
+            "Mu": 4902800305555.4
+          },
+          "category": "停止条件",
+          "ReadOnly": true,
+          "parentKey": "StopConditions",
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Criterion": "AnyThreshold"
+        }
+      ]
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "PropagatorName": "Earth_Hpop_default_v10",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "ThrustAxesName": "VNC(Moon)",
+        "CoordType": "Cartesian",
+        "X": -814.4667790483871,
+        "Y": 0,
+        "Z": 4.286263797015736e-16
+      },
+      "PropulsionMethod": "EngineModel",
+      "PropulsionMethodValue": "Constant_Thrust_Isp",
+      "UpdateMass": false,
+      "Name": "轨道机动段",
+      "Description": "以冲动燃烧或有限燃烧控制卫星",
+      "UserComment": "以冲动燃烧或有限燃烧控制卫星",
+      "ThrustType": "AffectsAccelOnly",
+      "MaxPropagationTime": 8640000,
+      "Results": [
+        {
+          "$type": "KeplerianElement",
+          "Name": "偏心率",
+          "UserComment": "轨道偏心率",
+          "Description": "轨道偏心率",
+          "CN": "偏心率",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        }
+      ]
+    },
+    {
+      "$type": "Propagate",
+      "PropagatorName": "Moon_Hpop_default_v10",
+      "Name": "轨道递推段",
+      "Description": "轨道递推直到满足停止条件",
+      "UserComment": "轨道递推直到满足停止条件",
+      "category": "任务控制序列",
+      "ReadOnly": true,
+      "parentKey": "MCSSegments",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": true,
+          "Description": "积分固定的时长",
+          "UserComment": "积分固定的时长",
+          "Trip": 86400,
+          "Tolerance": 1e-8,
+          "Sequence": "STOP",
+          "RepeatCount": 1,
+          "Criterion": "AnyThreshold"
+        },
+        {
+          "$type": "Epoch",
+          "Name": "历元",
+          "Active": false,
+          "Description": "在指定的日期和时间停止",
+          "UserComment": "在指定的日期和时间停止",
+          "Trip": "2000-01-01T00:00:00.000Z",
+          "Sequence": "STOP"
+        }
+      ]
+    }
+  ],
+  "Propagators": [
+    {
+      "Name": "Earth_Point_Mass",
+      "UserComment": "简单二体引力",
+      "Description": "使用 HPOP的数值积分器",
+      "CentralBodyName": "Earth",
+      "GravityModel": {
+        "$type": "TwoBody",
+        "Name": "二体引力",
+        "Description": "中心天体质点引力",
+        "UserComment": "中心天体质点引力",
+        "Mu": 398600441500000
+      },
+      "category": "轨道递推器",
+      "ReadOnly": true,
+      "parentKey": "Propagators",
+      "Clonable": false
+    },
+    {
+      "Name": "CisLunar",
+      "Description": "使用 HPOP的数值递推器",
+      "UserComment": "地月转移积分器",
+      "CentralBodyName": "Earth",
+      "GravityModel": {
+        "$type": "GravityField",
+        "Name": "WGS84",
+        "Description": "中心天体引力场引力",
+        "UserComment": "中心天体引力场引力",
+        "GravityFileName": "WGS84.grv",
+        "CentralBody": "Earth",
+        "Degree": 8,
+        "Order": 8,
+        "EOPfilePath": "EOP-v1.1.txt",
+        "SolidTideType": "None"
+      },
+      "ThirdBodyForce": [
+        {
+          "Name": "月球",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ModeType": "PointMass",
+          "ThirdBodyName": "Moon",
+          "EphemSource": "DeFile",
+          "GravSource": "CbFile",
+          "Mu": 4902800305555.4
+        },
+        {
+          "Name": "太阳",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ModeType": "PointMass",
+          "ThirdBodyName": "Sun",
+          "EphemSource": "DeFile",
+          "GravSource": "CbFile",
+          "Mu": 132712440041939390000
+        }
+      ],
+      "category": "轨道递推器",
+      "ReadOnly": true,
+      "parentKey": "Propagators",
+      "Clonable": false
+    },
+    {
+      "Name": "Moon_Hpop_default_v10",
+      "Description": "月球高精度轨道积分器(未测试)",
+      "UserComment": "STK的缺省积分器(光压中,太阳位置为True，STK中为Apparent)",
+      "CentralBodyName": "Moon",
+      "GravityModel": {
+        "$type": "GravityField",
+        "Name": "Gravitational Force",
+        "Description": "中心天体引力场引力",
+        "UserComment": "中心天体引力场引力",
+        "GravityFileName": "LP150Q.grv",
+        "Degree": 48,
+        "Order": 48,
+        "SolidTideType": "Permanent tide only"
+      },
+      "ThirdBodyForce": [
+        {
+          "Name": "地球",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ReadOnly": true,
+          "ModeType": "PointMass",
+          "EphemSource": "DeFile",
+          "ThirdBodyName": "Earth",
+          "GravSource": "CbFile",
+          "Mu": 3986004418000
+        },
+        {
+          "Name": "太阳",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ReadOnly": true,
+          "ModeType": "PointMass",
+          "ThirdBodyName": "Sun",
+          "EphemSource": "DeFile",
+          "GravSource": "CbFile",
+          "Mu": 132712200000000000000
+        }
+      ],
+      "SRPModel": {
+        "$type": "SRPSpherical",
+        "Name": "Spherical SRP",
+        "Description": "球形光压模型",
+        "UserComment": "球形光压模型",
+        "ShadowModel": "DualCone",
+        "SunPosition": "True",
+        "EclipsingList": [
+          "Earth"
+        ]
+      },
+      "category": "轨道递推器",
+      "ReadOnly": true,
+      "parentKey": "Propagators",
+      "Clonable": false
+    },
+    {
+      "Name": "Moon_Hpop_de430",
+      "Description": "月球高精度轨道积分器(使用GL0900D引力场，De430历表)",
+      "UserComment": "STK的缺省积分器(光压中,太阳位置为True，STK中为Apparent)",
+      "CentralBodyName": "Moon",
+      "GravityModel": {
+        "$type": "GravityField",
+        "Name": "Gravitational Force",
+        "Description": "中心天体引力场引力",
+        "UserComment": "中心天体引力场引力",
+        "GravityFileName": "GL0900D.grv",
+        "Degree": 48,
+        "Order": 48,
+        "SolidTideType": "Permanent tide only"
+      },
+      "ThirdBodyForce": [
+        {
+          "Name": "地球",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ReadOnly": true,
+          "ModeType": "PointMass",
+          "EphemSource": "DeFile",
+          "ThirdBodyName": "Earth",
+          "GravSource": "CbFile",
+          "Mu": 398600441500000
+        },
+        {
+          "Name": "太阳",
+          "Description": "第三体影响",
+          "UserComment": "太阳第三体引力",
+          "ReadOnly": true,
+          "ModeType": "PointMass",
+          "ThirdBodyName": "Sun",
+          "EphemSource": "DeFile",
+          "GravSource": "CbFile",
+          "Mu": 132712440041939390000
+        }
+      ],
+      "SRPModel": {
+        "$type": "SRPSpherical",
+        "Name": "Spherical SRP",
+        "Description": "球形光压模型",
+        "UserComment": "球形光压模型",
+        "ShadowModel": "DualCone",
+        "SunPosition": "Apparent",
+        "EclipsingList": [
+          "Earth"
+        ]
+      },
+      "category": "轨道递推器",
+      "ReadOnly": true,
+      "parentKey": "Propagators",
+      "Clonable": false
+    }
+  ],
+  "EngineModels": [
+    {
+      "$type": "EngineConstant",
+      "Name": "Constant_Thrust_Isp",
+      "Description": "常值推力、比冲 发动机",
+      "UserComment": "常值推力、比冲 发动机",
+      "Thrust": 500,
+      "Isp": 300,
+      "g": 9.80665,
+      "category": "发动机模型",
+      "ReadOnly": true,
+      "parentKey": "EngineModels"
+    }
+  ],
+  "Entities": [
+    {
+      "Name": "Moon",
+      "Position": {
+        "$type": "CentralBody",
+        "Name": "Moon"
+      }
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 ﻿
+using ASTROX.SegmentPropagation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.Runtime.Intrinsics.X86;
@@ -87,6 +88,18 @@ namespace ASTROX.Astrogator.Tests
             //  比较当前编号的t,x,y,z,Vx,Vy,Vz(m,m/s)
             //  标准值为STK 的计算结果, 129600 的数值            
             int id = output.Position.cartesianVelocity.Length;
+
+            //  脉冲机动
+            //  ICRF 推力 (3,4,5 m/s)：惯性系 ΔV 等于输入分量；VNC 为机动时刻轨道 VNC 下的投影（不等于 ICRF 分量）
+            var rltImp = output.MainSequenceResults[2] as MCSManeuverImpulsiveResults;
+            double[] deltaV_Inertial = rltImp.ManeuverInformation.DeltaV_Inertial;
+            double[] deltaV_VNC = rltImp.ManeuverInformation.DeltaV_VNC;
+            Assert.AreEqual(3.0, deltaV_Inertial[0], 1e-10);
+            Assert.AreEqual(4.0, deltaV_Inertial[1], 1e-10);
+            Assert.AreEqual(5.0, deltaV_Inertial[2], 1e-10);
+            Assert.AreEqual(6.582171853097831, deltaV_VNC[0], 1e-10);
+            Assert.AreEqual(2.4854505222713907, deltaV_VNC[1], 1e-10);
+            Assert.AreEqual(-0.7053718151638528, deltaV_VNC[2], 1e-10);
 
             Assert.AreEqual(129600, output.Position.cartesianVelocity[id - 7], 1e-6);
             Assert.AreEqual(3638366.5155835988116, output.Position.cartesianVelocity[id - 6], 2e-5);

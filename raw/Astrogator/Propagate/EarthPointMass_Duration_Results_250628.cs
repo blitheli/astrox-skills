@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using AeroSpace.Celestial;
+using AeroSpace.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ASTROX.Astrogator.Tests
@@ -40,6 +42,8 @@ namespace ASTROX.Astrogator.Tests
         [TestMethod()]
         public void EarthPointMass_Duration_Results_250628()
         {
+            PlanetsEphemeris.UseEarthEOPFile(Path.Combine(DataPaths.DGLPath, "EOP-v1.1.txt"));
+
             //  输入json文件的路径
             string filePath0 = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent.FullName;
             filePath0 = Path.Combine(filePath0, @"Astrogator/Propagate");
