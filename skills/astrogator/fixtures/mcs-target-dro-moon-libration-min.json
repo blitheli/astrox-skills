@@ -11,7 +11,7 @@
           "Name": "初始段",
           "InitialState": {
             "Cd": 2.2,
-            "CoordSystemName": "Moon Libration",
+            "CoordSystemName": "Moon EMLibration",
             "Cr": 1.0,
             "DragArea": 20,
             "DryMass": 500,
@@ -44,7 +44,7 @@
               "Criterion": "ThresholdIncreasing",
               "UserCalcObject": {
                 "$type": "PointElement",
-                "CoordSystemName": "Moon Libration",
+                "CoordSystemName": "Moon EMLibration",
                 "ComponentName": "Y"
               }
             }
@@ -53,37 +53,37 @@
             {
               "$type": "PointElement",
               "Name": "EM_X",
-              "CoordSystemName": "Moon Libration",
+              "CoordSystemName": "Moon EMLibration",
               "ComponentName": "X"
             },
             {
               "$type": "PointElement",
               "Name": "EM_Y",
-              "CoordSystemName": "Moon Libration",
+              "CoordSystemName": "Moon EMLibration",
               "ComponentName": "Y"
             },
             {
               "$type": "PointElement",
               "Name": "EM_Z",
-              "CoordSystemName": "Moon Libration",
+              "CoordSystemName": "Moon EMLibration",
               "ComponentName": "Z"
             },
             {
               "$type": "PointElement",
               "Name": "EM_Vx",
-              "CoordSystemName": "Moon Libration",
+              "CoordSystemName": "Moon EMLibration",
               "ComponentName": "Vx"
             },
             {
               "$type": "PointElement",
               "Name": "EM_Vy",
-              "CoordSystemName": "Moon Libration",
+              "CoordSystemName": "Moon EMLibration",
               "ComponentName": "Vy"
             },
             {
               "$type": "PointElement",
               "Name": "EM_Vz",
-              "CoordSystemName": "Moon Libration",
+              "CoordSystemName": "Moon EMLibration",
               "ComponentName": "Vz"
             }
           ]
