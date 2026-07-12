@@ -1,0 +1,192 @@
+{
+  "description": "Libration API declarative test cases. GET cases use query parameters; POST cases reference a request body fixture.",
+  "baseUrl": "http://astrox.cn:8765",
+  "cases": [
+    {
+      "name": "positions-earth-moon",
+      "method": "GET",
+      "path": "/libration/positions",
+      "query": {
+        "u": 0.01215058560962404
+      },
+      "expect": {
+        "httpStatus": 200,
+        "arrayLength": 10,
+        "approx": {
+          "[0]": 0.15093428861801883,
+          "[1]": 0.16783275105450815,
+          "[2]": 0.9929120602006538
+        },
+        "absoluteTolerance": 1e-10
+      }
+    },
+    {
+      "name": "positions-sun-earth",
+      "method": "GET",
+      "path": "/libration/positions",
+      "query": {
+        "u": 0.000003003143144634591
+      },
+      "expect": {
+        "httpStatus": 200,
+        "arrayLength": 10,
+        "approx": {
+          "[3]": 0.990026966366713,
+          "[4]": 1.01003373960387
+        },
+        "absoluteTolerance": 1e-10
+      }
+    },
+    {
+      "name": "unit-earth-moon-explicit",
+      "method": "GET",
+      "path": "/libration/unit",
+      "query": {
+        "gm1": 398600441800000,
+        "gm2": 4904869500000,
+        "meanRange": 384400000
+      },
+      "expect": {
+        "httpStatus": 200,
+        "approx": {
+          "UnitL": 384400000,
+          "UnitT": 375189.2968837575,
+          "UnitV": 1024.5494826018351
+        },
+        "absoluteTolerance": {
+          "UnitL": 1e-10,
+          "UnitT": 0.000001,
+          "UnitV": 0.000001
+        }
+      }
+    },
+    {
+      "name": "crtbp-trajectory-em-l2-halo-period",
+      "method": "POST",
+      "path": "/libration/crtbp-trajectory",
+      "requestBodyFile": "crtbp-trajectory-min.json",
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "IsBarycentric": false,
+        "positionsStride": 7,
+        "periodClosureNormMax": 1e-11
+      }
+    },
+    {
+      "name": "em-l2-halo-north",
+      "method": "GET",
+      "path": "/libration/em-l2-halo",
+      "query": {
+        "ax": 0.191494,
+        "isSouth": false
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "x0Length": 6,
+        "periodPositive": true,
+        "x0ZSign": "positive",
+        "periodClosureNormMax": 1e-11
+      }
+    },
+    {
+      "name": "em-l2-halo-south",
+      "method": "GET",
+      "path": "/libration/em-l2-halo",
+      "query": {
+        "ax": 0.191494,
+        "isSouth": true
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "x0ZSign": "negative",
+        "periodClosureNormMax": 1e-11
+      }
+    },
+    {
+      "name": "em-l2-nrho-north-contract-probe",
+      "method": "GET",
+      "path": "/libration/em-l2-halo",
+      "query": {
+        "ax": 0.026,
+        "isSouth": false
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "x0Length": 6,
+        "periodPositive": true,
+        "x0ZSign": "positive",
+        "periodClosureNormMax": 1e-11
+      },
+      "contractNote": "OpenAPI names ax=0.026 as a typical NRHO although it is below the same endpoint's documented ax range. A failed business assertion records a service-contract or orbit-family-data incompatibility."
+    },
+    {
+      "name": "em-l2-halo-out-of-range",
+      "method": "GET",
+      "path": "/libration/em-l2-halo",
+      "query": {
+        "ax": 0.01,
+        "isSouth": false
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": false,
+        "messageContains": "Ax"
+      }
+    },
+    {
+      "name": "em-l1-halo-north",
+      "method": "GET",
+      "path": "/libration/em-l1-halo",
+      "query": {
+        "az": 0.1,
+        "isSouth": false
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "x0Length": 6,
+        "x0Z": 0.1,
+        "absoluteTolerance": 1e-12,
+        "periodClosureNormMax": 1e-11
+      }
+    },
+    {
+      "name": "em-l1-halo-south",
+      "method": "GET",
+      "path": "/libration/em-l1-halo",
+      "query": {
+        "az": 0.1,
+        "isSouth": true
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "x0Z": -0.1,
+        "absoluteTolerance": 1e-12,
+        "periodClosureNormMax": 1e-11
+      }
+    },
+    {
+      "name": "em-dro-100000-km",
+      "method": "GET",
+      "path": "/libration/em-dro",
+      "query": {
+        "ax": 0.26014568158168577
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "x0Length": 6,
+        "x0X": 1.2601456815816858,
+        "x0Z": 0,
+        "x0VySign": "negative",
+        "absoluteTolerance": 1e-12,
+        "periodClosureNormMax": 1e-11
+      }
+    }
+  ]
+}

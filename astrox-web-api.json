@@ -3,7 +3,7 @@
   "info": {
     "title": "ASTROX Web API(.Net 10)",
     "description": "航天算法库(blitheli)",
-    "version": "2026-06-24"
+    "version": "2026-07-12"
   },
   "servers": [
     {
@@ -1945,6 +1945,321 @@
         }
       }
     },
+    "/libration/positions": {
+      "get": {
+        "tags": [
+          "Libration"
+        ],
+        "summary": "平动点位置计算",
+        "description": "圆形限制性三体问题平动点的位置(原点在质心,皆为无量纲),返回结果数组: <br>[0,1,2]:平动点1,2,3距附近天体的无量纲距离; <br>[3,4,5,6,7]:平动点1,2,3,4,5的横坐标x <br>[8,9]:平动点4,5的纵坐标y  <br>太阳系典型的质量比: <br>日-地系统: 3.003143144634591e-6 <br>地-月系统: 0.01215058560962404 <br>",
+        "parameters": [
+          {
+            "name": "u",
+            "in": "query",
+            "description": "质量比参数u:(m2/(m1+m2)),m2为次级天体质量",
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "format": "double"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libration/unit": {
+      "get": {
+        "tags": [
+          "Libration"
+        ],
+        "summary": "会合坐标系单位计算",
+        "description": "获取圆形限制性三体问题下:单位长度,单位时间及单位速度",
+        "parameters": [
+          {
+            "name": "gm1",
+            "in": "query",
+            "description": "主天体的引力参数(m^3/s^2)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 398600441800000
+            }
+          },
+          {
+            "name": "gm2",
+            "in": "query",
+            "description": "次级天体的引力参数(m^3/s^2)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 4904869500000
+            }
+          },
+          {
+            "name": "meanRange",
+            "in": "query",
+            "description": "主次天体会合坐标系平均距离(m)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 384400000
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibrationUnit"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibrationUnit"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LibrationUnit"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libration/crtbp-trajectory": {
+      "post": {
+        "tags": [
+          "Libration"
+        ],
+        "summary": "CRTBP 轨道数值积分",
+        "description": "圆形限制性三体问题会合坐标系轨道积分(无量纲)。<br>会合坐标系原点可为质心或主天体(此时次天体x=1),由参数IsBarycentric确定。<br>",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trajectory_CRTBP_Input"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trajectory_CRTBP_Input"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Trajectory_CRTBP_Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trajectory_CRTBP_Output"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trajectory_CRTBP_Output"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Trajectory_CRTBP_Output"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libration/em-l2-halo": {
+      "get": {
+        "tags": [
+          "Libration"
+        ],
+        "summary": "地月 L2 Halo 轨道",
+        "description": "根据地月 L2 Halo 轨道族数据插值并微分修正周期 Halo 轨道(CRTBP,原点在地球质心,无量纲)。<br>Ax 为无量纲月球相对 x 初值:Ax = X0[0] - 1.0。 L2 Halo轨道随Ax单调减变化,范围约 0.05 - 0.1928。<br>isSouth=true 表示南半球 Halo (X0[2] 取负值)。<br>默认Northern Halo, 返回的初值位置速度在XZ平面上, L2 点右上侧 <br>典型的地月Halo轨道: Ax = 0.192; NRHO: Ax = 0.026",
+        "parameters": [
+          {
+            "name": "ax",
+            "in": "query",
+            "description": "无量纲振幅 Ax(范围约 0.05 - 0.1928)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 0.192
+            }
+          },
+          {
+            "name": "isSouth",
+            "in": "query",
+            "description": "true 表示南半球 Halo",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libration/em-l1-halo": {
+      "get": {
+        "tags": [
+          "Libration"
+        ],
+        "summary": "地月 L1 Halo 轨道",
+        "description": "根据地月 L1 Halo 轨道族数据插值并微分修正周期 Halo 轨道(CRTBP,原点在地球质心,无量纲)。<br>Az 为无量纲 z 振幅:Az = X0[2],范围约 0.022  - 0.199。L1 Halo轨道随Az单调增变化,范围约 0.022  - 0.199。<br>isSouth=true 表示南半球 Halo (X0[2] 取负值)。<br>默认Northern Halo, 返回的初值位置速度在XZ平面上, L1 点左上侧",
+        "parameters": [
+          {
+            "name": "az",
+            "in": "query",
+            "description": "无量纲振幅 Az(范围约 0.022 - 0.199)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 0.05
+            }
+          },
+          {
+            "name": "isSouth",
+            "in": "query",
+            "description": "true 表示南半球 Halo",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/libration/em-dro": {
+      "get": {
+        "tags": [
+          "Libration"
+        ],
+        "summary": "地月 DRO 轨道",
+        "description": "根据地月平面 DRO 轨道族数据插值并微分修正周期 DRO(CRTBP,原点在地球质心,无量纲)。<br>Ax 为远离月球一侧无量纲振幅:Ax = X0[0] - 1.0,范围约 0.078 - 0.520(对应约 30000 - 200000 km, UnitL=384400 km)。<br>返回平面逆行周期轨道初值(+X 轴穿越,Vy&lt;0)。<br>典型振幅: Ax=70000 km → Ax=0.1801",
+        "parameters": [
+          {
+            "name": "ax",
+            "in": "query",
+            "description": "远离月球一侧无量纲振幅 Ax(范围约 0.078 - 0.520, 约 30000 - 200000 km)",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "default": 0.1801
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HaloOrbitResults"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Lighting/LightingTimes": {
       "post": {
         "tags": [
@@ -3260,159 +3575,6 @@
         }
       }
     },
-    "/Rocket/RocketSegmentFA": {
-      "post": {
-        "tags": [
-          "Rocket"
-        ],
-        "summary": "火箭方案弹道优化计算",
-        "description": "采用飞行段模型，气动力默认使用内置参数",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketSegmentFA_Input"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketSegmentFA_Input"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketSegmentFA_Input"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketSegmentFA_Output"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketSegmentFA_Output"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketSegmentFA_Output"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Rocket/RocketLanding": {
-      "post": {
-        "tags": [
-          "Rocket"
-        ],
-        "summary": "火箭垂直着陆弹道优化计算",
-        "description": "分4段,气动力默认使用内置参数",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketLandingInput"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketLandingInput"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketLandingInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketLanding_Output"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketLanding_Output"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketLanding_Output"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Rocket/RocketGuid": {
-      "post": {
-        "tags": [
-          "Rocket"
-        ],
-        "summary": "火箭制导弹道计算",
-        "description": "制导弹道,气动力默认使用内置参数。输入参数首行使用$type符号标记对应的制导类型",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketGuid"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketGuid"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/RocketGuid"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketGuid_Output2"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketGuid_Output2"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RocketGuid_Output2"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/Terrain/AzElMask": {
       "post": {
         "tags": [
@@ -4099,18 +4261,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgDirectionAgDirectionRADec"
+            "$ref": "#/components/schemas/AgDirectionAgDirectionXYZ"
           },
           {
-            "$ref": "#/components/schemas/AgDirectionAgDirectionXYZ"
+            "$ref": "#/components/schemas/AgDirectionAgDirectionRADec"
           }
         ],
         "description": "指向接口  <br>具体实现类:  <br>-AgDirectionRADec(\"$type\":\"RADec\")  <br>-AgDirectionXYZ(\"$type\":\"XYZ\")  <br>",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "RADec": "#/components/schemas/AgDirectionAgDirectionRADec",
-            "XYZ": "#/components/schemas/AgDirectionAgDirectionXYZ"
+            "XYZ": "#/components/schemas/AgDirectionAgDirectionXYZ",
+            "RADec": "#/components/schemas/AgDirectionAgDirectionRADec"
           }
         }
       },
@@ -4174,22 +4336,22 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgOrientationOrientationQuaternion"
+            "$ref": "#/components/schemas/AgOrientationOrientationAzEl"
           },
           {
             "$ref": "#/components/schemas/AgOrientationOrientationEulerAngles"
           },
           {
-            "$ref": "#/components/schemas/AgOrientationOrientationAzEl"
+            "$ref": "#/components/schemas/AgOrientationOrientationQuaternion"
           }
         ],
         "description": "指向接口  <br>具体实现类:  <br>-OrientationAzEl(\"$type\":\"AzEl\")  <br>-OrientationQuaternion(\"$type\":\"Quaternion\")  <br>-OrientationEulerAngles(\"$type\":\"EulerAngles\")  <br>",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Quaternion": "#/components/schemas/AgOrientationOrientationQuaternion",
+            "AzEl": "#/components/schemas/AgOrientationOrientationAzEl",
             "EulerAngles": "#/components/schemas/AgOrientationOrientationEulerAngles",
-            "AzEl": "#/components/schemas/AgOrientationOrientationAzEl"
+            "Quaternion": "#/components/schemas/AgOrientationOrientationQuaternion"
           }
         }
       },
@@ -4279,8 +4441,8 @@
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Rectangular": "#/components/schemas/AgSensorRectangularSensor",
-            "Conic": "#/components/schemas/AgSensorConicSensor"
+            "Conic": "#/components/schemas/AgSensorConicSensor",
+            "Rectangular": "#/components/schemas/AgSensorRectangularSensor"
           }
         }
       },
@@ -4349,26 +4511,26 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude"
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector"
           },
           {
             "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
           }
         ],
         "description": "瞬时脉冲机动姿态控制参数接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Attitude": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude",
+            "VelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector",
             "ThrustVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector",
-            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector",
-            "VelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector"
+            "Attitude": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude",
+            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
           }
         }
       },
@@ -4670,13 +4832,13 @@
             "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude"
-          },
-          {
             "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector"
           },
           {
             "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude"
           }
         ],
         "description": "瞬时脉冲机动姿态控制参数接口",
@@ -4684,9 +4846,9 @@
           "propertyName": "$type",
           "mapping": {
             "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector",
-            "Attitude": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude",
             "ThrustVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector",
-            "VelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector"
+            "VelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector",
+            "Attitude": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude"
           }
         }
       },
@@ -5171,9 +5333,6 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAElementAgVAElementCartesian"
-          },
-          {
             "$ref": "#/components/schemas/AgVAElementAgVAElementSpherical"
           },
           {
@@ -5181,16 +5340,19 @@
           },
           {
             "$ref": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAElementAgVAElementCartesian"
           }
         ],
         "description": "轨道参数基类",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Cartesian": "#/components/schemas/AgVAElementAgVAElementCartesian",
             "Spherical": "#/components/schemas/AgVAElementAgVAElementSpherical",
             "Keplerian": "#/components/schemas/AgVAElementAgVAElementKeplerian",
-            "TargetVecOut": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote"
+            "TargetVecOut": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote",
+            "Cartesian": "#/components/schemas/AgVAElementAgVAElementCartesian"
           }
         }
       },
@@ -5526,18 +5688,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstant"
+            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstAcc"
           },
           {
-            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstAcc"
+            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstant"
           }
         ],
         "description": "发动机基类接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "EngineConstant": "#/components/schemas/AgVAEngineAgVAEngineConstant",
-            "EngineConstAcc": "#/components/schemas/AgVAEngineAgVAEngineConstAcc"
+            "EngineConstAcc": "#/components/schemas/AgVAEngineAgVAEngineConstAcc",
+            "EngineConstant": "#/components/schemas/AgVAEngineAgVAEngineConstant"
           }
         }
       },
@@ -6001,25 +6163,25 @@
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate"
           },
           {
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow"
+          },
+          {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSInitialState"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop"
           },
           {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence"
           },
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite"
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence"
           },
           {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive"
           },
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow"
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite"
           }
         ],
         "description": "Astrogator段的基类",
@@ -6027,13 +6189,13 @@
           "propertyName": "$type",
           "mapping": {
             "Propagate": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate",
+            "Follow": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow",
             "InitialState": "#/components/schemas/AgVAMCSSegmentAgVAMCSInitialState",
-            "TargetSequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence",
-            "Stop": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop",
             "Sequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence",
-            "ManeuverFinite": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite",
+            "Stop": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop",
+            "TargetSequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence",
             "ManeuverImpulsive": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive",
-            "Follow": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow"
+            "ManeuverFinite": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite"
           }
         }
       },
@@ -6905,16 +7067,16 @@
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition"
           },
           {
-            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
-          },
-          {
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition"
           },
           {
+            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition"
+          },
+          {
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
           }
         ],
         "description": "轨道递推终止条件接口",
@@ -6922,10 +7084,10 @@
           "propertyName": "$type",
           "mapping": {
             "Duration": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition",
-            "Scalar": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition",
-            "Apoapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition",
             "Epoch": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition",
-            "Periapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition"
+            "Scalar": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition",
+            "Periapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition",
+            "Apoapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
           }
         }
       },
@@ -7175,6 +7337,10 @@
         ],
         "type": "object",
         "properties": {
+          "Text": {
+            "type": "string",
+            "description": "说明信息(可选)"
+          },
           "CentralBody": {
             "type": "string",
             "description": "中心天体名称(缺省:Earth,其余Moon,Mars,Sun, ...) <br>输出的MainSequenceResults的InitialState和FinalState都在此中心天体Inertial和Fixed系下",
@@ -7409,50 +7575,50 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarRelative"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarCartographic"
-          },
-          {
             "$ref": "#/components/schemas/CalcScalarCalcScalarPointElement"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarKeplerianElement"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarBPlane"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarEpoch"
           },
           {
             "$ref": "#/components/schemas/CalcScalarCalcScalarDuration"
           },
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarSphericalElement"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarCartographic"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarKeplerianElement"
           },
           {
             "$ref": "#/components/schemas/CalcScalarCalcScalarModifiedKeplerianElement"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarBPlane"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarSphericalElement"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarRelative"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarEpoch"
           }
         ],
         "description": "标量计算对象(可用于轨道积分终止条件、段Results参数设置)",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Relative": "#/components/schemas/CalcScalarCalcScalarRelative",
-            "Cartographic": "#/components/schemas/CalcScalarCalcScalarCartographic",
             "PointElement": "#/components/schemas/CalcScalarCalcScalarPointElement",
-            "KeplerianElement": "#/components/schemas/CalcScalarCalcScalarKeplerianElement",
-            "DeltaSpherical": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement",
-            "BPlane": "#/components/schemas/CalcScalarCalcScalarBPlane",
-            "Epoch": "#/components/schemas/CalcScalarCalcScalarEpoch",
             "Duration": "#/components/schemas/CalcScalarCalcScalarDuration",
+            "Cartographic": "#/components/schemas/CalcScalarCalcScalarCartographic",
+            "KeplerianElement": "#/components/schemas/CalcScalarCalcScalarKeplerianElement",
+            "ModifiedKeplerianElement": "#/components/schemas/CalcScalarCalcScalarModifiedKeplerianElement",
+            "BPlane": "#/components/schemas/CalcScalarCalcScalarBPlane",
             "SphericalElement": "#/components/schemas/CalcScalarCalcScalarSphericalElement",
-            "ModifiedKeplerianElement": "#/components/schemas/CalcScalarCalcScalarModifiedKeplerianElement"
+            "DeltaSpherical": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement",
+            "Relative": "#/components/schemas/CalcScalarCalcScalarRelative",
+            "Epoch": "#/components/schemas/CalcScalarCalcScalarEpoch"
           }
         }
       },
@@ -8707,49 +8873,6 @@
         },
         "description": "距离约束  <br>json反序列化时，首行为:\"$type\":\"Range\""
       },
-      "Control_Optimizer": {
-        "type": "object",
-        "properties": {
-          "Use": {
-            "type": "boolean",
-            "description": "是否有效"
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "自变量名称"
-          },
-          "CurrentValue": {
-            "type": "number",
-            "description": "当前值",
-            "format": "double"
-          },
-          "LowerBound": {
-            "type": "number",
-            "description": "下界",
-            "format": "double"
-          },
-          "UpperBound": {
-            "type": "number",
-            "description": "上界",
-            "format": "double"
-          },
-          "Scale": {
-            "type": "number",
-            "description": "归一化标尺",
-            "format": "double"
-          },
-          "Object": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "自变量所属段名称"
-          }
-        }
-      },
       "ConvertCzmlPositionInput": {
         "required": [
           "Position",
@@ -9269,43 +9392,19 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCSun"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixed"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNC"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars"
-          },
-          {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMoon"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesComposite"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNC"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMars"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth"
@@ -9317,10 +9416,22 @@
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLH"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesComposite"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCSun"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCzmlOrientation"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLH"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon"
@@ -9332,38 +9443,50 @@
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHCBF"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLH"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCzmlOrientation"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixed"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMars"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF"
           }
         ],
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "FixedAtEpoch": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch",
-            "VNC(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth",
-            "VNC(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon",
-            "VNC(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVNCSun",
-            "AlignedAndConstrained": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained",
-            "Fixed": "#/components/schemas/CrdnAxesCrdnAxesFixed",
-            "VNC": "#/components/schemas/CrdnAxesCrdnAxesVNC",
-            "LVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars",
             "LVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun",
             "LVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMoon",
-            "Composite": "#/components/schemas/CrdnAxesCrdnAxesComposite",
-            "VNC(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF",
-            "VNC(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVNCMars",
+            "VNC": "#/components/schemas/CrdnAxesCrdnAxesVNC",
+            "VVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars",
+            "VNC(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon",
             "LVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth",
             "LVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesLVLHCBF",
             "LVLH": "#/components/schemas/CrdnAxesCrdnAxesLVLH",
-            "VVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars",
+            "LVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars",
             "VVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun",
+            "Composite": "#/components/schemas/CrdnAxesCrdnAxesComposite",
+            "VNC(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVNCSun",
+            "CzmlOrientation": "#/components/schemas/CrdnAxesCzmlOrientation",
+            "VVLH": "#/components/schemas/CrdnAxesCrdnAxesVVLH",
             "VVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon",
             "VVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth",
             "VVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVVLHCBF",
-            "VVLH": "#/components/schemas/CrdnAxesCrdnAxesVVLH",
-            "CzmlOrientation": "#/components/schemas/CrdnAxesCzmlOrientation"
+            "AlignedAndConstrained": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained",
+            "VNC(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth",
+            "Fixed": "#/components/schemas/CrdnAxesCrdnAxesFixed",
+            "VNC(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVNCMars",
+            "FixedAtEpoch": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch",
+            "VNC(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF"
           }
         }
       },
@@ -10922,9 +11045,6 @@
         },
         "description": "地形遮挡的高度角数据(距离、最大高度角)"
       },
-      "EMCSProfile": {
-        "type": "integer"
-      },
       "EntityPath": {
         "required": [
           "Position"
@@ -11302,13 +11422,13 @@
             "type": "number",
             "description": "J2项归一化数值(引力场文件中C20的负值)。缺省: 地球EGM2008:0.000484165143790815, 其它:火星MRO110C:0.8750222171673000E-03",
             "format": "double",
-            "default": 0.00048416515
+            "default": 0.000484165143790815
           },
           "RefDistance": {
             "type": "number",
             "description": "参考椭球体半长轴(m)。缺省时: 地球EGM2008:6378136.3",
             "format": "double",
-            "default": 6378136.5
+            "default": 6378136.3
           },
           "OrbitEpoch": {
             "type": "string",
@@ -12072,6 +12192,76 @@
         },
         "description": "某时刻所有网格点FOM的统计数值(最小、最大、平均)(根据,具体数值由具体的FOM决定)"
       },
+      "HaloOrbitResults": {
+        "required": [
+          "IsSuccess",
+          "Message"
+        ],
+        "type": "object",
+        "properties": {
+          "IsSuccess": {
+            "type": "boolean",
+            "description": "计算是否成功"
+          },
+          "Message": {
+            "type": "string",
+            "description": "计算信息"
+          },
+          "Period": {
+            "type": "number",
+            "description": "无量纲周期",
+            "format": "double"
+          },
+          "X0": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "HALO轨道的初值(位于xz平面上)(已微分迭代后)"
+          },
+          "InitialX0": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "HALO轨道计算时的初始值(位于xz平面上）"
+          },
+          "ListT": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "HALO轨道一个周期的数值积分的时间数组(无量纲)"
+          },
+          "ListX": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "number",
+                "format": "double"
+              }
+            },
+            "description": "HALO轨道一个周期的数值积分的位置、速度数组(无量纲)"
+          }
+        },
+        "description": "圆形限制性三体问题下,L1-L3 Halo轨道的结果。也可作为DRO轨道的结果。"
+      },
       "IAtmosphericDensityFunction": {
         "required": [
           "$type"
@@ -12151,22 +12341,30 @@
         "type": "object",
         "anyOf": [
           {
+            "$ref": "#/components/schemas/IContraintConstraintSunExclusionAngle"
+          },
+          {
+            "$ref": "#/components/schemas/IContraintConstraintMoonExclusionAngle"
+          },
+          {
+            "$ref": "#/components/schemas/IContraintConstraintElevationAngle"
+          },
+          {
             "$ref": "#/components/schemas/IContraintConstraintAzElMask"
           },
           {
             "$ref": "#/components/schemas/IContraintConstraintRange"
-          },
-          {
-            "$ref": "#/components/schemas/IContraintConstraintElevationAngle"
           }
         ],
-        "description": "对象约束接口  <br>具体实现类:  <br>-ConstraintElevationAngle(\"$type\":\"ElevationAngle\")  <br>-ConstraintRange(\"$type\":\"Range\")  <br>-ConstraintAzElMask(\"$type\":\"AzElMask\")",
+        "description": "对象约束接口  <br>具体实现类:  <br>-ConstraintElevationAngle(\"$type\":\"ElevationAngle\")  <br>-ConstraintRange(\"$type\":\"Range\")  <br>-ConstraintAzElMask(\"$type\":\"AzElMask\")  <br>-ConstraintSunExclusionAngle(\"$type\":\"SunExclusionAngle\")  <br>-ConstraintMoonExclusionAngle(\"$type\":\"MoonExclusionAngle\")",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
+            "SunExclusionAngle": "#/components/schemas/IContraintConstraintSunExclusionAngle",
+            "MoonExclusionAngle": "#/components/schemas/IContraintConstraintMoonExclusionAngle",
+            "ElevationAngle": "#/components/schemas/IContraintConstraintElevationAngle",
             "AzElMask": "#/components/schemas/IContraintConstraintAzElMask",
-            "Range": "#/components/schemas/IContraintConstraintRange",
-            "ElevationAngle": "#/components/schemas/IContraintConstraintElevationAngle"
+            "Range": "#/components/schemas/IContraintConstraintRange"
           }
         }
       },
@@ -12239,6 +12437,30 @@
         },
         "description": "地面仰角约束  <br>json反序列化时，首行为:\"$type\":\"ElevationAngle\""
       },
+      "IContraintConstraintMoonExclusionAngle": {
+        "properties": {
+          "$type": {
+            "enum": [
+              "MoonExclusionAngle"
+            ],
+            "type": "string"
+          },
+          "Text": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "说明"
+          },
+          "MinimumValue": {
+            "type": "number",
+            "description": "月球规避角最小值(deg),缺省为0",
+            "format": "double",
+            "default": 0
+          }
+        },
+        "description": "月球规避角约束  <br>json反序列化时，首行为:\"$type\":\"MoonExclusionAngle\""
+      },
       "IContraintConstraintRange": {
         "properties": {
           "$type": {
@@ -12274,15 +12496,36 @@
         },
         "description": "距离约束  <br>json反序列化时，首行为:\"$type\":\"Range\""
       },
+      "IContraintConstraintSunExclusionAngle": {
+        "properties": {
+          "$type": {
+            "enum": [
+              "SunExclusionAngle"
+            ],
+            "type": "string"
+          },
+          "Text": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "说明"
+          },
+          "MinimumValue": {
+            "type": "number",
+            "description": "太阳规避角最小值(deg),缺省为0",
+            "format": "double",
+            "default": 0
+          }
+        },
+        "description": "太阳规避角约束  <br>json反序列化时，首行为:\"$type\":\"SunExclusionAngle\""
+      },
       "ICoverageGrid": {
         "required": [
           "$type"
         ],
         "type": "object",
         "anyOf": [
-          {
-            "$ref": "#/components/schemas/ICoverageGridCoverageGridLatLonBounds"
-          },
           {
             "$ref": "#/components/schemas/ICoverageGridCovGridLatLonBounds"
           },
@@ -12291,16 +12534,19 @@
           },
           {
             "$ref": "#/components/schemas/ICoverageGridCoverageGridLatitudeBounds"
+          },
+          {
+            "$ref": "#/components/schemas/ICoverageGridCoverageGridLatLonBounds"
           }
         ],
         "description": "覆盖分析中的网格定义接口  <br>参见派生类型(json反序列化时,最前面加$type:...)  <br>- CovGridLatLonBounds($type:CbLatLonBounds)  <br>- CoverageGridGlobal($type:Global)  <br>- CoverageGridLatitudeBounds($type:LatitudeBounds)  <br>- CoverageGridLatLonBounds($type:LatLonBounds)  <br>",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "LatLonBounds": "#/components/schemas/ICoverageGridCoverageGridLatLonBounds",
             "CbLatLonBounds": "#/components/schemas/ICoverageGridCovGridLatLonBounds",
             "Global": "#/components/schemas/ICoverageGridCoverageGridGlobal",
-            "LatitudeBounds": "#/components/schemas/ICoverageGridCoverageGridLatitudeBounds"
+            "LatitudeBounds": "#/components/schemas/ICoverageGridCoverageGridLatitudeBounds",
+            "LatLonBounds": "#/components/schemas/ICoverageGridCoverageGridLatLonBounds"
           }
         }
       },
@@ -12660,10 +12906,10 @@
             "$ref": "#/components/schemas/IEntityPositionAstrogatorMCS"
           },
           {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent"
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionHPOP"
           },
           {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionHPOP"
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionBallistic"
           },
           {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionCentralBody"
@@ -12675,19 +12921,19 @@
             "$ref": "#/components/schemas/IEntityPositionEntityPositionJ2"
           },
           {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionSite"
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionTwoBody"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent"
           },
           {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionCzml"
           },
           {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionSite"
+          },
+          {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionBallistic"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionTwoBody"
           }
         ],
         "description": "对象位置参数接口(参见实现类)  <br>具体实现类:  <br>-EntityPositionSite(\"$type\":\"SitePosition\")  <br>-EntityPositionCzml(\"$type\":\"CzmlPosition\")  <br>-EntityPositionCzmlPositions(\"$type\":\"CzmlPositions\")  <br>-EntityPositionTwoBody(\"$type\":\"TwoBody\")  <br>-EntityPositionJ2(\"$type\":\"J2\")  <br>-EntityPositionSGP4(\"$type\":\"SGP4\")  <br>-EntityPositionCentralBody(\"$type\":\"CentralBody\") <br>-EntityPositionBallistic(\"$type\":\"Ballistic\") <br>-EntityPositionSimpleAscent(\"$type\":\"SimpleAscent\") <br>-EntityPositionHPOP(\"$type\":\"HPOP\") <br>-AstrogatorMCS(\"$type\":\"AstrogatorMCS\")",
@@ -12695,16 +12941,16 @@
           "propertyName": "$type",
           "mapping": {
             "AstrogatorMCS": "#/components/schemas/IEntityPositionAstrogatorMCS",
-            "SimpleAscent": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent",
             "HPOP": "#/components/schemas/IEntityPositionEntityPositionHPOP",
+            "Ballistic": "#/components/schemas/IEntityPositionEntityPositionBallistic",
             "CentralBody": "#/components/schemas/IEntityPositionEntityPositionCentralBody",
             "SGP4": "#/components/schemas/IEntityPositionEntityPositionSGP4",
             "J2": "#/components/schemas/IEntityPositionEntityPositionJ2",
-            "SitePosition": "#/components/schemas/IEntityPositionEntityPositionSite",
+            "TwoBody": "#/components/schemas/IEntityPositionEntityPositionTwoBody",
+            "SimpleAscent": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent",
             "CzmlPosition": "#/components/schemas/IEntityPositionEntityPositionCzml",
-            "CzmlPositions": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions",
-            "Ballistic": "#/components/schemas/IEntityPositionEntityPositionBallistic",
-            "TwoBody": "#/components/schemas/IEntityPositionEntityPositionTwoBody"
+            "SitePosition": "#/components/schemas/IEntityPositionEntityPositionSite",
+            "CzmlPositions": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions"
           }
         }
       },
@@ -12718,6 +12964,10 @@
               "AstrogatorMCS"
             ],
             "type": "string"
+          },
+          "Text": {
+            "type": "string",
+            "description": "说明信息(可选)"
           },
           "CentralBody": {
             "type": "string",
@@ -13116,13 +13366,13 @@
             "type": "number",
             "description": "J2项归一化数值(引力场文件中C20的负值)。缺省: 地球EGM2008:0.000484165143790815, 其它:火星MRO110C:0.8750222171673000E-03",
             "format": "double",
-            "default": 0.00048416515
+            "default": 0.000484165143790815
           },
           "RefDistance": {
             "type": "number",
             "description": "参考椭球体半长轴(m)。缺省时: 地球EGM2008:6378136.3",
             "format": "double",
-            "default": 6378136.5
+            "default": 6378136.3
           },
           "OrbitEpoch": {
             "type": "string",
@@ -13837,44 +14087,6 @@
         },
         "description": "太阳辐射压（SRP）摄动模型参数，SRPSpherical类型"
       },
-      "IVAMCSProfile": {
-        "type": "object",
-        "properties": {
-          "Type": {
-            "$ref": "#/components/schemas/EMCSProfile"
-          },
-          "IsActive": {
-            "type": "boolean"
-          },
-          "IsIterate": {
-            "type": "boolean"
-          },
-          "VeMCS": {
-            "$ref": "#/components/schemas/IVePropagatorMCS"
-          },
-          "TypeDiscriminator": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ]
-          }
-        }
-      },
-      "IVePropagatorMCS": {
-        "type": "object"
-      },
       "JacchiaRoberts": {
         "type": "object",
         "properties": {
@@ -14041,12 +14253,12 @@
             },
             "description": "初始位置速度:x,y,z(m),Vx,Vy,Vz(m/s),支持多个初始RV,在数组中往后添加即可",
             "default": [
-              1112487.4,
-              6184933,
-              487640.8,
-              -8088.605,
-              1334.5963,
-              1525.882
+              1112487.3869553704,
+              6184932.960994068,
+              487640.81891733914,
+              -8088.604880980995,
+              1334.596293517134,
+              1525.8819071266005
             ]
           },
           "RV2": {
@@ -14057,12 +14269,12 @@
             },
             "description": "末态位置速度：x,y,z(m),Vx,Vy,Vz(m/s),支持多个末态RV,在数组中往后添加即可",
             "default": [
-              -4963330.5,
-              4154175.2,
-              1301603,
-              -5569.688,
-              -5716.8755,
-              323.9083
+              -4963330.254157325,
+              4154175.317326534,
+              1301602.9420849527,
+              -5569.687866545414,
+              -5716.875397495282,
+              323.9082929292631
             ]
           },
           "Gm": {
@@ -14079,7 +14291,7 @@
             },
             "description": "飞行时间(s),支持多个Lambert算例,在数组中往后添加即可",
             "default": [
-              817.4257
+              817.42573018326
             ]
           }
         }
@@ -14169,6 +14381,42 @@
           }
         },
         "description": "火箭落区边界点输出参数(Cesium中,Polygon的Positions/cartographicDegrees)"
+      },
+      "LibrationUnit": {
+        "type": "object",
+        "properties": {
+          "GravitationalParameter1": {
+            "type": "number",
+            "description": "主天体的引力参数(m^3/s^2)",
+            "format": "double"
+          },
+          "GravitationalParameter2": {
+            "type": "number",
+            "description": "次级天体的引力参数(m^3/s^2)",
+            "format": "double"
+          },
+          "U": {
+            "type": "number",
+            "description": "次级天体的质量系数(m2/(m1+m2))",
+            "format": "double"
+          },
+          "UnitL": {
+            "type": "number",
+            "description": "会合坐标系单位长度(m)",
+            "format": "double"
+          },
+          "UnitT": {
+            "type": "number",
+            "description": "会合坐标系单位时间(s),无量纲时间对应一圈为2π",
+            "format": "double"
+          },
+          "UnitV": {
+            "type": "number",
+            "description": "会合坐标系单位速度(m/s)",
+            "format": "double"
+          }
+        },
+        "description": "会合坐标系单位"
       },
       "LifeTimeTLE_Input": {
         "type": "object",
@@ -14558,19 +14806,19 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSSequenceResults"
-          },
-          {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverFiniteResults"
-          },
-          {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverImpulsiveResults"
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSTargetSequenceResults"
           },
           {
             "$ref": "#/components/schemas/MCSSegmentResultsMCSPropagateResults"
           },
           {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSTargetSequenceResults"
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverImpulsiveResults"
+          },
+          {
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverFiniteResults"
+          },
+          {
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSSequenceResults"
           },
           {
             "$ref": "#/components/schemas/MCSSegmentResultsBase"
@@ -15107,7 +15355,7 @@
             "type": "number",
             "description": "升交点赤经/黄经 (deg)",
             "format": "double",
-            "default": 209.81828
+            "default": 209.81829
           },
           "ArgOfPeriapsis": {
             "type": "number",
@@ -15610,56 +15858,6 @@
         },
         "description": "报告: 覆盖百分比(随时间变化的瞬时覆盖百分比和累计覆盖百分比)  <br>与FOM无关  <br>内部使用SatisfactionIntervals属性，此参数对应最小资源数约束的结果  <br>可单独求解某资源的覆盖百分比"
       },
-      "Result_Optimizer": {
-        "type": "object",
-        "properties": {
-          "Use": {
-            "type": "boolean",
-            "description": "是否有效"
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "名称"
-          },
-          "CurrentValue": {
-            "type": "number",
-            "description": "当前值",
-            "format": "double"
-          },
-          "DesiredValue": {
-            "type": "number",
-            "description": "要求值",
-            "format": "double"
-          },
-          "Scale": {
-            "type": "number",
-            "description": "归一化标尺",
-            "format": "double"
-          },
-          "Object": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "约束函数所属段名称"
-          },
-          "Goal": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "优化目标(Equality/Minimize/Maximize)"
-          },
-          "DltFG": {
-            "type": "number",
-            "description": "约束当前值与要求值的差",
-            "format": "double"
-          }
-        }
-      },
       "RKF7th8th": {
         "type": "object",
         "properties": {
@@ -15721,2740 +15919,6 @@
           }
         },
         "description": "龙哥-库塔 7(8)阶数值积分器参数"
-      },
-      "RocketGuid": {
-        "required": [
-          "$type"
-        ],
-        "type": "object",
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/RocketGuidRocketGuid_KZ1A"
-          },
-          {
-            "$ref": "#/components/schemas/RocketGuidRocketGuid_CZ2CD"
-          },
-          {
-            "$ref": "#/components/schemas/RocketGuidRocketGuid_CZ4BC"
-          },
-          {
-            "$ref": "#/components/schemas/RocketGuidRocketGuid_CZ3BC"
-          },
-          {
-            "$ref": "#/components/schemas/RocketGuidRocketGuid_CZ7A"
-          }
-        ],
-        "discriminator": {
-          "propertyName": "$type",
-          "mapping": {
-            "KZ1A": "#/components/schemas/RocketGuidRocketGuid_KZ1A",
-            "CZ2CD": "#/components/schemas/RocketGuidRocketGuid_CZ2CD",
-            "CZ4BC": "#/components/schemas/RocketGuidRocketGuid_CZ4BC",
-            "CZ3BC": "#/components/schemas/RocketGuidRocketGuid_CZ3BC",
-            "CZ7A": "#/components/schemas/RocketGuidRocketGuid_CZ7A"
-          }
-        }
-      },
-      "RocketGuid_Output2": {
-        "type": "object",
-        "properties": {
-          "IsSuccess": {
-            "type": "boolean",
-            "description": "结果(True:成功；FALSE:失败)"
-          },
-          "Message": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "结果信息(主要是存储失败的原因)"
-          },
-          "GuanJiFangCheng": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "description": "实际关机方程(GJFC_1k/GJFC_2k/GJFC_3k, 0为正常关机,1为耗尽关机)"
-          },
-          "Delta_dL": {
-            "type": "number",
-            "description": "一级射程关机偏差(km)",
-            "format": "double"
-          },
-          "Delta_Va": {
-            "type": "number",
-            "description": "二级关机速度偏差(m/s)",
-            "format": "double"
-          },
-          "Delta_Sma1": {
-            "type": "number",
-            "description": "(三级)一次关机半长轴偏差(km)",
-            "format": "double"
-          },
-          "Delta_Sma2": {
-            "type": "number",
-            "description": "(三级)二次关机半长轴偏差(km),若无二次关机则忽略此参数",
-            "format": "double"
-          },
-          "Delta_Elm3k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "(三级)一次关机轨道根数偏差(sma,ecc,inc,raan,omg,f,u)(单位:km,deg)"
-          },
-          "Delta_Elm32k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "(三级)二次关机轨道根数偏差(sma,ecc,inc,raan,omg,f,u)(单位:km,deg)。若无二次关机则忽略此参数"
-          },
-          "DicAllData": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "所有点弹道参数"
-          },
-          "DicAllDataZJ": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "array"
-              }
-            },
-            "description": "所有子级的弹道参数"
-          },
-          "DicKeyData": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "特征点弹道参数(每一段的开始、结束时刻所有弹道数据,其中开始数据与上一段的结束时刻相同)"
-          },
-          "DicKeyData2": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "特征点弹道参数2(每一段的开始参数，适用于飞行时序)"
-          },
-          "ZJLD": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/RocketZJLDInfo"
-            },
-            "description": "所有子级落点表"
-          }
-        }
-      },
-      "RocketGuidRocketGuid_CZ2CD": {
-        "properties": {
-          "$type": {
-            "enum": [
-              "CZ2CD"
-            ],
-            "type": "string"
-          },
-          "PC": {
-            "description": "制导偏差量(若无偏差，可不赋值。注意，偏差量包含所有参数，若对应的火箭没有对应的偏差参数可不用赋值",
-            "$ref": "#/components/schemas/RocketPianCha_CZ2CD"
-          },
-          "Guid_RV_2z": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "二级主机关机点制导位置、速度(地心发惯系)"
-          },
-          "Guid_RV_2u": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "游机关机点制导位置、速度(地心发惯系)"
-          },
-          "Sm_1": {
-            "type": "number",
-            "description": "芯一级横截面积(m^2)",
-            "format": "double",
-            "default": 8.814
-          },
-          "Tk_1": {
-            "type": "number",
-            "description": "一级最大关机时刻(s)(射程关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_F": {
-            "type": "number",
-            "description": "二级起飞至抛罩时长(s)",
-            "format": "double"
-          },
-          "Tk_2z": {
-            "type": "number",
-            "description": "二级起飞至主机关机最大时长(s)(速度关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_2u": {
-            "type": "number",
-            "description": "二级主机关机到游机关机时长(s)",
-            "format": "double"
-          },
-          "dt_k12f": {
-            "type": "number",
-            "description": "一级关机到分离(s),缺省1.5s",
-            "format": "double"
-          },
-          "dt_xjfl": {
-            "type": "number",
-            "description": "二级游机关机到星箭分离(s),缺省32s",
-            "format": "double"
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级总海平面推力(N)",
-            "format": "double",
-            "default": 2961600
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级海平面比冲(m/s)",
-            "format": "double",
-            "default": 2550
-          },
-          "Sa_1": {
-            "type": "number",
-            "description": "芯一级发动机总喷口面积(m^2)",
-            "format": "double",
-            "default": 6.486
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机总真空推力(N)",
-            "format": "double",
-            "default": 742040
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机真空比冲(m/s)",
-            "format": "double",
-            "default": 2922.4
-          },
-          "F_2u": {
-            "type": "number",
-            "description": "二级游机总真空推力(N)",
-            "format": "double",
-            "default": 47100
-          },
-          "Ips_2u": {
-            "type": "number",
-            "description": "二级游机真空比冲(m/s)",
-            "format": "double",
-            "default": 2834
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "仅芯一级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_1": {
-            "type": "number",
-            "description": "仅芯一级关机点质量(kg)(耗尽关机使用)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "仅二级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_2": {
-            "type": "number",
-            "description": "仅二级关机点质量(kg)",
-            "format": "double"
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "火箭制导方案名称"
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "方案说明"
-          },
-          "Description": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "详细描述"
-          },
-          "Name_FaSheDian": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "发射点名称(若未赋值，则采用FaSheDianLLA参数)"
-          },
-          "FaSheDianLLA": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "发射点大地经度(deg),纬度(deg),高度(m)"
-          },
-          "Gw": {
-            "type": "number",
-            "description": "有效载荷质量(kg)",
-            "format": "double"
-          },
-          "Gf": {
-            "type": "number",
-            "description": "整流罩质量(kg)",
-            "format": "double"
-          },
-          "A0": {
-            "type": "number",
-            "description": "发射方位角(deg)",
-            "format": "double"
-          },
-          "GJ_dL": {
-            "type": "number",
-            "description": "一级关机射程数值(m)",
-            "format": "double"
-          },
-          "GJ_Va": {
-            "type": "number",
-            "description": "(二级)速度关机数值(m/s)",
-            "format": "double"
-          },
-          "GJ_U": {
-            "type": "number",
-            "description": "三级滑行段结束纬度俯角(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_PhicxDotHx": {
-            "type": "number",
-            "description": "三级滑行段俯仰程序角变化率(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_Sma1": {
-            "type": "number",
-            "description": "(三级)一次关机半长轴数值(m)",
-            "format": "double"
-          },
-          "GJ_Sma2": {
-            "type": "number",
-            "description": "(三级)二次关机半长轴数值(m)。若无二次关机则不用赋值",
-            "format": "double"
-          },
-          "TList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角时间序列(s),以起飞时刻为零点"
-          },
-          "PhicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角序列(deg),以起飞时刻为零点"
-          },
-          "TList_psi": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角时间序列(s),缺省可不赋值,以起飞时刻为零点"
-          },
-          "PsicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角序列(deg),缺省可不赋值,以起飞时刻为零点"
-          },
-          "ReturnDicAllData": {
-            "type": "boolean",
-            "description": "是否返回全部数据表(数据量较大),默认为true",
-            "default": true
-          }
-        }
-      },
-      "RocketGuidRocketGuid_CZ3BC": {
-        "properties": {
-          "$type": {
-            "enum": [
-              "CZ3BC"
-            ],
-            "type": "string"
-          },
-          "PC": {
-            "description": "制导偏差量",
-            "$ref": "#/components/schemas/RocketPianCha_3JB"
-          },
-          "Is32k": {
-            "type": "boolean",
-            "description": "是否有三级二次工作"
-          },
-          "Guid_RV_2k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "二级主机关机点制导位置、速度(地心发惯系)"
-          },
-          "Guid_RV_3k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "三级一次关机点制导位置、速度(地心发惯系)"
-          },
-          "Guid_RV_32k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "三级二次关机点制导位置、速度(地心发惯系)"
-          },
-          "Sm_1b": {
-            "type": "number",
-            "description": "一级带助推横截面积(m^2)",
-            "format": "double",
-            "default": 17.628
-          },
-          "Sm_1": {
-            "type": "number",
-            "description": "芯一级横截面积(m^2)",
-            "format": "double",
-            "default": 8.814
-          },
-          "Tk_b": {
-            "type": "number",
-            "description": "助推器关机时刻(s)",
-            "format": "double"
-          },
-          "Tk_1": {
-            "type": "number",
-            "description": "一级最大关机时刻(s)(射程关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_F": {
-            "type": "number",
-            "description": "二级起飞至抛罩时长(s)",
-            "format": "double"
-          },
-          "Tk_2z": {
-            "type": "number",
-            "description": "二级起飞至主机关机最大时长(s)(速度关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_2u": {
-            "type": "number",
-            "description": "二级主机关机到游机关机时长(s)",
-            "format": "double"
-          },
-          "Tk_31": {
-            "type": "number",
-            "description": "三级起飞至一次关机最大时刻(s)(半长轴关机/耗尽关机 均为实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_32": {
-            "type": "number",
-            "description": "三级二次开机至关机最大时刻(s)(半长轴关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "dt_booster": {
-            "type": "number",
-            "description": "助推器关机至分离(s),缺省1.5s",
-            "format": "double",
-            "default": 1.5
-          },
-          "dt_k12f": {
-            "type": "number",
-            "description": "一级关机到分离(s),缺省1.5s",
-            "format": "double",
-            "default": 1.5
-          },
-          "dt_k23f": {
-            "type": "number",
-            "description": "二级游机关机到分离(s),缺省1.0s",
-            "format": "double",
-            "default": 1
-          },
-          "dt_msxz": {
-            "type": "number",
-            "description": "三级一次或二次关机后末速修正时长(s),缺省20s",
-            "format": "double",
-            "default": 20
-          },
-          "dt_xjfl": {
-            "type": "number",
-            "description": "三级末速修正结束到星箭分离时长(s),缺省80s",
-            "format": "double",
-            "default": 80
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级总海平面推力(N)",
-            "format": "double",
-            "default": 2961600
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级海平面比冲(m/s)",
-            "format": "double",
-            "default": 2556.2
-          },
-          "Sa_1": {
-            "type": "number",
-            "description": "芯一级发动机总喷口面积(m^2)",
-            "format": "double",
-            "default": 3.244
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机总真空推力(N)",
-            "format": "double",
-            "default": 742040
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机真空比冲(m/s)",
-            "format": "double",
-            "default": 2922.4
-          },
-          "F_2u": {
-            "type": "number",
-            "description": "二级游机总真空推力(N)",
-            "format": "double",
-            "default": 46800
-          },
-          "Ips_2u": {
-            "type": "number",
-            "description": "二级游机真空比冲(m/s)",
-            "format": "double",
-            "default": 2834
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级总真空推力(N)",
-            "format": "double",
-            "default": 156906
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级真空比冲(m/s)",
-            "format": "double",
-            "default": 4334.54
-          },
-          "F_b": {
-            "type": "number",
-            "description": "一级助推总海平面推力(N)",
-            "format": "double",
-            "default": 2961600
-          },
-          "Ips_b": {
-            "type": "number",
-            "description": "一级助推海平面比冲(m/s)",
-            "format": "double",
-            "default": 2556.2
-          },
-          "Sa_b": {
-            "type": "number",
-            "description": "一级助推发动机总喷口面积(m^2)",
-            "format": "double",
-            "default": 3.244
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "仅芯一级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_1": {
-            "type": "number",
-            "description": "仅芯一级关机点质量(kg)",
-            "format": "double"
-          },
-          "M0_b": {
-            "type": "number",
-            "description": "所有助推器起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_b": {
-            "type": "number",
-            "description": "所有助推器关机点质量(kg)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "仅二级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_2": {
-            "type": "number",
-            "description": "仅二级关机点质量(kg)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "仅三级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_3": {
-            "type": "number",
-            "description": "仅三级关机点质量(kg)",
-            "format": "double"
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "火箭制导方案名称"
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "方案说明"
-          },
-          "Description": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "详细描述"
-          },
-          "Name_FaSheDian": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "发射点名称(若未赋值，则采用FaSheDianLLA参数)"
-          },
-          "FaSheDianLLA": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "发射点大地经度(deg),纬度(deg),高度(m)"
-          },
-          "Gw": {
-            "type": "number",
-            "description": "有效载荷质量(kg)",
-            "format": "double"
-          },
-          "Gf": {
-            "type": "number",
-            "description": "整流罩质量(kg)",
-            "format": "double"
-          },
-          "A0": {
-            "type": "number",
-            "description": "发射方位角(deg)",
-            "format": "double"
-          },
-          "GJ_dL": {
-            "type": "number",
-            "description": "一级关机射程数值(m)",
-            "format": "double"
-          },
-          "GJ_Va": {
-            "type": "number",
-            "description": "(二级)速度关机数值(m/s)",
-            "format": "double"
-          },
-          "GJ_U": {
-            "type": "number",
-            "description": "三级滑行段结束纬度俯角(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_PhicxDotHx": {
-            "type": "number",
-            "description": "三级滑行段俯仰程序角变化率(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_Sma1": {
-            "type": "number",
-            "description": "(三级)一次关机半长轴数值(m)",
-            "format": "double"
-          },
-          "GJ_Sma2": {
-            "type": "number",
-            "description": "(三级)二次关机半长轴数值(m)。若无二次关机则不用赋值",
-            "format": "double"
-          },
-          "TList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角时间序列(s),以起飞时刻为零点"
-          },
-          "PhicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角序列(deg),以起飞时刻为零点"
-          },
-          "TList_psi": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角时间序列(s),缺省可不赋值,以起飞时刻为零点"
-          },
-          "PsicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角序列(deg),缺省可不赋值,以起飞时刻为零点"
-          },
-          "ReturnDicAllData": {
-            "type": "boolean",
-            "description": "是否返回全部数据表(数据量较大),默认为true",
-            "default": true
-          }
-        }
-      },
-      "RocketGuidRocketGuid_CZ4BC": {
-        "properties": {
-          "$type": {
-            "enum": [
-              "CZ4BC"
-            ],
-            "type": "string"
-          },
-          "PC": {
-            "description": "制导偏差量(若无偏差，可不赋值。注意，偏差量包含所有参数，若对应的火箭没有对应的偏差参数可不用赋值",
-            "$ref": "#/components/schemas/RocketPianCha_CZ4"
-          },
-          "Is32k": {
-            "type": "boolean",
-            "description": "是否有三级二次工作(若无三级二次工作，则不赋值，默认为false)"
-          },
-          "Guid_RV_2k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "二级主机关机点制导位置、速度(地心发惯系)"
-          },
-          "Guid_RV_3k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "三级一次关机点制导位置、速度(地心发惯系)"
-          },
-          "Guid_RV_32k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "三级二次关机点制导位置、速度(地心发惯系),若无则不赋值"
-          },
-          "Sm_1": {
-            "type": "number",
-            "description": "芯一级横截面积(m^2)",
-            "format": "double",
-            "default": 8.814
-          },
-          "Tk_1": {
-            "type": "number",
-            "description": "一级最大关机时刻(s)(射程关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_F": {
-            "type": "number",
-            "description": "二级起飞至抛罩时长(s)",
-            "format": "double"
-          },
-          "Tk_2z": {
-            "type": "number",
-            "description": "二级起飞至主机关机最大时长(s)(速度关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_2u": {
-            "type": "number",
-            "description": "二级主机关机到游机关机时长(s)，默认为9.8s",
-            "format": "double"
-          },
-          "Tk_31": {
-            "type": "number",
-            "description": "三级起飞至一次关机最大时刻(s)(半长轴关机/耗尽关机 均为实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_32": {
-            "type": "number",
-            "description": "三级二次开机至关机最大时刻(s)(半长轴关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "dt_k12f": {
-            "type": "number",
-            "description": "一级关机到分离(s),缺省1.5s",
-            "format": "double"
-          },
-          "dt_k23f": {
-            "type": "number",
-            "description": "二级游机关机到分离(s),缺省1.0s",
-            "format": "double"
-          },
-          "dt_msxz": {
-            "type": "number",
-            "description": "三级一次或二次关机后末速修正时长(s),缺省20s",
-            "format": "double",
-            "default": 20
-          },
-          "dt_xjfl": {
-            "type": "number",
-            "description": "三级末速修正结束到星箭分离时长(s),缺省80s",
-            "format": "double",
-            "default": 80
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级总海平面推力(N)",
-            "format": "double",
-            "default": 2961600
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级海平面比冲(m/s)",
-            "format": "double",
-            "default": 2550
-          },
-          "Sa_1": {
-            "type": "number",
-            "description": "芯一级发动机总喷口面积(m^2)",
-            "format": "double",
-            "default": 6.486
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机总真空推力(N)",
-            "format": "double",
-            "default": 742040
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机真空比冲(m/s)",
-            "format": "double",
-            "default": 2942
-          },
-          "F_2u": {
-            "type": "number",
-            "description": "二级游机总真空推力(N)",
-            "format": "double",
-            "default": 46100
-          },
-          "Ips_2u": {
-            "type": "number",
-            "description": "二级游机真空比冲(m/s)",
-            "format": "double",
-            "default": 2761.6
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级总真空推力(N)",
-            "format": "double",
-            "default": 100848
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级真空比冲(m/s)",
-            "format": "double",
-            "default": 2971
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "仅芯一级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_1": {
-            "type": "number",
-            "description": "仅芯一级关机点质量(kg)(耗尽关机使用)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "仅二级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_2": {
-            "type": "number",
-            "description": "仅二级关机点质量(kg)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "仅三级起飞质量(kg)(若无三级，则不赋值，默认为0)",
-            "format": "double"
-          },
-          "Mj_3": {
-            "type": "number",
-            "description": "仅三级关机点质量(kg)(若无三级，则不赋值，默认为0)",
-            "format": "double"
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "火箭制导方案名称"
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "方案说明"
-          },
-          "Description": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "详细描述"
-          },
-          "Name_FaSheDian": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "发射点名称(若未赋值，则采用FaSheDianLLA参数)"
-          },
-          "FaSheDianLLA": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "发射点大地经度(deg),纬度(deg),高度(m)"
-          },
-          "Gw": {
-            "type": "number",
-            "description": "有效载荷质量(kg)",
-            "format": "double"
-          },
-          "Gf": {
-            "type": "number",
-            "description": "整流罩质量(kg)",
-            "format": "double"
-          },
-          "A0": {
-            "type": "number",
-            "description": "发射方位角(deg)",
-            "format": "double"
-          },
-          "GJ_dL": {
-            "type": "number",
-            "description": "一级关机射程数值(m)",
-            "format": "double"
-          },
-          "GJ_Va": {
-            "type": "number",
-            "description": "(二级)速度关机数值(m/s)",
-            "format": "double"
-          },
-          "GJ_U": {
-            "type": "number",
-            "description": "三级滑行段结束纬度俯角(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_PhicxDotHx": {
-            "type": "number",
-            "description": "三级滑行段俯仰程序角变化率(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_Sma1": {
-            "type": "number",
-            "description": "(三级)一次关机半长轴数值(m)",
-            "format": "double"
-          },
-          "GJ_Sma2": {
-            "type": "number",
-            "description": "(三级)二次关机半长轴数值(m)。若无二次关机则不用赋值",
-            "format": "double"
-          },
-          "TList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角时间序列(s),以起飞时刻为零点"
-          },
-          "PhicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角序列(deg),以起飞时刻为零点"
-          },
-          "TList_psi": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角时间序列(s),缺省可不赋值,以起飞时刻为零点"
-          },
-          "PsicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角序列(deg),缺省可不赋值,以起飞时刻为零点"
-          },
-          "ReturnDicAllData": {
-            "type": "boolean",
-            "description": "是否返回全部数据表(数据量较大),默认为true",
-            "default": true
-          }
-        }
-      },
-      "RocketGuidRocketGuid_CZ7A": {
-        "properties": {
-          "$type": {
-            "enum": [
-              "CZ7A"
-            ],
-            "type": "string"
-          },
-          "PC": {
-            "description": "制导偏差量(若无偏差，可不赋值。注意，偏差量包含所有参数，若对应的火箭没有对应的偏差参数可不用赋值",
-            "$ref": "#/components/schemas/RocketPianCha_CZ7A"
-          },
-          "Is32k": {
-            "type": "boolean",
-            "description": "是否有三级二次工作(若无三级二次工作，则不赋值，默认为false)"
-          },
-          "Guid_RV_2k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "二级主机关机点制导位置、速度(地心发惯系)"
-          },
-          "Guid_RV_3k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "三级一次关机点制导位置、速度(地心发惯系)"
-          },
-          "Guid_RV_32k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "三级二次关机点制导位置、速度(地心发惯系),若无则不赋值"
-          },
-          "Sm_1": {
-            "type": "number",
-            "description": "芯一级横截面积(m^2)",
-            "format": "double",
-            "default": 8.814
-          },
-          "Tk_1": {
-            "type": "number",
-            "description": "一级最大关机时刻(s)(射程关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_F": {
-            "type": "number",
-            "description": "二级起飞至抛罩时长(s)",
-            "format": "double"
-          },
-          "Tk_2": {
-            "type": "number",
-            "description": "二级起飞至关机最大时长(s)(速度关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_31": {
-            "type": "number",
-            "description": "三级起飞至一次关机最大时刻(s)(半长轴关机/耗尽关机 均为实现，强制关机)",
-            "format": "double"
-          },
-          "Tk_32": {
-            "type": "number",
-            "description": "三级二次开机至关机最大时刻(s)(半长轴关机/耗尽关机 均未实现，强制关机)",
-            "format": "double"
-          },
-          "dt_k12f": {
-            "type": "number",
-            "description": "一级关机到分离(s)",
-            "format": "double",
-            "default": 1.5
-          },
-          "dt_k23f": {
-            "type": "number",
-            "description": "二级游机关机到分离(s)",
-            "format": "double",
-            "default": 1
-          },
-          "dt_msxz": {
-            "type": "number",
-            "description": "三级一次或二次关机后末速修正时长(s)",
-            "format": "double",
-            "default": 20
-          },
-          "dt_xjfl": {
-            "type": "number",
-            "description": "三级末速修正结束到星箭分离时长(s)",
-            "format": "double",
-            "default": 80
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级总海平面推力(N)",
-            "format": "double",
-            "default": 7200000
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级海平面比冲(m/s)",
-            "format": "double",
-            "default": 2942
-          },
-          "Sa_1": {
-            "type": "number",
-            "description": "芯一级发动机总喷口面积(m^2)",
-            "format": "double",
-            "default": 8.436
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机总真空推力(N)",
-            "format": "double",
-            "default": 720000
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机真空比冲(m/s)",
-            "format": "double",
-            "default": 3349
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级总真空推力(N)",
-            "format": "double",
-            "default": 165410
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级真空比冲(m/s)",
-            "format": "double",
-            "default": 4295.3
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "仅芯一级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_1": {
-            "type": "number",
-            "description": "仅芯一级关机点质量(kg)(耗尽关机使用)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "仅二级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_2": {
-            "type": "number",
-            "description": "仅二级关机点质量(kg)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "仅三级起飞质量(kg)(若无三级，则不赋值，默认为0)",
-            "format": "double"
-          },
-          "Mj_3": {
-            "type": "number",
-            "description": "仅三级关机点质量(kg)(若无三级，则不赋值，默认为0)",
-            "format": "double"
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "火箭制导方案名称"
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "方案说明"
-          },
-          "Description": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "详细描述"
-          },
-          "Name_FaSheDian": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "发射点名称(若未赋值，则采用FaSheDianLLA参数)"
-          },
-          "FaSheDianLLA": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "发射点大地经度(deg),纬度(deg),高度(m)"
-          },
-          "Gw": {
-            "type": "number",
-            "description": "有效载荷质量(kg)",
-            "format": "double"
-          },
-          "Gf": {
-            "type": "number",
-            "description": "整流罩质量(kg)",
-            "format": "double"
-          },
-          "A0": {
-            "type": "number",
-            "description": "发射方位角(deg)",
-            "format": "double"
-          },
-          "GJ_dL": {
-            "type": "number",
-            "description": "一级关机射程数值(m)",
-            "format": "double"
-          },
-          "GJ_Va": {
-            "type": "number",
-            "description": "(二级)速度关机数值(m/s)",
-            "format": "double"
-          },
-          "GJ_U": {
-            "type": "number",
-            "description": "三级滑行段结束纬度俯角(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_PhicxDotHx": {
-            "type": "number",
-            "description": "三级滑行段俯仰程序角变化率(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_Sma1": {
-            "type": "number",
-            "description": "(三级)一次关机半长轴数值(m)",
-            "format": "double"
-          },
-          "GJ_Sma2": {
-            "type": "number",
-            "description": "(三级)二次关机半长轴数值(m)。若无二次关机则不用赋值",
-            "format": "double"
-          },
-          "TList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角时间序列(s),以起飞时刻为零点"
-          },
-          "PhicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角序列(deg),以起飞时刻为零点"
-          },
-          "TList_psi": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角时间序列(s),缺省可不赋值,以起飞时刻为零点"
-          },
-          "PsicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角序列(deg),缺省可不赋值,以起飞时刻为零点"
-          },
-          "ReturnDicAllData": {
-            "type": "boolean",
-            "description": "是否返回全部数据表(数据量较大),默认为true",
-            "default": true
-          }
-        }
-      },
-      "RocketGuidRocketGuid_KZ1A": {
-        "properties": {
-          "$type": {
-            "enum": [
-              "KZ1A"
-            ],
-            "type": "string"
-          },
-          "PC": {
-            "description": "制导偏差量(若无偏差，可不赋值。注意，偏差量包含所有参数，若对应的火箭没有对应的偏差参数可不用赋值",
-            "$ref": "#/components/schemas/RocketPianCha_KZ1A"
-          },
-          "Guid_RV_4k": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "四级关机点制导位置、速度(地心发惯系)"
-          },
-          "Sm_1": {
-            "type": "number",
-            "description": "芯一级横截面积(m^2)",
-            "format": "double",
-            "default": 8.814
-          },
-          "Tk_1": {
-            "type": "number",
-            "description": "一级最大关机时刻(s)(目前设定为定时关机)",
-            "format": "double",
-            "default": 65
-          },
-          "Tk_2": {
-            "type": "number",
-            "description": "二级点火至关机最大时长(s)(目前设定为定时关机)",
-            "format": "double",
-            "default": 62
-          },
-          "Tk_F": {
-            "type": "number",
-            "description": "二级起飞至抛罩时长(s)",
-            "format": "double",
-            "default": 15.1
-          },
-          "Tk_3": {
-            "type": "number",
-            "description": "三级点火至关机最大时刻(s)(目前设定为定时关机)",
-            "format": "double",
-            "default": 55
-          },
-          "Tk_4": {
-            "type": "number",
-            "description": "四级点火至关机最大时刻(s)(目前设定为半长轴关机)",
-            "format": "double",
-            "default": 765
-          },
-          "dt_k12f": {
-            "type": "number",
-            "description": "一级关机到分离(s)",
-            "format": "double",
-            "default": 18
-          },
-          "dt_k23f": {
-            "type": "number",
-            "description": "二级关机到分离(s)",
-            "format": "double",
-            "default": 16
-          },
-          "dt_F": {
-            "type": "number",
-            "description": "二三级分离到抛整流罩(s)",
-            "format": "double",
-            "default": 15.1
-          },
-          "dt_3ign": {
-            "type": "number",
-            "description": "抛整流罩到三级点火(s)",
-            "format": "double",
-            "default": 16
-          },
-          "dt_k34f": {
-            "type": "number",
-            "description": "三级关机到分离(s)",
-            "format": "double",
-            "default": 37.1
-          },
-          "dt_xjfl": {
-            "type": "number",
-            "description": "四级关机到星箭分离(s)",
-            "format": "double",
-            "default": 8
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级总海平面推力(N)",
-            "format": "double",
-            "default": 600000
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级海平面比冲(m/s)",
-            "format": "double",
-            "default": 2352
-          },
-          "Sa_1": {
-            "type": "number",
-            "description": "芯一级发动机总喷口面积(m^2)",
-            "format": "double",
-            "default": 0.5
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级海平面推力(N)",
-            "format": "double",
-            "default": 353696
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级海平面比冲(m/s)",
-            "format": "double",
-            "default": 2810
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级真空推力(N)",
-            "format": "double",
-            "default": 145479
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级真空比冲(m/s)",
-            "format": "double",
-            "default": 2850
-          },
-          "F_4": {
-            "type": "number",
-            "description": "四级真空推力(N)",
-            "format": "double",
-            "default": 2000
-          },
-          "Ips_4": {
-            "type": "number",
-            "description": "四级真空比冲(m/s)",
-            "format": "double",
-            "default": 3000
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "仅芯一级起飞质量(kg)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "仅二级起飞质量(kg)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "仅三级起飞质量(kg)",
-            "format": "double"
-          },
-          "M0_4": {
-            "type": "number",
-            "description": "仅四级起飞质量(kg)",
-            "format": "double"
-          },
-          "Mj_1": {
-            "type": "number",
-            "description": "仅芯一级关机点质量(kg)",
-            "format": "double"
-          },
-          "Mj_2": {
-            "type": "number",
-            "description": "仅二级关机点质量(kg)",
-            "format": "double"
-          },
-          "Mj_3": {
-            "type": "number",
-            "description": "仅三级关机点质量(kg)",
-            "format": "double"
-          },
-          "Mj_4": {
-            "type": "number",
-            "description": "仅四级关机点质量(kg)",
-            "format": "double"
-          },
-          "phicx3_dot": {
-            "type": "number",
-            "description": "三级点火程序角速度(deg/s)",
-            "format": "double",
-            "default": 0
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "火箭制导方案名称"
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "方案说明"
-          },
-          "Description": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "详细描述"
-          },
-          "Name_FaSheDian": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "发射点名称(若未赋值，则采用FaSheDianLLA参数)"
-          },
-          "FaSheDianLLA": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "发射点大地经度(deg),纬度(deg),高度(m)"
-          },
-          "Gw": {
-            "type": "number",
-            "description": "有效载荷质量(kg)",
-            "format": "double"
-          },
-          "Gf": {
-            "type": "number",
-            "description": "整流罩质量(kg)",
-            "format": "double"
-          },
-          "A0": {
-            "type": "number",
-            "description": "发射方位角(deg)",
-            "format": "double"
-          },
-          "GJ_dL": {
-            "type": "number",
-            "description": "一级关机射程数值(m)",
-            "format": "double"
-          },
-          "GJ_Va": {
-            "type": "number",
-            "description": "(二级)速度关机数值(m/s)",
-            "format": "double"
-          },
-          "GJ_U": {
-            "type": "number",
-            "description": "三级滑行段结束纬度俯角(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_PhicxDotHx": {
-            "type": "number",
-            "description": "三级滑行段俯仰程序角变化率(deg)。若无则不用赋值",
-            "format": "double"
-          },
-          "GJ_Sma1": {
-            "type": "number",
-            "description": "(三级)一次关机半长轴数值(m)",
-            "format": "double"
-          },
-          "GJ_Sma2": {
-            "type": "number",
-            "description": "(三级)二次关机半长轴数值(m)。若无二次关机则不用赋值",
-            "format": "double"
-          },
-          "TList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角时间序列(s),以起飞时刻为零点"
-          },
-          "PhicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段俯仰程序角序列(deg),以起飞时刻为零点"
-          },
-          "TList_psi": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角时间序列(s),缺省可不赋值,以起飞时刻为零点"
-          },
-          "PsicxList": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "大气飞行段偏航程序角序列(deg),缺省可不赋值,以起飞时刻为零点"
-          },
-          "ReturnDicAllData": {
-            "type": "boolean",
-            "description": "是否返回全部数据表(数据量较大),默认为true",
-            "default": true
-          }
-        },
-        "description": "火箭方案制导弹道(适用: KZ1A模型，四级火箭)"
-      },
-      "RocketLanding_Output": {
-        "type": "object",
-        "properties": {
-          "IsSuccess": {
-            "type": "boolean",
-            "description": "结果(True:成功；FALSE:失败)",
-            "default": true
-          },
-          "Message": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "结果信息(主要是存储失败的原因)",
-            "default": "Success!"
-          },
-          "DicAllData": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "所有点弹道参数"
-          },
-          "DicKeyData": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "特征点弹道参数"
-          },
-          "DicShiXu": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "飞行时序"
-          },
-          "Optim_VariableX0": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "优化自变量(Phicx20,Psicx20,Dt2,Height4),仅IsOptimize为true时使用"
-          }
-        },
-        "description": "火箭垂直起降输出参数"
-      },
-      "RocketLandingInput": {
-        "type": "object",
-        "properties": {
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "名称",
-            "default": "方案名称"
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "方案说明",
-            "default": "方案说明"
-          },
-          "IsOptimize": {
-            "type": "boolean",
-            "description": "是否优化弹道",
-            "default": false
-          },
-          "A0": {
-            "type": "number",
-            "description": "发射方位角(deg)",
-            "format": "double"
-          },
-          "FaSheDianLLA": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "发射点大地经度(deg),纬度(deg),高度(m)"
-          },
-          "T0": {
-            "type": "number",
-            "description": "初始段时刻(s)(距离发射零点)",
-            "format": "double"
-          },
-          "X0": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "初始段状态(发射惯性系: 位置(m)，速度(m/s)，总质量(kg))"
-          },
-          "Phicx0": {
-            "type": "number",
-            "description": "初始段俯仰程序角(deg)",
-            "format": "double"
-          },
-          "Psicx0": {
-            "type": "number",
-            "description": "初始段偏航角(deg)",
-            "format": "double"
-          },
-          "Sm": {
-            "type": "number",
-            "description": "气动面积(m^2)(缺省:8.814)",
-            "format": "double",
-            "default": 8.814
-          },
-          "Dt1": {
-            "type": "number",
-            "description": "调姿段时长(s)",
-            "format": "double"
-          },
-          "Phicx20": {
-            "type": "number",
-            "description": "转弯段初始俯仰角(deg)",
-            "format": "double"
-          },
-          "Psicx20": {
-            "type": "number",
-            "description": "转弯段初始偏航角(deg)",
-            "format": "double"
-          },
-          "Dt2": {
-            "type": "number",
-            "description": "转弯段工作时长(s)",
-            "format": "double"
-          },
-          "Force2": {
-            "type": "number",
-            "description": "转弯段真空推力(N)",
-            "format": "double"
-          },
-          "Ips2": {
-            "type": "number",
-            "description": "转弯段真空比冲(m/s)",
-            "format": "double"
-          },
-          "Height4": {
-            "type": "number",
-            "description": "着陆段初始高度(km)",
-            "format": "double"
-          },
-          "Force4": {
-            "type": "number",
-            "description": "着陆段海平面推力(N)",
-            "format": "double"
-          },
-          "Ips4": {
-            "type": "number",
-            "description": "着陆段海平面比冲(m/s)",
-            "format": "double"
-          },
-          "Sa4": {
-            "type": "number",
-            "description": "着陆段发动机喷口面积(m^2)",
-            "format": "double"
-          },
-          "Cons_H": {
-            "type": "number",
-            "description": "着陆点高度(km)",
-            "format": "double"
-          },
-          "Cons_Lambda": {
-            "type": "number",
-            "description": "着陆点经度(deg)",
-            "format": "double"
-          },
-          "Cons_B": {
-            "type": "number",
-            "description": "着陆点纬度(deg)",
-            "format": "double"
-          },
-          "Cons_V": {
-            "type": "number",
-            "description": "着陆点速度(m/s)",
-            "format": "double"
-          },
-          "VariableX0": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "优化自变量初值(Phicx20,Psicx20,Dt2,Height4),仅IsOptimize为true时使用"
-          },
-          "VariableLowerBound": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "优化自变量下界(Phicx20,Psicx20,Dt2,Height4)，仅IsOptimize为true时使用"
-          },
-          "VariableUpperBound": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "优化自变量上界(Phicx20,Psicx20,Dt2,Height4)，仅IsOptimize为true时使用"
-          }
-        },
-        "description": "火箭垂直起降输入参数"
-      },
-      "RocketPianCha_3JB": {
-        "type": "object",
-        "properties": {
-          "IsBoosterFenLi": {
-            "type": "boolean",
-            "description": "助推是否分离(true:分离)",
-            "default": true
-          },
-          "IsFairingFenLi": {
-            "type": "boolean",
-            "description": "整流罩是否分离(true:分离)",
-            "default": true
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "芯一级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "芯二级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "芯三级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "T_F1": {
-            "type": "number",
-            "description": "一级主机故障时刻(s)(起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_Fb": {
-            "type": "number",
-            "description": "一级助推故障时刻(s)(起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F2": {
-            "type": "number",
-            "description": "二级主机故障时刻(s)(二级起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F2u": {
-            "type": "number",
-            "description": "二级游机故障时刻(s)(二级起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F3": {
-            "type": "number",
-            "description": "三级主机故障时刻(s)(三级起飞时刻为0点）",
-            "format": "double"
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_b": {
-            "type": "number",
-            "description": "一级助推推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2u": {
-            "type": "number",
-            "description": "二级游机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_b": {
-            "type": "number",
-            "description": "一级助推比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2u": {
-            "type": "number",
-            "description": "二级游机比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级比冲偏差(0.1表示10%)",
-            "format": "double"
-          }
-        }
-      },
-      "RocketPianCha_CZ2CD": {
-        "type": "object",
-        "properties": {
-          "IsFairingFenLi": {
-            "type": "boolean",
-            "description": "整流罩是否分离(true:分离)",
-            "default": true
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "芯一级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "芯二级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "T_F1": {
-            "type": "number",
-            "description": "一级主机故障时刻(s)(起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F2": {
-            "type": "number",
-            "description": "二级主机故障时刻(s)(二级起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F2u": {
-            "type": "number",
-            "description": "二级游机故障时刻(s)(二级起飞时刻为0点）",
-            "format": "double"
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2u": {
-            "type": "number",
-            "description": "二级游机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2u": {
-            "type": "number",
-            "description": "二级游机比冲偏差(0.1表示10%)",
-            "format": "double"
-          }
-        }
-      },
-      "RocketPianCha_CZ4": {
-        "type": "object",
-        "properties": {
-          "IsFairingFenLi": {
-            "type": "boolean",
-            "description": "整流罩是否分离(true:分离)",
-            "default": true
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "芯一级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "芯二级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "芯三级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "T_F1": {
-            "type": "number",
-            "description": "一级主机故障时刻(s)(起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F2": {
-            "type": "number",
-            "description": "二级主机故障时刻(s)(二级起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F2u": {
-            "type": "number",
-            "description": "二级游机故障时刻(s)(二级起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F3": {
-            "type": "number",
-            "description": "三级主机故障时刻(s)(三级起飞时刻为0点）",
-            "format": "double"
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2u": {
-            "type": "number",
-            "description": "二级游机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2u": {
-            "type": "number",
-            "description": "二级游机比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级比冲偏差(0.1表示10%)",
-            "format": "double"
-          }
-        }
-      },
-      "RocketPianCha_CZ7A": {
-        "type": "object",
-        "properties": {
-          "IsFairingFenLi": {
-            "type": "boolean",
-            "description": "整流罩是否分离(true:分离)",
-            "default": true
-          },
-          "M0_1": {
-            "type": "number",
-            "description": "芯一级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "芯二级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "芯三级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "T_F1": {
-            "type": "number",
-            "description": "一级主机故障时刻(s)(起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F2": {
-            "type": "number",
-            "description": "二级主机故障时刻(s)(二级起飞时刻为0点）",
-            "format": "double"
-          },
-          "T_F3": {
-            "type": "number",
-            "description": "三级主机故障时刻(s)(三级起飞时刻为0点）",
-            "format": "double"
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级比冲偏差(0.1表示10%)",
-            "format": "double"
-          }
-        }
-      },
-      "RocketPianCha_KZ1A": {
-        "type": "object",
-        "properties": {
-          "M0_1": {
-            "type": "number",
-            "description": "芯一级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_2": {
-            "type": "number",
-            "description": "芯二级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_3": {
-            "type": "number",
-            "description": "芯三级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "M0_4": {
-            "type": "number",
-            "description": "芯四级起飞质量偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_1": {
-            "type": "number",
-            "description": "芯一级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_2": {
-            "type": "number",
-            "description": "二级主机推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_3": {
-            "type": "number",
-            "description": "三级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "F_4": {
-            "type": "number",
-            "description": "四级推力偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_1": {
-            "type": "number",
-            "description": "芯一级比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_2": {
-            "type": "number",
-            "description": "二级主机比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_3": {
-            "type": "number",
-            "description": "三级比冲偏差(0.1表示10%)",
-            "format": "double"
-          },
-          "Ips_4": {
-            "type": "number",
-            "description": "四级比冲偏差(0.1表示10%)",
-            "format": "double"
-          }
-        }
-      },
-      "RocketSegmentFA_Input": {
-        "required": [
-          "Gw",
-          "T1",
-          "Alpham",
-          "Natmos",
-          "RocketSegments",
-          "sma0",
-          "ecc0",
-          "inc0",
-          "omg0"
-        ],
-        "type": "object",
-        "properties": {
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "名称",
-            "default": "方案名称"
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "方案说明",
-            "default": "方案说明"
-          },
-          "RocketType": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "火箭类型名称,用于输出制导参数时识别各飞行段。<br>目前支持的有: CZ3A,CZ3B,CZ3C,CZ4B,CZ4C,CZ2C,CZ2D,CZ7A"
-          },
-          "UseMcsProfile": {
-            "type": "boolean",
-            "description": "是否使用MCS file运行弹道",
-            "default": false
-          },
-          "Name_FaSheDian": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "发射点名称"
-          },
-          "FaSheDianLLA": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
-            "description": "发射点大地经度(deg),纬度(deg),高度(m)  <br>如果Name_FaSheDian未赋值则采用此参数"
-          },
-          "Gw": {
-            "type": "number",
-            "description": "有效载荷质量(kg)",
-            "format": "double"
-          },
-          "A0": {
-            "type": "number",
-            "description": "发射方位角(deg)  <br>此数值未赋值时，则内部自动根据入轨倾角计算初值  <br>最好手动给合理的初值",
-            "format": "double",
-            "default": -1001
-          },
-          "T1": {
-            "type": "number",
-            "description": "转弯开始时刻(s)",
-            "format": "double"
-          },
-          "Alpham": {
-            "type": "number",
-            "description": "大气飞行段最大攻角(deg)",
-            "format": "double"
-          },
-          "Natmos": {
-            "type": "integer",
-            "description": "大气段飞行段数",
-            "format": "int32"
-          },
-          "AeroParamsFileName": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "气动数据表文件名(位于../Data/Rocket/ 目录下)"
-          },
-          "RocketSegments": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/RocketSegmentInfo"
-            },
-            "description": "火箭飞行段序列"
-          },
-          "sma0": {
-            "type": "number",
-            "description": "目标轨道半长轴(m)",
-            "format": "double"
-          },
-          "ecc0": {
-            "type": "number",
-            "description": "目标轨道偏心率",
-            "format": "double"
-          },
-          "inc0": {
-            "type": "number",
-            "description": "目标轨道倾角(deg)",
-            "format": "double"
-          },
-          "omg0": {
-            "type": "number",
-            "description": "目标轨道近地点幅角(deg)",
-            "format": "double"
-          },
-          "ProfileOptim": {
-            "description": "MCS文件(序列二次规划Optimal),当只有一个优化文件时，使用此参数；当有多个时，使用McsProfiles定义",
-            "$ref": "#/components/schemas/VAMCSProfileDEOptimizer"
-          },
-          "McsProfiles": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/IVAMCSProfile"
-            },
-            "description": "MCS文件数组(使用此可定义多个优化文件，此时ProfileOptim不必定义)"
-          }
-        },
-        "description": "火箭方案弹道输入参数"
-      },
-      "RocketSegmentFA_Output": {
-        "type": "object",
-        "properties": {
-          "IsSuccess": {
-            "type": "boolean",
-            "description": "结果(True:成功；FALSE:失败)"
-          },
-          "Message": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "结果信息(主要是存储失败的原因)"
-          },
-          "Input_New": {
-            "description": "优化后的最新输入参数",
-            "$ref": "#/components/schemas/RocketSegmentFA_Input"
-          },
-          "DicGuidanceParams": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "description": "制导使用的参数字典（根据火箭型号和飞行段）"
-          },
-          "DicAllData": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "所有点弹道参数"
-          },
-          "DicAllDataZJ": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "object",
-              "additionalProperties": {
-                "type": "array"
-              }
-            },
-            "description": "所有子级的弹道参数"
-          },
-          "DicKeyData": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "特征点弹道参数"
-          },
-          "DicKeyData2": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "特征点弹道参数"
-          },
-          "DicShiXu": {
-            "type": [
-              "null",
-              "object"
-            ],
-            "additionalProperties": {
-              "type": "array"
-            },
-            "description": "飞行时序(每个飞行段的开始时刻:段名称,总时间,段时间）"
-          },
-          "ZJLD": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/RocketZJLDInfo"
-            },
-            "description": "所有子级落点表"
-          }
-        }
-      },
-      "RocketSegmentInfo": {
-        "required": [
-          "Name",
-          "Fx",
-          "Ips",
-          "Gj",
-          "Dt",
-          "Sm",
-          "Sa",
-          "Psicx",
-          "Phicx_dot"
-        ],
-        "type": "object",
-        "properties": {
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "段名称，各级开始段名称最好为:一级起飞，二级起飞..."
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "段说明"
-          },
-          "Fx": {
-            "type": "number",
-            "description": "段轴向总推力(N)。需要将多个发动机综合求解得到轴向总推力!",
-            "format": "double"
-          },
-          "Ips": {
-            "type": "number",
-            "description": "段总比冲(m/s)。根据多台发动机的秒耗量和Fx，反过来计算总比冲！",
-            "format": "double"
-          },
-          "Gj": {
-            "type": "number",
-            "description": "段末抛掉的结构质量(kg)",
-            "format": "double"
-          },
-          "Dt": {
-            "type": "number",
-            "description": "段飞行时长(s)",
-            "format": "double"
-          },
-          "Sm": {
-            "type": "number",
-            "description": "气动面积(m^2)",
-            "format": "double"
-          },
-          "Sa": {
-            "type": "number",
-            "description": "发动机喷口面积(m^2)",
-            "format": "double"
-          },
-          "Psicx": {
-            "type": [
-              "null",
-              "string"
-            ],
-            "description": "偏航角(Follow,或具体角度(deg))。Follow则表示与上段相同!"
-          },
-          "Phicx_dot": {
-            "type": "number",
-            "description": "俯仰角变化率(deg/s)",
-            "format": "double"
-          }
-        },
-        "description": "火箭单个飞行段信息"
-      },
-      "RocketZJLDInfo": {
-        "type": "object",
-        "properties": {
-          "Mass": {
-            "type": "number",
-            "description": "子级质量(kg)",
-            "format": "double"
-          },
-          "Sm": {
-            "type": "number",
-            "description": "气动面积(m^2)",
-            "format": "double"
-          },
-          "tt": {
-            "type": "number",
-            "description": "飞行总时间(s)",
-            "format": "double"
-          },
-          "tdf": {
-            "type": "number",
-            "description": "飞行段时间(s)",
-            "format": "double"
-          },
-          "d_L": {
-            "type": "number",
-            "description": "大地距离L(km)",
-            "format": "double"
-          },
-          "lambda": {
-            "type": "number",
-            "description": "大地经度λ(deg)",
-            "format": "double"
-          },
-          "d_B": {
-            "type": "number",
-            "description": "大地纬度B(deg)",
-            "format": "double"
-          }
-        }
       },
       "SatelliteDatabaseEntry": {
         "type": "object",
@@ -19299,6 +16763,94 @@
         },
         "description": "飞行器TLE相关参数信息(适用于json对象)"
       },
+      "Trajectory_CRTBP_Input": {
+        "required": [
+          "RV0"
+        ],
+        "type": "object",
+        "properties": {
+          "U": {
+            "type": "number",
+            "description": "无量纲质量比(m2/(m1+m2))",
+            "format": "double",
+            "default": 0.01215058560962404
+          },
+          "T0": {
+            "type": "number",
+            "description": "初始时刻(无量纲),默认为0.0,一般可不输入",
+            "format": "double",
+            "default": 0
+          },
+          "IsBarycentric": {
+            "type": "boolean",
+            "description": "是否使用质心会合坐标系(原点在质心),默认:false(原点在主天体)",
+            "default": false
+          },
+          "RV0": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "会合坐标系下，初始位置速度(无量纲)",
+            "default": [
+              1.189017399646985,
+              0,
+              0.06060558718057466,
+              0,
+              -0.17403902743307584,
+              0
+            ]
+          },
+          "TEnd": {
+            "type": "number",
+            "description": "结束时刻(无量纲)；可小于 t0 以进行逆向积分",
+            "format": "double",
+            "default": 3.384919254474086
+          },
+          "OutStep": {
+            "type": "number",
+            "description": "输出步长绝对值(无量纲)；为 0 表示返回自适应积分全部节点，否则按此步长均匀输出",
+            "format": "double",
+            "default": 0
+          }
+        },
+        "description": "圆形限制性三体问题的轨道积分输入参数"
+      },
+      "Trajectory_CRTBP_Output": {
+        "type": "object",
+        "properties": {
+          "IsSuccess": {
+            "type": "boolean",
+            "description": "是否成功"
+          },
+          "Message": {
+            "type": "string",
+            "description": "信息(成功或失败原因)"
+          },
+          "U": {
+            "type": "number",
+            "description": "无量纲质量比(m2/(m1+m2))",
+            "format": "double"
+          },
+          "IsBarycentric": {
+            "type": "boolean",
+            "description": "Positions数组是否使用质心会合坐标系,默认:true; false:原点在主天体"
+          },
+          "Positions": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
+            "description": "会合坐标系下位置速度数组(无量纲)(t0,x0,y0,z0,vx0,vy0,vz0,t1,x1,y1,z1,vx1,vy1,vz1,...)"
+          }
+        },
+        "description": "圆形限制性三体问题的轨道积分输出参数"
+      },
       "TransferResultData": {
         "type": "object",
         "properties": {
@@ -19408,71 +16960,6 @@
           }
         },
         "description": "网格点的覆盖品质数值(由计算类型决定,具体数值由具体的FOM决定)"
-      },
-      "VAMCSProfileDEOptimizer": {
-        "type": "object",
-        "properties": {
-          "TypeDiscriminator": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "Type": {
-            "description": "文件类型:eDifferentialCorrector,eDEOptimizer",
-            "$ref": "#/components/schemas/EMCSProfile"
-          },
-          "IsActive": {
-            "type": "boolean",
-            "description": "本控制文件是否有效，false时则不运行本控制文件"
-          },
-          "IsIterate": {
-            "type": "boolean",
-            "description": "是否循环"
-          },
-          "Name": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "Text": {
-            "type": [
-              "null",
-              "string"
-            ]
-          },
-          "Controls": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/Control_Optimizer"
-            },
-            "description": "自变量表格"
-          },
-          "Results": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "$ref": "#/components/schemas/Result_Optimizer"
-            },
-            "description": "约束表格"
-          },
-          "xResult": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            }
-          }
-        }
       },
       "Walker_Input": {
         "required": [
@@ -19597,6 +17084,9 @@
       "name": "LandingZone"
     },
     {
+      "name": "Libration"
+    },
+    {
       "name": "Lighting"
     },
     {
@@ -19613,9 +17103,6 @@
     },
     {
       "name": "Propagator"
-    },
-    {
-      "name": "Rocket"
     },
     {
       "name": "Terrain"

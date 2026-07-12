@@ -118,6 +118,11 @@
       "name": "rv2kepler",
       "skillFile": "skills/rv2kepler/SKILL.md",
       "fixturesDir": "skills/rv2kepler/fixtures"
+    },
+    {
+      "name": "libration",
+      "skillFile": "skills/libration/SKILL.md",
+      "fixturesDir": "skills/libration/fixtures"
     }
   ]
 }
