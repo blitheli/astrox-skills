@@ -41,11 +41,11 @@ CRTBP 是理想模型. 它适合周期轨道族初值、快速设计和动力学
 
 ### 3.1 质心原点
 
-标准 CRTBP 常令系统质心位于原点. `/libration/positions` 使用此约定.`crtbp-trajectory` 在 `IsBarycentric=true` 时也使用此约定.
+标准 CRTBP 常令系统质心位于原点. `/libration/positions` 使用此约定.`crtbp-trajectory` 在 `IsBarycentric=true` 时也使用此约定.`crtbp-period-orbit-fixed-x` 在 `IsBarycentric=true` 时按质心系解释输入/输出(`x_bary = x_m1 - U`),但内部仍在主天体原点求解.
 
 ### 3.2 主天体原点
 
-`crtbp-trajectory` 在 `IsBarycentric=false` 时原点位于主天体,次天体位于 `x=1`. 地月 L1/L2 Halo 和 DRO 族接口采用此类无量纲状态约定.
+`crtbp-trajectory` 与 `crtbp-period-orbit-fixed-x` 在 `IsBarycentric=false` 时原点位于主天体,次天体位于 `x=1`. 地月 L1/L2 Halo 和 DRO 族接口采用此类无量纲状态约定.
 
 因此地月族接口中的:
 
@@ -55,7 +55,7 @@ x = 1
 
 表示月球位置,不是 L1 或 L2 位置. L2 与 DRO 的振幅常写为 `Ax=X0[0]-1`,即相对月球位置.
 
-不要直接混合两种原点的状态. 请求 `crtbp-trajectory` 时应显式设置 `IsBarycentric`,并核对响应回显.
+不要直接混合两种原点的状态. 请求 `crtbp-trajectory` 或 `crtbp-period-orbit-fixed-x` 时应显式设置 `IsBarycentric`,并核对响应回显.
 
 ## 4. 归一化单位
 
@@ -135,15 +135,41 @@ OpenAPI 将典型 70000 km 写为 `Ax=0.1801`,与直接使用 384400 km 换算�
 
 DRO 通常具有较强的线性稳定性,而 L1/L2 Halo 通常不稳定. 稳定性结论会随轨道成员和力模型变化,不能仅凭轨道名称替代单值矩阵或长期摄动分析.
 
-## 7. 周期轨道验证
+## 7. 固定 X 的周期轨道微分修正
 
-Halo/DRO 接口返回 `Period`,`X0`,`ListT`,`ListX`. 基本检查:
+`POST /libration/crtbp-period-orbit-fixed-x` 用于在给定质量比与初值猜测下,求 XZ 平面对称的 CRTBP 周期轨道:
+
+```text
+固定: x
+修正: z, Vy, 半周期(由 |TEnd-T0| 提供初值)
+目标: 关于 XZ 平面对称的闭合轨道(Halo 或 DRO)
+```
+
+输入要求:
+
+- `RV0` 为 XZ 平面穿越态:`y≈0`,`vx≈0`,`vz≈0`.
+- `x` 在迭代中不变,因此振幅由所选 `x`(或 `Ax=x-1`)直接指定.
+- 初值应靠近目标族;过差猜测可能不收敛.
+
+与地月族接口的分工:
+
+| 场景 | 推荐接口 |
+| --- | --- |
+| 地月标准 L1/L2 Halo、NRHO、DRO 查表 | `em-l1-halo` / `em-l2-halo` / `em-dro` |
+| 任意 `U`、自定义 `x`、或在族结果附近再修正 | `crtbp-period-orbit-fixed-x` |
+
+典型流程:先用 `em-*` 得到邻近成员,再微调 `z` 或 `TEnd` 后调用本接口;也可直接用已有猜测调用. 修正成功后,可用同一 `X0`/`Period`/`U`/`IsBarycentric` 送入 `crtbp-trajectory` 验证.
+
+## 8. 周期轨道验证
+
+Halo/DRO 与固定 X 修正接口返回 `Period`,`X0`,`ListT`,`ListX`. 基本检查:
 
 1. `IsSuccess=true`.
 2. `X0` 长度为 6.
 3. `Period>0`.
 4. `ListT` 与 `ListX` 非空且数量匹配.
 5. `ListX` 最后一项与 `X0` 在所需容差内闭合.
+6. 对固定 X 接口,额外确认 `X0[0]` 等于请求的 `RV0[0]`.
 
 将 `X0` 和 `Period` 再送入 `crtbp-trajectory` 时,必须保持相同的:
 
@@ -152,13 +178,14 @@ Halo/DRO 接口返回 `Period`,`X0`,`ListT`,`ListX`. 基本检查:
 - 状态顺序 `[x,y,z,vx,vy,vz]`.
 - 无量纲单位.
 
-## 8. 使用边界
+## 9. 使用边界
 
 使用本技能:
 
 - 快速查询 L1-L5.
 - 计算归一化单位.
 - 获取地月 L1/L2 Halo、NRHO、DRO 的 CRTBP 初值.
+- 对自定义初值做固定 X 的周期轨道微分修正.
 - 对无量纲状态做纯 CRTBP 数值积分.
 
 改用 `astrogator`:

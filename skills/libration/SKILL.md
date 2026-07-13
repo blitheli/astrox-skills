@@ -1,11 +1,11 @@
 ---
 name: libration
-description: 计算圆型限制性三体问题(CRTBP)的平动点位置与归一化单位,生成地月 L1/L2 Halo、NRHO、DRO 周期轨道初值,或在无量纲会合坐标系中积分轨迹。用户提到 Lagrange 点、平动点、CRTBP、Halo、NRHO、DRO 或地月会合系时使用。
+description: 计算圆型限制性三体问题(CRTBP)的平动点位置与归一化单位,生成地月 L1/L2 Halo、NRHO、DRO 周期轨道初值,对已有 XZ 平面穿越初值做固定 X 的周期轨道微分修正,或在无量纲会合坐标系中积分轨迹。用户提到 Lagrange 点、平动点、CRTBP、Halo、NRHO、DRO、微分修正或地月会合系时使用。
 ---
 
 # 平动点与 CRTBP 轨道技能 (Libration)
 
-本技能调用 Astrox Web API 的 6 个 `/libration/*` 端点,处理平动点、CRTBP 单位、无量纲轨迹积分及地月周期轨道族。相关概念、坐标系和换算公式见 [docs/libration-knowledge.md](docs/libration-knowledge.md)。
+本技能调用 Astrox Web API 的 7 个 `/libration/*` 端点,处理平动点、CRTBP 单位、无量纲轨迹积分、地月周期轨道族及固定 X 的周期轨道微分修正。相关概念、坐标系和换算公式见 [docs/libration-knowledge.md](docs/libration-knowledge.md)。
 
 ## 核心指令 (Core Instructions)
 
@@ -13,31 +13,33 @@ description: 计算圆型限制性三体问题(CRTBP)的平动点位置与归一
   - 求 L1-L5 位置: `GET /libration/positions`
   - 求无量纲与 SI 单位换算: `GET /libration/unit`
   - 积分已有 CRTBP 初值: `POST /libration/crtbp-trajectory`
+  - 固定 X 求 XZ 对称周期轨道: `POST /libration/crtbp-period-orbit-fixed-x`
   - 生成地月 L1 Halo: `GET /libration/em-l1-halo`
   - 生成地月 L2 Halo/NRHO: `GET /libration/em-l2-halo`
   - 生成地月平面 DRO: `GET /libration/em-dro`
 2. 明确坐标约定:
   - `/positions` 使用质心原点会合系.
-  - `crtbp-trajectory` 由 `IsBarycentric` 选择质心原点或主天体原点.
+  - `crtbp-trajectory`、`crtbp-period-orbit-fixed-x` 由 `IsBarycentric` 选择质心原点或主天体原点.
   - `em-l1-halo`、`em-l2-halo`、`em-dro` 返回主天体原点会合系无量纲状态,地月场景中月球位于 `x=1`.
 3. 不得把无量纲会合系状态直接当作 m、m/s 或惯性系状态. 使用 `/libration/unit` 返回的 `UnitL`、`UnitT`、`UnitV` 换算.
-4. `positions` 和 `unit` 没有 `IsSuccess` 包装. 其余 4 个端点先检查 HTTP 状态,再检查 `IsSuccess`.
-5. 轨道族接口返回的 `X0` 顺序为 `[x,y,z,vx,vy,vz]`,`Period` 为无量纲周期.
+4. `positions` 和 `unit` 没有 `IsSuccess` 包装. 其余端点先检查 HTTP 状态,再检查 `IsSuccess`.
+5. 轨道族与微分修正接口返回的 `X0` 顺序为 `[x,y,z,vx,vy,vz]`,`Period` 为无量纲周期.
+6. 需要自定义振幅/质量比下的 Halo/DRO 初值时,优先用 `crtbp-period-orbit-fixed-x`;地月标准族查表用 `em-*-halo` / `em-dro`.
 
 
 
 ## 接口选择
 
 
-| 需求              | 方法与路径                              | 主要输入                    | 主要输出               |
-| --------------- | ---------------------------------- | ----------------------- | ------------------ |
-| L1-L5 位置        | `GET /libration/positions`         | 质量比 `u`                 | 10 元裸数组            |
-| 会合系单位           | `GET /libration/unit`              | `gm1`,`gm2`,`meanRange` | `LibrationUnit`    |
-| CRTBP 积分        | `POST /libration/crtbp-trajectory` | `RV0` 等                 | 展平轨迹 `Positions`   |
-| 地月 L2 Halo/NRHO | `GET /libration/em-l2-halo`        | `ax`,`isSouth`          | `HaloOrbitResults` |
-| 地月 L1 Halo      | `GET /libration/em-l1-halo`        | `az`,`isSouth`          | `HaloOrbitResults` |
-| 地月 DRO          | `GET /libration/em-dro`            | `ax`                    | `HaloOrbitResults` |
-
+| 需求              | 方法与路径                                       | 主要输入                    | 主要输出               |
+| --------------- | ------------------------------------------- | ----------------------- | ------------------ |
+| L1-L5 位置        | `GET /libration/positions`                  | 质量比 `u`                 | 10 元裸数组            |
+| 会合系单位           | `GET /libration/unit`                       | `gm1`,`gm2`,`meanRange` | `LibrationUnit`    |
+| CRTBP 积分        | `POST /libration/crtbp-trajectory`          | `RV0` 等                 | 展平轨迹 `Positions`   |
+| 固定 X 周期轨道修正     | `POST /libration/crtbp-period-orbit-fixed-x` | `RV0`,`TEnd` 等          | `HaloOrbitResults` |
+| 地月 L2 Halo/NRHO | `GET /libration/em-l2-halo`                 | `ax`,`isSouth`          | `HaloOrbitResults` |
+| 地月 L1 Halo      | `GET /libration/em-l1-halo`                 | `az`,`isSouth`          | `HaloOrbitResults` |
+| 地月 DRO          | `GET /libration/em-dro`                     | `ax`                    | `HaloOrbitResults` |
 
 
 
@@ -122,7 +124,35 @@ description: 计算圆型限制性三体问题(CRTBP)的平动点位置与归一
 
 必须检查 `Positions.length % 7 == 0`. OpenAPI 的输出描述称 `IsBarycentric` 默认 true,但输入 schema 和上游测试明确默认 false;以请求值及响应回显为准.
 
-### 4. 地月 L2 Halo/NRHO
+### 4. CRTBP 周期轨道微分修正(固定 X)
+
+`POST /libration/crtbp-period-orbit-fixed-x`
+
+在 CRTBP 中固定初始 `x`,通过微分修正 `z`、`Vy` 与半周期,求关于 XZ 平面对称的周期轨道(Halo/DRO).
+
+请求体与 `crtbp-trajectory` 相同,均为 `Trajectory_CRTBP_Input`:
+
+
+| 参数              | 类型        | 必须  | 默认值                   | 说明                                      |
+| --------------- | --------- | --- | --------------------- | --------------------------------------- |
+| `RV0`           | number[6] | 是   | OpenAPI L2 Halo 示例    | XZ 平面穿越初值,应满足 `y≈vx≈vz≈0`               |
+| `U`             | number    | 否   | `0.01215058560962404` | 质量比                                     |
+| `T0`            | number    | 否   | `0`                   | 初始无量纲时刻                                 |
+| `IsBarycentric` | boolean   | 否   | `false`               | 输入/输出坐标系;内部始终在主天体原点求解                  |
+| `TEnd`          | number    | 否   | `3.384919254474086`   | 周期初值取 `|TEnd-T0|`                       |
+| `OutStep`       | number    | 否   | `0`                   | 与积分接口共用 schema;本端点返回 `ListT`/`ListX` |
+
+
+关键约束:
+
+- `RV0[0]`(x)在修正过程中保持不变.
+- 初值应接近目标族成员;猜测过差时 `IsSuccess=false`.
+- `IsBarycentric=true` 时按 `x_bary = x_m1 - U` 解释输入/输出;响应 `IsBarycentric` 与请求一致.
+- 平面 DRO 可取 `z=0`;三维 Halo 取 `z≠0`.
+
+响应为 `HaloOrbitResults`(见下方公共响应). 成功时核对:`X0[0]` 等于请求 `RV0[0]`,`Period>0`,周期闭合.
+
+### 5. 地月 L2 Halo/NRHO
 
 `GET /libration/em-l2-halo`
 
@@ -133,7 +163,7 @@ description: 计算圆型限制性三体问题(CRTBP)的平动点位置与归一
 | `isSouth` | boolean | 否   | `false` | `true` 返回南半球轨道,即 `X0[2]<0`         |
 
 
-### 5. 地月 L1 Halo
+### 6. 地月 L1 Halo
 
 `GET /libration/em-l1-halo`
 
@@ -146,7 +176,7 @@ description: 计算圆型限制性三体问题(CRTBP)的平动点位置与归一
 
 
 
-### 6. 地月 DRO
+### 7. 地月 DRO
 
 `GET /libration/em-dro`
 
@@ -162,12 +192,13 @@ description: 计算圆型限制性三体问题(CRTBP)的平动点位置与归一
 
 ## 周期轨道公共响应
 
-`em-l1-halo`、`em-l2-halo`、`em-dro` 均返回 `HaloOrbitResults`:
+`em-l1-halo`、`em-l2-halo`、`em-dro`、`crtbp-period-orbit-fixed-x` 均返回 `HaloOrbitResults`:
 
 
 | 字段                    | 说明             |
 | --------------------- | -------------- |
 | `IsSuccess`,`Message` | 业务状态           |
+| `IsBarycentric`       | 原点约定;族接口通常为 false,固定 X 接口与请求一致 |
 | `Period`              | 无量纲周期          |
 | `X0`                  | 微分修正后的 6 元初值   |
 | `InitialX0`           | 修正前初值          |
@@ -195,8 +226,9 @@ t_s   = t_nd * UnitT
 2. 若需要物理量,先调用 `/libration/unit`.
 3. 对振幅做范围预检,并保留 API 的 `IsSuccess` 作为最终判定.
 4. 获取周期轨道时保存响应中的 `X0`,`Period`,并单独记录所采用的质量比 `U` 约定.
-5. 将轨道初值送入 `crtbp-trajectory` 时保持相同 `U` 和坐标原点.
-6. 输出时同时标明数值、单位、坐标系、原点和是否无量纲.
+5. 自定义周期轨道:构造 XZ 穿越初值 `RV0`,设 `TEnd≈` 预估周期,调用 `crtbp-period-orbit-fixed-x`;可用 `em-*` 结果作初值猜测后再微调.
+6. 将轨道初值送入 `crtbp-trajectory` 时保持相同 `U` 和坐标原点.
+7. 输出时同时标明数值、单位、坐标系、原点和是否无量纲.
 
 
 
@@ -225,14 +257,22 @@ curl "${BASE_URL}/libration/crtbp-trajectory" \
   --request POST \
   --header 'Content-Type: application/json' \
   --data-binary "@skills/libration/fixtures/crtbp-trajectory-min.json"
+
+# 固定 X 的周期轨道微分修正
+curl "${BASE_URL}/libration/crtbp-period-orbit-fixed-x" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@skills/libration/fixtures/crtbp-period-orbit-fixed-x-min.json"
 ```
 
 
 
 ## Fixtures
 
-- `fixtures/cases.json`:6 个端点的声明式测试清单,包含查询参数和期望检查.
+- `fixtures/cases.json`:7 个端点的声明式测试清单,包含查询参数和期望检查.
 - `fixtures/crtbp-trajectory-min.json`:上游闭合测试使用的 L2 Halo 一周期积分请求.
+- `fixtures/crtbp-period-orbit-fixed-x-min.json`:已知闭合 L2 Halo 初值的固定 X 修正请求.
+- `fixtures/crtbp-period-orbit-fixed-x-perturbed.json`:在 `em-l2-halo` 附近扰动 z/周期后的修正请求.
 
 验证时以 HTTP 200 和各端点的响应规则为准. 远程服务器不可用时,连接失败不表示 fixture 或本地配置错误.
 

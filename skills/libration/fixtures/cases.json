@@ -202,6 +202,38 @@
         "absoluteTolerance": 1e-12,
         "periodClosureNormMax": 1e-11
       }
+    },
+    {
+      "name": "crtbp-period-orbit-fixed-x-em-l2-halo",
+      "method": "POST",
+      "path": "/libration/crtbp-period-orbit-fixed-x",
+      "requestBodyFile": "crtbp-period-orbit-fixed-x-min.json",
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "IsBarycentric": false,
+        "x0Length": 6,
+        "periodPositive": true,
+        "fixedX0": 1.189017399646985,
+        "absoluteTolerance": 1e-14,
+        "periodClosureNormMax": 1e-11
+      }
+    },
+    {
+      "name": "crtbp-period-orbit-fixed-x-perturbed-recovers",
+      "method": "POST",
+      "path": "/libration/crtbp-period-orbit-fixed-x",
+      "requestBodyFile": "crtbp-period-orbit-fixed-x-perturbed.json",
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": true,
+        "IsBarycentric": false,
+        "x0Length": 6,
+        "fixedX0": 1.191494,
+        "absoluteTolerance": 1e-14,
+        "periodClosureNormMax": 1e-11
+      },
+      "note": "Perturbed z and period guess around em-l2-halo ax=0.191494; X is held fixed while z/Vy/period are corrected."
     }
   ]
 }
