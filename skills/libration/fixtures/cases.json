@@ -106,11 +106,11 @@
       }
     },
     {
-      "name": "em-l2-nrho-north-contract-probe",
+      "name": "em-l2-nrho-north",
       "method": "GET",
       "path": "/libration/em-l2-halo",
       "query": {
-        "ax": 0.026,
+        "ax": 0.0261,
         "isSouth": false
       },
       "expect": {
@@ -121,7 +121,22 @@
         "x0ZSign": "positive",
         "periodClosureNormMax": 1e-11
       },
-      "contractNote": "OpenAPI names ax=0.026 as a typical NRHO although it is below the same endpoint's documented ax range. A failed business assertion records a service-contract or orbit-family-data incompatibility."
+      "note": "Use ax slightly above the data-file lower bound (~0.026000000000018453). Literal OpenAPI example ax=0.026 is rejected by floating-point boundary."
+    },
+    {
+      "name": "em-l2-halo-openapi-nrho-literal-rejected",
+      "method": "GET",
+      "path": "/libration/em-l2-halo",
+      "query": {
+        "ax": 0.026,
+        "isSouth": false
+      },
+      "expect": {
+        "httpStatus": 200,
+        "IsSuccess": false,
+        "messageContains": "Ax"
+      },
+      "contractNote": "OpenAPI lists NRHO Ax=0.026, but the orbit-family file lower bound is slightly larger; literal 0.026 must fail."
     },
     {
       "name": "em-l2-halo-out-of-range",
