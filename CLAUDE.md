@@ -66,4 +66,5 @@ skills/
 - `kepler2rv`(目录 `skills/kepler2rv/`)
 - `rv2kepler`(目录 `skills/rv2kepler/`)
 - `astrogator`(目录 `skills/astrogator/`;地月平动点专题见 `skills/astrogator/docs/earth-moon-libration.md`)
+- `libration`(目录 `skills/libration/`;CRTBP 平动点、Halo/NRHO/DRO、无量纲轨迹积分与固定 X 周期轨道微分修正)
 
