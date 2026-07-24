@@ -67,4 +67,5 @@ skills/
 - `rv2kepler`(目录 `skills/rv2kepler/`)
 - `astrogator`(目录 `skills/astrogator/`;地月平动点专题见 `skills/astrogator/docs/earth-moon-libration.md`)
 - `libration`(目录 `skills/libration/`;CRTBP 平动点、Halo/NRHO/DRO、无量纲轨迹积分与固定 X 周期轨道微分修正)
+- `rocket-trajectory-optim`(目录 `skills/rocket-trajectory-optim/`;火箭方案弹道优化,契约见仓库根目录 `rocket-web-api.json`,默认服务 `http://astrox.cn:8764`)
 
