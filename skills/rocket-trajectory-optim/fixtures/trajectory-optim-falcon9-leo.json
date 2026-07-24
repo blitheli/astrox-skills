@@ -1,0 +1,232 @@
+{
+  "RocketInput": {
+    "$type": "Falcon9",
+    "Name": "Falcon9 LEO 300km 53°",
+    "Text": "使用两个优化文件.第1个优化:目标轨道,一次关机,150x300km;第2个微分修正法:二次点火进入300km圆轨道",
+    "Text2": "偏心率不为0,omg0取值158是根据发射点和方位角综合确定的，保证二级一次关机后刚好在近地点附近,运载能力16t,二级还剩余约5t燃料",
+    "Name_FaSheDian": "SLC40",
+    "A0": 138.424,
+    "T1": 10,
+    "Alpham": 0.8416,
+    "Sm": 10.75,
+    "Gw": 15973,
+    "FairingMass": 1700,
+
+    "sma0": 6603170,
+    "ecc0": 0.0114,
+    "inc0": 53.0,
+    "omg0": 158,
+
+    "Stage1_Mass": 436600,
+    "Stage1_FuelMass": 411000,
+    "Stage2_Mass": 116000,
+    "Stage2_FuelMass": 111500,
+    "Tk_1": 146.0,
+    "Dt_k12f": 4.0,
+    "Dt_dh2": 6.0,
+    "Tk_F": 6,
+    "Tk_2": 369,
+    "Tk_2u": 500,
+    "Dt_hx": 2595,
+    "Tk_22": 2,
+    "Dt_xjfl": 410,
+    "PhicxDot_2": -0.0774,
+    "PhicxDot_hx": -0.07,
+    "PsicxDot_2": 0.0,
+    "Stage1_Engine": {
+      "Name": "9台Merlin 1D",
+      "NumberOfEngines": 9,
+      "Force": 845222,
+      "Ips": 2766.42,
+      "Sa": 0.68
+    },
+    "Stage2_Engine": {
+      "Name": "1台Merlin Vacuum",
+      "NumberOfEngines": 1,
+      "Force": 981000,
+      "Ips": 3412.7,
+      "IsVacuum": true
+    },
+    "Stage2_Engine2": {
+      "Name": "1台Merlin Vacuum",
+      "Text": "二次工作,节流40%",
+      "NumberOfEngines": 1,
+      "Force": 981000,
+      "Ips": 3412.7,
+      "ThrustThrottling": [ 0, 0.4, 10, 0.4 ],
+      "IsVacuum": true
+    }
+  },
+
+  "RunProfiles": true,
+  "GetKeyData": false,
+
+  "Profiles": [
+    {
+      "$type": "AlglibOptimizer",
+      "Name": "Falcon9_SECO-1,150x300km",
+      "Text": "二级一次点火后进入150x300km椭圆轨道(目标轨道)",
+      "IsActive": true,
+      "IsIterate": true,
+      "DiffStep": 0.0001,
+      "EpsX": 0.001,
+      "StepMax": 0.2,
+      "MaxIts": 100,
+      "Controls": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Object": "初始状态",
+          "CurrentValue": 15000,
+          "LowerBound": 10000,
+          "UpperBound": 25000,
+          "Scale": 1000
+        },
+        {
+          "Use": true,
+          "Name": "A0",
+          "Object": "初始状态",
+          "CurrentValue": 138.4,
+          "LowerBound": 120,
+          "UpperBound": 150,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "Alpham",
+          "CurrentValue": 0.8,
+          "LowerBound": 0.2,
+          "UpperBound": 3,
+          "Scale": 1,
+          "Object": "初始状态"
+        },
+        {
+          "Use": true,
+          "Name": "PhicxDot_2",
+          "Object": "初始状态",
+          "CurrentValue": -0.08,
+          "LowerBound": -0.6,
+          "UpperBound": 0.3,
+          "Scale": 1
+        }
+      ],
+      "Results": [
+        {
+          "Use": true,
+          "Name": "Gw",
+          "Goal": "Maximize",
+          "Object": "初始状态",
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "gs_r",
+          "Goal": "Equality",
+          "Object": "二级一次关机",
+          "Scale": 100000
+        },
+        {
+          "Use": true,
+          "Name": "gs_Va",
+          "Goal": "Equality",
+          "Object": "二级一次关机",
+          "Scale": 1000
+        },
+        {
+          "Use": true,
+          "Name": "gs_thetaba",
+          "Goal": "Equality",
+          "Object": "二级一次关机",
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "gs_ir",
+          "Goal": "Equality",
+          "Object": "二级一次关机",
+          "Scale": 1
+        }
+      ]
+    },
+    {
+      "$type": "DifferentialCorrector",
+      "Name": "Falcon9_SECO-2",
+      "Text": "在远地点二次点火进入300km圆轨道",
+      "IsActive": true,
+      "IsIterate": true,
+      "MaxIts": 50,
+      "Controls": [
+        {
+          "Use": true,
+          "Name": "PhicxDot_hx",
+          "Object": "初始状态",
+          "CurrentValue": -0.07,
+          "DiffStep": 0.01,
+          "StepMax": 0.1,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "PsicxDot_hx",
+          "Object": "初始状态",
+          "CurrentValue": 0.0,
+          "DiffStep": 0.01,
+          "StepMax": 0.1,
+          "Scale": 1
+        },
+        {
+          "Use": true,
+          "Name": "Dt_hx",
+          "Object": "初始状态",
+          "CurrentValue": 2595,
+          "DiffStep": 1,
+          "StepMax": 100,
+          "Scale": 0.001
+        },
+        {
+          "Use": true,
+          "Name": "Tk_22",
+          "Object": "初始状态",
+          "CurrentValue": 2.6,
+          "DiffStep": 0.001,
+          "StepMax": 0.2,
+          "Scale": 1
+        }
+      ],
+      "Results": [
+        {
+          "Use": true,
+          "Name": "Az_vvlh",
+          "DesiredValue": 0.0,
+          "Tolerance": 0.00001,
+          "Scale": 1,
+          "Object": "二级一次关机"
+        },
+        {
+          "Use": true,
+          "Name": "El_vvlh",
+          "DesiredValue": 0.0,
+          "Tolerance": 0.00001,
+          "Scale": 1,
+          "Object": "二级一次关机"
+        },
+        {
+          "Use": true,
+          "Name": "theta_ba",
+          "DesiredValue": 0.0,
+          "Tolerance": 0.00001,
+          "Scale": 1,
+          "Object": "二级一次关机"
+        },
+        {
+          "Use": true,
+          "Name": "gs_am",
+          "DesiredValue": 6678137.0,
+          "Tolerance": 1,
+          "Scale": 0.000001,
+          "Object": "星箭分离"
+        }
+      ]
+    }
+  ]
+}

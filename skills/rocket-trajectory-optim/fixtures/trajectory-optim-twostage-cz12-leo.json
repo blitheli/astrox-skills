@@ -1,0 +1,88 @@
+{
+  "RocketInput": {
+    "$type": "TwoStage",
+    "Name": "CZ-12 LEO 900km 50°",
+    "Text": "单Alglib直接入900km/50°圆轨道; 4×YF-100J+2×YF-115B(180kN/台);各级质量公网查询,待确认。",
+    "Text2": "Y7典型时序初值; Tk_2=423固定、Tk_22=18s; Dt_hx=1000s",
+    "Text3": "二级干质量为6t,推进剂对应的飞行总时间可自行调整430-510s",
+    "FaSheDianLLA": [109.8, 18.4, 20],
+    "A0": 141.821,
+    "T1": 18,
+    "Alpham": 0.4263,
+    "Sm": 11.341,
+    "Gw": 3000,
+    "FairingMass": 2000,
+    "sma0": 7278137,
+    "ecc0": 0.0,
+    "inc0": 50.0,
+    "omg0": 170,
+    "Stage1_Mass": 355000,
+    "Stage1_FuelMass": 333000,
+    "Stage2_Mass": 54000,
+    "Stage2_FuelMass": 48000,
+    "Tk_1": 196.315,
+    "Dt_k12f": 2.0,
+    "Dt_dh2": 2.0,
+    "Tk_F": 8.7,
+    "Tk_2": 423,
+    "Dt_hx": 1000,
+    "Tk_22": 18,
+    "Dt_xjfl": 90,
+    "PhicxDot_2": 0.00329,
+    "PsicxDot_2": 0.0,
+    "PhicxDot_hx": -0.31823,
+    "PsicxDot_hx": 0.0,
+    "Stage1_Engine": {
+      "Name": "4台YF-100J",
+      "NumberOfEngines": 4,
+      "Force": 1250000,
+      "Ips": 2960.0,
+      "Sa": 1.5
+    },
+    "Stage2_Engine": {
+      "Name": "2台YF-115B",
+      "NumberOfEngines": 2,
+      "Force": 180000,
+      "Ips": 3349.0,
+      "IsVacuum": true
+    },
+    "Stage2_Engine2": {
+      "Name": "2台YF-115B二次",
+      "NumberOfEngines": 2,
+      "Force": 180000,
+      "Ips": 3349.0,
+      "IsVacuum": true
+    }
+  },
+  "RunProfiles": true,
+  "GetKeyData": true,
+  "Profiles": [
+    {
+      "$type": "AlglibOptimizer",
+      "Name": "CZ12_LEO_直接入轨",
+      "Text": "最大化Gw,星箭分离入900km/50°圆; Tk_2=423固定、Tk_22优化; Dt_hx=1000±1s",
+      "IsActive": true,
+      "IsIterate": true,
+      "DiffStep": 0.00002,
+      "EpsX": 0.00001,
+      "StepMax": 0.05,
+      "MaxIts": 800,
+      "Controls": [
+        { "Use": true, "Name": "Gw", "Object": "初始状态", "CurrentValue": 8000, "LowerBound": 2000, "UpperBound": 12000, "Scale": 10000 },
+        { "Use": true, "Name": "A0", "Object": "初始状态", "CurrentValue": 140, "LowerBound": 130.0, "UpperBound": 146.0, "Scale": 100 },
+        { "Use": true, "Name": "Alpham", "Object": "初始状态", "CurrentValue": 0.62, "LowerBound": 0.25, "UpperBound": 1.2, "Scale": 100 },
+        { "Use": true, "Name": "PhicxDot_2", "Object": "初始状态", "CurrentValue": -0.02, "LowerBound": -0.3, "UpperBound": 0.5, "Scale": 1 },
+        { "Use": true, "Name": "PhicxDot_hx", "Object": "初始状态", "CurrentValue": -0.41, "LowerBound": -0.5, "UpperBound": 0.3, "Scale": 1 },
+        { "Use": false, "Name": "Dt_hx", "Object": "初始状态", "CurrentValue": 1000, "LowerBound": 999, "UpperBound": 1001, "Scale": 0.001 },
+        { "Use": false, "Name": "Tk_22", "Object": "初始状态", "CurrentValue": 50, "LowerBound": 15, "UpperBound": 50, "Scale": 1 }
+      ],
+      "Results": [
+        { "Use": true, "Name": "Gw", "Goal": "Maximize", "Object": "初始状态", "DesiredValue": 0, "Scale": 1000000 },
+        { "Use": true, "Name": "gs_r", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 100000 },
+        { "Use": true, "Name": "gs_Va", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 1000 },
+        { "Use": true, "Name": "gs_thetaba", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 1 },
+        { "Use": true, "Name": "gs_ir", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 1 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "RocketInput": {
+    "$type": "CZ-8",
+    "Name": "CZ8_SSO_260614",
+    "Text": "CZ-8(基本型) 700km SSO 方案弹道, 2×液体助推+芯一级+2×YF-75氢氧二级",
+    "Text2": "单Alglib直接入轨; 时序参照旧版CZ8_SSO方案弹道_250729(Tk_zt=172,Tk_1=220)",
+    "Name_FaSheDian": "wc",
+    "A0": 190.992,
+    "T1": 17,
+    "Alpham": 2.053,
+    "Sm": 16.766,
+    "Sm2": 8.814,
+    "SmFairing": 8.814,
+    "Gw": 4303.9,
+    "FairingMass": 2000,
+
+    "sma0": 7078137,
+    "ecc0": 0.0,
+    "inc0": 98.2,
+    "omg0": 163,
+
+    "NumberOfBooster": 2,
+    "Booster_Sm": 2.812,
+    "Booster_Mass": 58000,
+    "Booster_FuelMass": 54000,
+    "Stage1_Mass": 196000,
+    "Stage1_FuelMass": 174000,
+    "Stage2_Mass": 35000,
+    "Stage2_FuelMass": 30000,
+
+    "Tk_zt": 172,
+    "Dt_ztf": 1.5,
+    "Tk_1": 220,
+    "Dt_k12f": 1.2,
+    "Tk_F": 7,
+    "Tk_2": 320,
+    "Dt_hx": 360,
+    "Tk_22": 200,
+    "Dt_xjfl": 75,
+
+    "PhicxDot_2": -0.0204,
+    "PsicxDot_2": 0.0,
+    "PhicxDot_hx": -0.0613,
+    "PsicxDot_hx": 0.0,
+    "PhicxDot_22": -0.0570,
+    "PsicxDot_22": 0.0,
+
+    "Booster_Engine": {
+      "Name": "助推 2×YF-100",
+      "NumberOfEngines": 2,
+      "IsBooster": true,
+      "Force": 1223500,
+      "Ips": 2942,
+      "Sa": 0.5
+    },
+    "Stage1_Engine": {
+      "Name": "芯一级 2×YF-100",
+      "NumberOfEngines": 2,
+      "Force": 1223500,
+      "Ips": 2942,
+      "Sa": 0.5,
+      "ThrustThrottling": [ 0, 1.0, 60, 1.0, 85, 0.765, 171.5, 1.0 ]
+    },
+    "Stage2_Engine": {
+      "Name": "二级一次 2×YF-75",
+      "NumberOfEngines": 2,
+      "Force": 83500,
+      "Ips": 4295,
+      "IsVacuum": true
+    },
+    "Stage2_Engine2": {
+      "Name": "二级二次 2×YF-75",
+      "NumberOfEngines": 2,
+      "Force": 83500,
+      "Ips": 4295,
+      "IsVacuum": true
+    }
+  },
+
+  "RunProfiles": true,
+  "GetKeyData": true,
+
+  "Profiles": [
+    {
+      "$type": "AlglibOptimizer",
+      "Name": "CZ8_SSO_直接入轨",
+      "Text": "最大化Gw,二级二次关机后进入700km SSO圆轨道",
+      "IsActive": true,
+      "IsIterate": true,
+      "DiffStep": 0.0001,
+      "EpsX": 0.001,
+      "StepMax": 0.2,
+      "MaxIts": 150,
+      "Controls": [
+        { "Use": true, "Name": "Gw", "Object": "初始状态", "CurrentValue": 4300, "LowerBound": 2000, "UpperBound": 7500, "Scale": 10000 },
+        { "Use": true, "Name": "A0", "Object": "初始状态", "CurrentValue": 191.0, "LowerBound": 185, "UpperBound": 200, "Scale": 100 },
+        { "Use": true, "Name": "Alpham", "Object": "初始状态", "CurrentValue": 2.05, "LowerBound": 0.3, "UpperBound": 5, "Scale": 100 },
+        { "Use": true, "Name": "PhicxDot_2", "Object": "初始状态", "CurrentValue": -0.020, "LowerBound": -0.3, "UpperBound": 0.1, "Scale": 1 },
+        { "Use": true, "Name": "PhicxDot_hx", "Object": "初始状态", "CurrentValue": -0.061, "LowerBound": -0.2, "UpperBound": 0.0, "Scale": 1 },
+        { "Use": true, "Name": "PhicxDot_22", "Object": "初始状态", "CurrentValue": -0.057, "LowerBound": -0.2, "UpperBound": 0.0, "Scale": 1 },
+        { "Use": true, "Name": "Dt_hx", "Object": "初始状态", "CurrentValue": 360, "LowerBound": 150, "UpperBound": 700, "Scale": 0.001 },
+        { "Use": true, "Name": "Tk_22", "Object": "初始状态", "CurrentValue": 200, "LowerBound": 80, "UpperBound": 250, "Scale": 1 },
+        { "Use": true, "Name": "Tk_2", "Object": "初始状态", "CurrentValue": 320, "LowerBound": 260, "UpperBound": 400, "Scale": 1 }
+      ],
+      "Results": [
+        { "Use": true, "Name": "Gw", "Goal": "Maximize", "Object": "初始状态", "DesiredValue": 0, "Scale": 1000000 },
+        { "Use": true, "Name": "gs_r", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 100000 },
+        { "Use": true, "Name": "gs_Va", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 1000 },
+        { "Use": true, "Name": "gs_thetaba", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 1 },
+        { "Use": true, "Name": "gs_ir", "Goal": "Equality", "Object": "星箭分离", "DesiredValue": 0, "Scale": 1 }
+      ]
+    }
+  ]
+}

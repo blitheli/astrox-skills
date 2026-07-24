@@ -28,6 +28,7 @@
 - 技能目录结构与注册信息参见 `CLAUDE.md` 和 `claude.json`。
 - `raw/` 目录下的 C# 文件是上游参考代码,不需要在本地编译。
 - 使用技能时不必展开查询 `astrox-web-api.json`;该文件主要用于创建或维护技能、核对字段与 OpenAPI 契约。
+- 火箭相关技能以仓库根目录 `rocket-web-api.json` 为准,默认服务为 `http://astrox.cn:8764`。
 
 ---
 

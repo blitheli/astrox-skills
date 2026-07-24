@@ -1,27 +1,31 @@
 {
   "RocketInput": {
     "$type": "CZ-2D",
-    "Name": "CZ2D_LEO_Optim",
+    "Name": "CZ2D LEO 500km 35°",
+    "Text": "500km,35°倾角,运载能力约2.5t",
+    "Text2": "至少剩余推进剂(灌注量+安全余量):一级:1400kg; 二级:500kg",
     "Name_FaSheDian": "xc",
-    "A0": 136.0,
+    "A0": 112.0,
     "T1": 17,
-    "Alpham": 1.158,
+    "Alpham": 0.72,
     "Sm": 8.814,
-    "Gw": 4300,
+    "Gw": 2500,
     "FairingMass": 1400,
+
     "sma0": 6892137,
-    "ecc0": 0.0,
-    "inc0": 55.0,
+    "ecc0": 0.00000,
+    "inc0": 35.0,
     "omg0": 178,
-    "Stage1_Mass": 187766.87059,
-    "Stage1_FuelMass": 176766.87059,
-    "Stage2_Mass": 55322.45236,
-    "Stage2_FuelMass": 51322.45236,
-    "Tk_1": 152.2,
+
+    "Stage1_Mass": 193000,
+    "Stage1_FuelMass": 182000,
+    "Stage2_Mass": 57000,
+    "Stage2_FuelMass": 53000,
+    "Tk_1": 154.0,
     "Dt_k12f": 1.2,
     "Tk_F": 64,
-    "Tk_2z": 160,
-    "Tk_2u": 500,
+    "Tk_2z": 170,
+    "Tk_2u": 400,
     "Dt_xjfl": 32,
     "PhicxDot_2z": -0.001,
     "PhicxDot_2u": -0.14,
@@ -29,14 +33,15 @@
     "Stage1_Engine": {
       "Name": "一级海平面发动机",
       "NumberOfEngines": 4,
-      "Force": 740400,
-      "Ips": 2550,
-      "Sa": 1.622
+      "Force": 748200,
+      "Ips": 2560,
+      "Sa": 0.8,
+      "CantAngle": 2.8
     },
     "Stage2_MainEngine": {
       "Name": "二级主机",
       "Force": 742000,
-      "Ips": 2941.999792,
+      "Ips": 2942,
       "IsVacuum": true
     },
     "Stage2_VernierEngine": {
@@ -44,6 +49,7 @@
       "NumberOfEngines": 4,
       "Force": 11775,
       "Ips": 2834,
+      "CantAngle": 10.0,
       "IsVacuum": true
     }
   },
@@ -71,16 +77,16 @@
           "Use": true,
           "Name": "A0",
           "Object": "初始状态",
-          "CurrentValue": 136,
-          "LowerBound": 120,
+          "CurrentValue": 112,
+          "LowerBound": 110,
           "UpperBound": 150,
           "Scale": 1
         },
         {
           "Use": true,
           "Name": "Alpham",
-          "CurrentValue": 1.158,
-          "LowerBound": 0.5,
+          "CurrentValue": 0.72,
+          "LowerBound": 0.3,
           "UpperBound": 3,
           "Scale": 1,
           "Object": "初始状态"
@@ -145,4 +151,5 @@
   ],
   "RunProfiles": true,
   "GetKeyData": false
+
 }

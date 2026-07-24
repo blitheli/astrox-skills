@@ -1,0 +1,143 @@
+{
+  "RocketInput": {
+    "$type": "CZ-3B",
+    "Name": "CZ3B_GTO_260613",
+    "Text": "CZ-3B(增强型) 28.5°倾角 GTO弹道,运载能力约5.5t。至少剩余推进剂(灌注量+安全余量):一级:1400kg; 二级:500kg; 三级:300kg",
+    "Text2": "Profile1(Alglib):最大化Gw,三级一次工作进入~200km停泊轨道; Profile2(DC):切向点火,二次关机后w:179.6°,ha:35786km",
+    "Name_FaSheDian": "xc",
+    "A0": 95.0,
+    "T1": 11,
+    "Alpham": 1.2,
+    "Sm": 24.718,
+    "Sm2": 8.814,
+    "SmFairing": 8.814,
+    "Gw": 5500,
+    "FairingMass": 820,
+
+    "sma0": 6578137,
+    "ecc0": 0.0,
+    "inc0": 28.5,
+    "omg0": 179.5,
+
+    "NumberOfBooster": 4,
+    "Booster_Sm": 3.976,
+    "Booster_Mass": 44000,
+    "Booster_FuelMass": 41100,
+    "Stage1_Mass": 196000,
+    "Stage1_FuelMass": 184200,
+    "Stage2_Mass": 49600,
+    "Stage2_FuelMass": 45750,
+    "Stage3_Mass": 21304,
+    "Stage3_FuelMass": 18193,
+
+    "Tk_zt": 139,
+    "Dt_ztf": 1.5,
+    "Tk_1": 156,
+    "Dt_k12f": 1.5,
+    "Tk_F": 76,
+    "Tk_2z": 169,
+    "Tk_2u": 6,
+    "Dt_k23f": 1.0,
+    "Tk_3": 275,
+    "Dt_hx": 830,
+    "Tk_32": 183,
+    "Dt_msxz": 20,
+    "Dt_xjfl": 80,
+
+    "PhicxDot_2z": -0.10,
+    "PsicxDot_2z": 0.0,
+    "PhicxDot_3": -0.10,
+    "PsicxDot_3": 0.0,
+    "PhicxDot_Hx": -0.07,
+    "PsicxDot_Hx": 0.0,
+
+    "Booster_Engine": {
+      "Name": "助推 YF-25",
+      "NumberOfEngines": 4,
+      "IsBooster": true,
+      "Force": 740400,
+      "Ips": 2556.2,
+      "Sa": 0.5,
+      "CantAngle": 6.0
+    },
+    "Stage1_Engine": {
+      "Name": "芯一级 YF-21C(4台)",
+      "NumberOfEngines": 4,
+      "Force": 748200,
+      "Ips": 2560,
+      "Sa": 0.8
+    },
+    "Stage2_MainEngine": {
+      "Name": "二级主机 YF-22E",
+      "Force": 742040,
+      "Ips": 2971,
+      "IsVacuum": true
+    },
+    "Stage2_VernierEngine": {
+      "Name": "二级游机 YF-23C(4室)",
+      "NumberOfEngines": 4,
+      "Force": 11800,
+      "Ips": 2834,
+      "CantAngle": 10.0,
+      "IsVacuum": true
+    },
+    "Stage3_Engine": {
+      "Name": "三级 2×YF-75",
+      "NumberOfEngines": 2,
+      "Force": 83500,
+      "Ips": 4295,
+      "IsVacuum": true
+    }
+  },
+
+  "RunProfiles": true,
+  "GetKeyData": true,
+
+  "Profiles": [
+    {
+      "$type": "AlglibOptimizer",
+      "Name": "CZ3B_GTO_停泊轨道",
+      "Text": "最大化Gw,三级一次工作进入~200km停泊轨道",
+      "IsActive": true,
+      "IsIterate": true,
+      "DiffStep": 0.0001,
+      "EpsX": 0.001,
+      "StepMax": 0.2,
+      "MaxIts": 100,
+      "Controls": [
+        { "Use": true, "Name": "Gw", "Object": "初始状态", "CurrentValue": 5500, "LowerBound": 3000, "UpperBound": 5800, "Scale": 10000 },
+        { "Use": true, "Name": "A0", "Object": "初始状态", "CurrentValue": 95.0, "LowerBound": 88, "UpperBound": 105, "Scale": 100 },
+        { "Use": true, "Name": "Alpham", "Object": "初始状态", "CurrentValue": 1.2, "LowerBound": 0.5, "UpperBound": 6, "Scale": 100 },
+        { "Use": true, "Name": "PhicxDot_2z", "Object": "初始状态", "CurrentValue": -0.10, "LowerBound": -0.3, "UpperBound": 0.1, "Scale": 1 },
+        { "Use": true, "Name": "PhicxDot_3", "Object": "初始状态", "CurrentValue": -0.10, "LowerBound": -0.3, "UpperBound": 0.1, "Scale": 1 }
+      ],
+      "Results": [
+        { "Use": true, "Name": "Gw", "Goal": "Maximize", "Object": "初始状态", "DesiredValue": 0, "Scale": 1000000 },
+        { "Use": true, "Name": "gs_r", "Goal": "Equality", "Object": "二三级分离", "DesiredValue": 0, "Scale": 100000 },
+        { "Use": true, "Name": "gs_Va", "Goal": "Equality", "Object": "二三级分离", "DesiredValue": 0, "Scale": 1000 },
+        { "Use": true, "Name": "gs_thetaba", "Goal": "Equality", "Object": "二三级分离", "DesiredValue": 0, "Scale": 1 },
+        { "Use": true, "Name": "gs_ir", "Goal": "Equality", "Object": "二三级分离", "DesiredValue": 0, "Scale": 1 }
+      ]
+    },
+    {
+      "$type": "DifferentialCorrector",
+      "Name": "CZ3B_GTO_二次点火",
+      "Text": "切向点火,二次关机后w:179.6°,ha:35786km",
+      "IsActive": true,
+      "IsIterate": true,
+      "MaxIts": 50,
+      "Controls": [
+        { "Use": true, "Name": "PhicxDot_Hx", "Object": "初始状态", "CurrentValue": -0.100, "DiffStep": 0.01, "StepMax": 0.1, "Scale": 1 },
+        { "Use": true, "Name": "PsicxDot_Hx", "Object": "初始状态", "CurrentValue": 0.0, "DiffStep": 0.01, "StepMax": 0.1, "Scale": 1 },
+        { "Use": true, "Name": "Dt_hx", "Object": "初始状态", "CurrentValue": 788, "DiffStep": 1, "StepMax": 100, "Scale": 0.001 },
+        { "Use": true, "Name": "Tk_32", "Object": "初始状态", "CurrentValue": 185, "DiffStep": 0.5, "StepMax": 30, "Scale": 0.01 }
+      ],
+      "Results": [
+        { "Use": true, "Name": "Az_vvlh", "DesiredValue": 0.0, "Tolerance": 0.00001, "Scale": 1, "Object": "三级一次关机" },
+        { "Use": true, "Name": "El_vvlh", "DesiredValue": 0.0, "Tolerance": 0.00001, "Scale": 1, "Object": "三级一次关机" },
+        { "Use": true, "Name": "gs_w", "DesiredValue": 179.6, "Tolerance": 0.00001, "Scale": 1, "Object": "星箭分离" },
+        { "Use": true, "Name": "gs_ha", "DesiredValue": 35786000.0, "Tolerance": 1000, "Scale": 0.000001, "Object": "星箭分离" }
+      ]
+    }
+  ]
+}
