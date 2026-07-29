@@ -18,6 +18,8 @@
 
 ## JSON 示例
 
+库内/文档示意(仅 URL 与步长):
+
 ```json
 {
   "TerrainServerUrl": "http://astrox.cn:8765/AstroxTerrain/v1/tilesets/Moon_V14_new/tiles/",
@@ -25,6 +27,8 @@
   "MaxSearchRange": 15
 }
 ```
+
+经当前 Web API 提交时,若包含本对象,需同时给出非 null 的 `TerrainServerUrl` 与 `PolarDemFileName`(模型非空字符串校验)。`PolarDemFileName` 非空则走极区 DEM 并忽略 URL;空字符串可能运行期失败。中低纬场景常直接省略整个 `TerrainMaskPara`。
 
 ## 注意事项
 

@@ -62,6 +62,9 @@ description: 计算地面站/月面站等固定点的方位–仰角地形遮罩
 | `TerrainZoomLevel` | int    | `-1` | 地形最大级别(`-1` 自动)                         |
 
 
+**Web API 注意**:当前服务端模型将 `TerrainServerUrl`、`PolarDemFileName` 视为非空 `string`。一旦请求体包含 `TerrainMaskPara` 对象,HTTP 校验要求这两个字段都出现且非 `null`。`PolarDemFileName` 为 `""` 时可能在运行期按字典键查找失败;非空时会走极区 DEM 并忽略 `TerrainServerUrl`。中低纬地球/月球 tileset 场景建议**省略整个 `TerrainMaskPara`**,使用服务端缺省配置(Bruno 坑缺省结果与上游 Assert 一致)。
+
+
 ### 响应数据结构
 
 详见 `shared-docs/api-schemas/AzimuthElevationMaskOut.md`。
@@ -87,7 +90,7 @@ description: 计算地面站/月面站等固定点的方位–仰角地形遮罩
 
 - **单位**:输入经纬度为 deg、高度为 m;`StepSize` 为 m;`MaxSearchRange` 为 km;输出方位角/仰角均为 **rad**(度 = rad × 180/π)。
 - **贴地**:`clampToGround: true` 时以地形表面为观测点;响应中 `sitePosition.cartographicDegrees[2]` 可能被更新。
-- **地形源**:显式给出 `TerrainServerUrl` 或 `PolarDemFileName`;省略则依赖服务端缺省配置,跨环境可能不一致。
+- **地形源**:优先省略 `TerrainMaskPara` 使用缺省;自定义时见上文 Web API 校验说明。上游 C# 库内可直接传 `TerrainServerUrl`+`StepSize`+`MaxSearchRange`(无需 `PolarDemFileName`),与 HTTP 校验不完全一致。
 - **成功判定**:HTTP 200 且 `IsSuccess === true`;失败时优先返回 `Message`。
 - **与其他技能衔接**:Simple 输出的扁平数组可喂给 `access`(约束 `AzElMask`)、`lighting-times`(`AzElMaskData`)。
 
@@ -131,7 +134,7 @@ curl "${BASE_URL}/Terrain/AzElMask" \
 - `AzElMaskData[0].Elevation * (180/π) ≈ 13.394` (±0.01)
 - `AzElMaskData[1].Elevation * (180/π) ≈ 13.416` (±0.01)
 
-### 内联 JSON
+### 内联 JSON(推荐 HTTP 形态,省略 TerrainMaskPara)
 
 ```bash
 export BASE_URL=http://astrox.cn:8765
@@ -144,14 +147,23 @@ curl "${BASE_URL}/Terrain/AzElMask" \
       "CentralBody": "Moon",
       "cartographicDegrees": [102.91745, 35.911758, -2252],
       "clampToGround": true
-    },
-    "TerrainMaskPara": {
-      "TerrainServerUrl": "http://astrox.cn:8765/AstroxTerrain/v1/tilesets/Moon_V14_new/tiles/",
-      "StepSize": 30,
-      "MaxSearchRange": 15
     }
   }'
 ```
+
+### 上游 C# 库内用例中的 TerrainMaskPara(对照)
+
+库内 `TerrainMaskCompute.GetAzimuthElevationMask` 常用如下参数(缺省步长/搜索距与服务端缺省一致):
+
+```json
+{
+  "TerrainServerUrl": "http://astrox.cn:8765/AstroxTerrain/v1/tilesets/Moon_V14_new/tiles/",
+  "StepSize": 30,
+  "MaxSearchRange": 15
+}
+```
+
+经 HTTP 调用时勿原样省略 `PolarDemFileName`(会 400);见上文 Web API 注意。
 
 ### 简化接口
 
@@ -166,9 +178,9 @@ curl "${BASE_URL}/Terrain/AzElMaskSimple" \
 ## Fixtures
 
 
-| 文件                                                         | 说明                                      |
-| ---------------------------------------------------------- | --------------------------------------- |
-| `skills/terrain-mask/fixtures/moon-bruno-azelmask.json`    | 月球 Bruno 坑,`StepSize=30m`,`MaxSearchRange=15km` |
+| 文件                                                         | 说明                                                    |
+| ---------------------------------------------------------- | ----------------------------------------------------- |
+| `skills/terrain-mask/fixtures/moon-bruno-azelmask.json`    | 月球 Bruno 坑,省略 `TerrainMaskPara`(HTTP 可运行,对齐上游 Assert) |
 
 ## 本地快速验证
 
