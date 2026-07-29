@@ -90,7 +90,7 @@ description: 计算地面站/月面站等固定点的方位–仰角地形遮罩
 
 - **单位**:输入经纬度为 deg、高度为 m;`StepSize` 为 m;`MaxSearchRange` 为 km;输出方位角/仰角均为 **rad**(度 = rad × 180/π)。
 - **贴地**:`clampToGround: true` 时以地形表面为观测点;响应中 `sitePosition.cartographicDegrees[2]` 可能被更新。
-- **地形源**:优先省略 `TerrainMaskPara` 使用缺省;自定义时见上文 Web API 校验说明。上游 C# 库内可直接传 `TerrainServerUrl`+`StepSize`+`MaxSearchRange`(无需 `PolarDemFileName`),与 HTTP 校验不完全一致。
+- **地形源**:优先省略 `TerrainMaskPara` 使用缺省。中低纬月球/地球走 tileset;月球南极(如沙克尔顿)缺省走极区 DEM(`Moon_LDEM_80s_20m`)。自定义时见上文 Web API 校验说明。上游 C# 库内可直接传 `TerrainServerUrl`+`StepSize`+`MaxSearchRange`(无需 `PolarDemFileName`),与 HTTP 校验不完全一致。
 - **成功判定**:HTTP 200 且 `IsSuccess === true`;失败时优先返回 `Message`。
 - **与其他技能衔接**:Simple 输出的扁平数组可喂给 `access`(约束 `AzElMask`)、`lighting-times`(`AzElMaskData`)。
 
@@ -112,7 +112,9 @@ description: 计算地面站/月面站等固定点的方位–仰角地形遮罩
 
 ## 调用示例(最小可运行)
 
-月球 Bruno 坑地形遮罩(与上游 C# 单元测试一致):
+### 示例 1:月球 Bruno 坑(中低纬 tileset)
+
+与上游 C# 单元测试一致;省略 `TerrainMaskPara`,使用服务端缺省月球地形。
 
 ```bash
 export BASE_URL=http://astrox.cn:8765
@@ -134,7 +136,34 @@ curl "${BASE_URL}/Terrain/AzElMask" \
 - `AzElMaskData[0].Elevation * (180/π) ≈ 13.394` (±0.01)
 - `AzElMaskData[1].Elevation * (180/π) ≈ 13.416` (±0.01)
 
-### 内联 JSON(推荐 HTTP 形态,省略 TerrainMaskPara)
+### 示例 2:月球南极沙克尔顿坑(极区 DEM)
+
+地面站位于沙克尔顿坑底部 `[126.544292, -89.732934, -2781]`,`clampToGround: true`。缺省走极区 DEM(`Moon_LDEM_80s_20m` / PolarStereoGraphic),无需显式 `TerrainMaskPara`。
+
+```bash
+export BASE_URL=http://astrox.cn:8765
+curl "${BASE_URL}/Terrain/AzElMask" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/terrain-mask/fixtures/moon-sp-shackleton-azelmask.json
+```
+
+期望(节选,角度已换算为 deg,容差约 ±0.01°):
+
+| 索引 | Azimuth(deg) | Elevation(deg) | 最远 Distance(km,约) |
+| --- | ------------ | -------------- | ------------------- |
+| 0   | 0.000        | ~17.065        | ~13.47              |
+| 31  | 31.000       | 17.005         | —                   |
+| 70  | 70.000       | 19.450         | —                   |
+
+上游 Assert:
+
+- `AzElMaskData[31].Elevation * (180/π) ≈ 17.005` (±0.01)
+- `AzElMaskData[70].Elevation * (180/π) ≈ 19.450` (±0.01)
+
+若需显式指定极区 DEM,可在 `TerrainMaskPara` 中设置 `PolarDemFileName: "Moon_LDEM_80s_20m"`(同时须给出非 null 的 `TerrainServerUrl`,见上文 Web API 注意)。
+
+### 内联 JSON(Bruno,推荐 HTTP 形态)
 
 ```bash
 export BASE_URL=http://astrox.cn:8765
@@ -151,9 +180,9 @@ curl "${BASE_URL}/Terrain/AzElMask" \
   }'
 ```
 
-### 上游 C# 库内用例中的 TerrainMaskPara(对照)
+### 上游 C# 库内用例中的 TerrainMaskPara(中低纬对照)
 
-库内 `TerrainMaskCompute.GetAzimuthElevationMask` 常用如下参数(缺省步长/搜索距与服务端缺省一致):
+库内 `TerrainMaskCompute.GetAzimuthElevationMask` 对 Bruno 坑常用如下参数(缺省步长/搜索距与服务端缺省一致):
 
 ```json
 {
@@ -175,20 +204,38 @@ curl "${BASE_URL}/Terrain/AzElMaskSimple" \
   --data-binary @skills/terrain-mask/fixtures/moon-bruno-azelmask.json
 ```
 
+月球南极 Simple 接口内部使用 `.lbl` DEM(以实现为准),输入可复用沙克尔顿 fixture:
+
+```bash
+curl "${BASE_URL}/Terrain/AzElMaskSimple" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/terrain-mask/fixtures/moon-sp-shackleton-azelmask.json
+```
+
 ## Fixtures
 
 
-| 文件                                                         | 说明                                                    |
-| ---------------------------------------------------------- | ----------------------------------------------------- |
-| `skills/terrain-mask/fixtures/moon-bruno-azelmask.json`    | 月球 Bruno 坑,省略 `TerrainMaskPara`(HTTP 可运行,对齐上游 Assert) |
+| 文件                                                              | 说明                                                              |
+| --------------------------------------------------------------- | --------------------------------------------------------------- |
+| `skills/terrain-mask/fixtures/moon-bruno-azelmask.json`         | 月球 Bruno 坑(中低纬),省略 `TerrainMaskPara`,对齐上游 Assert             |
+| `skills/terrain-mask/fixtures/moon-sp-shackleton-azelmask.json` | 月球南极沙克尔顿坑底部,缺省极区 DEM,对齐上游 Assert                              |
 
 ## 本地快速验证
 
 ```bash
 export BASE_URL=http://astrox.cn:8765
+# Bruno
 curl "${BASE_URL}/Terrain/AzElMask" \
   --request POST \
   --header 'Content-Type: application/json' \
   --data-binary @skills/terrain-mask/fixtures/moon-bruno-azelmask.json \
-  | jq '{IsSuccess, Message, el0_deg: (.AzElMaskData[0].Elevation * 180 / 3.141592653589793), el1_deg: (.AzElMaskData[1].Elevation * 180 / 3.141592653589793)}'
+  | jq '{IsSuccess, el0_deg: (.AzElMaskData[0].Elevation * 180 / 3.141592653589793), el1_deg: (.AzElMaskData[1].Elevation * 180 / 3.141592653589793)}'
+
+# 沙克尔顿
+curl "${BASE_URL}/Terrain/AzElMask" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/terrain-mask/fixtures/moon-sp-shackleton-azelmask.json \
+  | jq '{IsSuccess, el31_deg: (.AzElMaskData[31].Elevation * 180 / 3.141592653589793), el70_deg: (.AzElMaskData[70].Elevation * 180 / 3.141592653589793)}'
 ```
