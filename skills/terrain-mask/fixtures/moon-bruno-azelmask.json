@@ -1,0 +1,8 @@
+{
+  "Text": "月球Bruno坑的地形遮罩",
+  "sitePosition": {
+    "CentralBody": "Moon",
+    "cartographicDegrees": [102.91745, 35.911758, -2252],
+    "clampToGround": true
+  }
+}

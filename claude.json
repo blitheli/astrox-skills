@@ -123,6 +123,11 @@
       "name": "libration",
       "skillFile": "skills/libration/SKILL.md",
       "fixturesDir": "skills/libration/fixtures"
+    },
+    {
+      "name": "terrain-mask",
+      "skillFile": "skills/terrain-mask/SKILL.md",
+      "fixturesDir": "skills/terrain-mask/fixtures"
     }
   ]
 }

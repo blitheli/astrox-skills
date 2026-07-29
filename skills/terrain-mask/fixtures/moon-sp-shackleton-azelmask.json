@@ -1,0 +1,8 @@
+{
+  "Text": "月球南极沙克尔顿的地形遮罩",
+  "sitePosition": {
+    "CentralBody": "Moon",
+    "cartographicDegrees": [126.544292, -89.732934, -2781],
+    "clampToGround": true
+  }
+}
