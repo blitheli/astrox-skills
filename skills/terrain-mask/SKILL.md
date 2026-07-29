@@ -62,7 +62,7 @@ description: 计算地面站/月面站等固定点的方位–仰角地形遮罩
 | `TerrainZoomLevel` | int    | `-1` | 地形最大级别(`-1` 自动)                         |
 
 
-**Web API 注意**:当前服务端模型将 `TerrainServerUrl`、`PolarDemFileName` 视为非空 `string`。一旦请求体包含 `TerrainMaskPara` 对象,HTTP 校验要求这两个字段都出现且非 `null`。`PolarDemFileName` 为 `""` 时可能在运行期按字典键查找失败;非空时会走极区 DEM 并忽略 `TerrainServerUrl`。中低纬地球/月球 tileset 场景建议**省略整个 `TerrainMaskPara`**,使用服务端缺省配置(Bruno 坑缺省结果与上游 Assert 一致)。
+**Web API 注意**:当前服务端模型将 `TerrainServerUrl`、`PolarDemFileName` 视为非空 `string`。一旦请求体包含 `TerrainMaskPara` 对象,HTTP 校验要求这两个字段都出现且非 `null`。`PolarDemFileName` 为 `""` 时可能在运行期按字典键查找失败;非空时会走极区 DEM 并忽略 `TerrainServerUrl`。中低纬**月球** tileset 场景可省略整个 `TerrainMaskPara`(Bruno 坑缺省结果与上游 Assert 一致)。**地球** St. Helens 等需自定义 `TerrainServerUrl`/`MaxSearchRange` 的场景,库内可直接传参;经当前 HTTP 通道因上述校验与地球缺省 tileset 不可达,暂无法数值复核(见示例 3)。
 
 
 ### 响应数据结构
@@ -163,7 +163,40 @@ curl "${BASE_URL}/Terrain/AzElMask" \
 
 若需显式指定极区 DEM,可在 `TerrainMaskPara` 中设置 `PolarDemFileName: "Moon_LDEM_80s_20m"`(同时须给出非 null 的 `TerrainServerUrl`,见上文 Web API 注意)。
 
+### 示例 3:地球 St. Helens 火山坑
+
+地面站 `[ -122.189, 46.1956, 2102 ]`,`clampToGround: true`。上游 C# 显式指定地球 Cesium 地形服务与较小搜索距:
+
+```bash
+export BASE_URL=http://astrox.cn:8765
+curl "${BASE_URL}/Terrain/AzElMask" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/terrain-mask/fixtures/earth-sthelens-azelmask.json
+```
+
+`TerrainMaskPara` 要点(与上游 `AzElMask_StHelens.json` 一致):
+
+| 字段 | 值 | 说明 |
+| --- | --- | --- |
+| `TerrainServerUrl` | `.../AstroxTerrain/v1/tilesets/Earth_CesiumTerrain/tiles/` | 地球 Cesium 地形(历史曾用 `:9080` / `AstroxTerrainEarth/.../Earth_Cesium`) |
+| `TerrainZoomLevel` | `11` | 最大级别 |
+| `StepSize` | `30` | m |
+| `MaxSearchRange` | `1.5` | **km**(明显小于月球缺省 15 km) |
+
+上游 Assert(角度 deg,容差 ±0.01°):
+
+- `AzElMaskData[0].Elevation * (180/π) ≈ 7.047`
+- `AzElMaskData[30].Elevation * (180/π) ≈ -1.558`
+
+**当前 Web API 实测限制**(2026-07):
+
+1. 省略 `TerrainMaskPara` 时,地球缺省地形服务 metadata 下载失败(`Metadata could not be downloaded...`),无法像 Bruno/沙克尔顿那样靠缺省对齐 Assert。
+2. 按上游 JSON 提交时,模型校验要求补齐 `PolarDemFileName`;若填 `""` 则运行期字典键失败;若填非空极区 DEM 名则会忽略 `TerrainServerUrl`,结果不对齐 St. Helens。
+3. 因此本 fixture 保留**库内/上游可运行形态**;经当前 HTTP 通道暂无法完成数值复核。服务端放宽 `PolarDemFileName` 可空或恢复地球缺省 tileset 后,可用上文 Assert 复测。
+
 ### 内联 JSON(Bruno,推荐 HTTP 形态)
+
 
 ```bash
 export BASE_URL=http://astrox.cn:8765
@@ -220,6 +253,7 @@ curl "${BASE_URL}/Terrain/AzElMaskSimple" \
 | --------------------------------------------------------------- | --------------------------------------------------------------- |
 | `skills/terrain-mask/fixtures/moon-bruno-azelmask.json`         | 月球 Bruno 坑(中低纬),省略 `TerrainMaskPara`,对齐上游 Assert             |
 | `skills/terrain-mask/fixtures/moon-sp-shackleton-azelmask.json` | 月球南极沙克尔顿坑底部,缺省极区 DEM,对齐上游 Assert                              |
+| `skills/terrain-mask/fixtures/earth-sthelens-azelmask.json`     | 地球 St. Helens;含 `TerrainMaskPara`(Zoom=11,搜索 1.5 km);HTTP 暂无法复核 |
 
 ## 本地快速验证
 
@@ -238,4 +272,11 @@ curl "${BASE_URL}/Terrain/AzElMask" \
   --header 'Content-Type: application/json' \
   --data-binary @skills/terrain-mask/fixtures/moon-sp-shackleton-azelmask.json \
   | jq '{IsSuccess, el31_deg: (.AzElMaskData[31].Elevation * 180 / 3.141592653589793), el70_deg: (.AzElMaskData[70].Elevation * 180 / 3.141592653589793)}'
+
+# St. Helens(当前 HTTP 可能失败,见示例 3;成功时核对 el0/el30)
+curl "${BASE_URL}/Terrain/AzElMask" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/terrain-mask/fixtures/earth-sthelens-azelmask.json \
+  | jq '{IsSuccess, Message, el0_deg: (.AzElMaskData[0].Elevation * 180 / 3.141592653589793), el30_deg: (.AzElMaskData[30].Elevation * 180 / 3.141592653589793)}'
 ```

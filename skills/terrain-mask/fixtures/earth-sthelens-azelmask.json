@@ -1,0 +1,15 @@
+{
+  "Text": "St.Helens火山坑的地形遮罩",
+  "sitePosition": {
+    "CentralBody": "Earth",
+    "cartographicDegrees": [-122.189, 46.1956, 2102],
+    "clampToGround": true,
+    "HeightAboveGround": 0
+  },
+  "TerrainMaskPara": {
+    "TerrainServerUrl": "http://astrox.cn:8765/AstroxTerrain/v1/tilesets/Earth_CesiumTerrain/tiles/",
+    "TerrainZoomLevel": 11,
+    "StepSize": 30,
+    "MaxSearchRange": 1.5
+  }
+}
