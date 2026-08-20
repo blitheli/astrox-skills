@@ -9,7 +9,7 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
 
 ## 核心指令 (Core Instructions)
 
-1. **输入解析**:识别出发天体 `DepartureCbName`、到达天体 `ArrivalCbName`、出发时间段 `DepartureInterval`、到达时间段 `ArrivalInterval`、最小转移时间 `MinTofDays`、日心输出系 `SunFrameName`,以及可选的时间步长与小行星轨道根数。
+1. **输入解析**:识别出发天体 `DepartureCbName`、到达天体 `ArrivalCbName`、出发时间段 `DepartureInterval`、到达时间段 `ArrivalInterval`、转移时间上下限 `MinTofDays`/`MaxTofDays`、日心输出系 `SunFrameName`、出发/到达速度增量上限 `MaxDepartureDV`/`MaxArrivalDV`,以及可选的时间步长与小行星轨道根数。
 2. **小行星轨道根数**:
   - 当出发或到达天体为小行星时,可传 `DepartureElements` / `ArrivalElements`(MPC 型轨道根数)。**若对应 `*Elements` 不为 `null`,服务端直接使用该根数积分,不调用 MPC 网络查询。**
   - 若为小行星且 `*Elements` 为 `null`,则由服务端通过 MPC 等途径获取轨道根数(依赖网络)。
@@ -33,7 +33,10 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
 | `DepartureInterval` | string | 是   | `2028-06-01T00:00:00Z/2028-10-01T00:00:00Z`                           | 出发时间搜索区间 `Start/Stop`,UTC ISO8601                                           |
 | `ArrivalInterval`   | string | 是   | `2029-04-10T00:00:00Z/2029-04-10T00:00:00Z`                           | 到达时间搜索区间 `Start/Stop`,UTC ISO8601                                           |
 | `SunFrameName`      | string | 否   | `MeanEclpJ2000`                                                       | 日心结果输出参考系,例如 `MeanEclpJ2000` 或 `ICRF`                                  |
-| `MinTofDays`        | int32  | 否   | `10`                                                                  | 最小转移时间(天)                                                         |
+| `MinTofDays`        | int32  | 否   | `10`                                                                  | 最小转移天数                                                             |
+| `MaxTofDays`        | int32  | 否   | `500`                                                                 | 最大转移天数                                                             |
+| `MaxDepartureDV`    | int32  | 否   | `10000`                                                               | 最大出发速度增量(m/s);通常用于衡量地球出发 Vinf,`C3 = Vinf^2`                         |
+| `MaxArrivalDV`      | int32  | 否   | `10000`                                                               | 最大到达速度增量(m/s);通常用于衡量到达 Vinf,例如撞击速度或制动速度                           |
 | `DepartureStepDay`  | number | 否   | `1`                                                                   | 出发时间步长(天)                                                         |
 | `ArrivalStepDay`    | number | 否   | `1`                                                                   | 到达时间步长(天)                                                         |
 | `DepartureElements` | object \| null | 否   | `null`                                                                | 出发小行星 MPC 轨道根数;非 `null` 时不经网络查询 MPC                                  |
@@ -84,14 +87,15 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
 ## 注意事项
 
 - 时间字符串使用 UTC ISO8601,例如 `2028-06-01T00:00:00Z`;区间必须为 `Start/Stop` 用 `/` 连接。
-- `MinTofDays` 为整数(天);步长 `DepartureStepDay`、`ArrivalStepDay` 为天。
+- `MinTofDays`、`MaxTofDays` 为整数(天);须满足 `MinTofDays` <= `MaxTofDays`。步长 `DepartureStepDay`、`ArrivalStepDay` 为天。
+- `MaxDepartureDV`、`MaxArrivalDV` 为整数(m/s),用于过滤超出上限的转移解。出发端通常对应地球出发 Vinf(`C3 = Vinf^2`);到达端通常对应到达 Vinf(撞击速度或制动速度)。
 - 行星名称与天体星历技能中约定一致(如 `Earth`、`Mars`);小行星可用名称或 MPC 编号样式字符串。
 - 小行星不传 `*Elements` 时依赖 MPC 等外部数据,可能因网络或服务不可用而失败。
 - 判定成功:HTTP 200 且 `IsSuccess` 为 `true`。
 
 ## 标准执行流程
 
-1. 参数预检:确认四个名称/区间字段非空;区间格式正确;若需离线小行星根数则填全 `*Elements`。
+1. 参数预检:确认四个名称/区间字段非空;区间格式正确;若给出 TOF/DV 上限则检查单位与 `MinTofDays` <= `MaxTofDays`;若需离线小行星根数则填全 `*Elements`。
 2. 请求构造:按字段名构造 JSON,`null` 的 `*Elements` 可省略或显式传 `null`。
 3. 结果判定:HTTP 200 + `IsSuccess === true`。
 4. 输出归一化:摘要出发/到达天体、时间网格与参考系;列出 `TransferResults` 中各方案的 `DepartureTime`、`ArrivalTime`、`DV1_Mag`、`DV2_Mag`。
