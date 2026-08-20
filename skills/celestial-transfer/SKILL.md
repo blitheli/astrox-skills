@@ -15,7 +15,7 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
   - 若为小行星且 `*Elements` 为 `null`,则由服务端通过 MPC 等途径获取轨道根数(依赖网络)。
 3. **时间区间格式**: `DepartureInterval` 与 `ArrivalInterval` 均为 **Start/Stop** 两段 ISO8601 UTC 字符串,中间以 `/` 分隔,例如 `2028-06-01T00:00:00Z/2028-10-01T00:00:00Z`。
 4. **API 调用逻辑**:向 `{BASE_URL}/celestial/transfer` 发送 `POST`,`Content-Type: application/json`。
-5. **结果说明**:成功时 `TransferResults` 为每次可行转移的列表,含出发/到达时刻、两段 Delta-V 向量与模长、日心系 RV1/RV2。
+5. **结果说明**:成功时 `TransferResults` 为每次可行转移的列表,含出发/到达时刻、飞行时间 `TimeOfFlightDays`、两段双曲超速(Delta-V)向量与模长、日心系 RV1/RV2,以及到达时刻太阳光照角 `ArrivalLightAngle`。
 
 ## API 规范 (Tool Definition)
 
@@ -59,29 +59,31 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
 | `Q`              | number | AU  | 近日点距,可选                                |
 
 
-### 输出说明
+### 输出说明 (`PlanetTransferOutput`)
 
 
 | 字段名               | 类型      | 说明                           |
 | ----------------- | ------- | ---------------------------- |
 | `IsSuccess`       | boolean | 结果(True:成功;False:失败)        |
-| `Message`         | string  | 结果信息(失败原因等)                 |
-| `TransferResults` | array   | 转移结果列表,元素类型见下表             |
+| `Message`         | string  | 结果信息(主要是存储失败的原因)            |
+| `TransferResults` | array   | 转移结果列表(包含每次转移的详细数据),元素类型见下表 |
 
 
-#### TransferResults[] 元素 (TransferResultData)
+#### TransferResults[] 元素 (`TransferResultData`)
 
 
-| 字段名             | 类型       | 单位     | 说明                    |
-| --------------- | -------- | ------ | --------------------- |
-| `DepartureTime` | string   | —      | 出发时刻(UTC ISO8601 字符串) |
-| `ArrivalTime`   | string   | —      | 到达时刻(UTC ISO8601 字符串) |
-| `DeltaV1`       | number[] | m/s    | 出发端速度增量向量 [x,y,z]    |
-| `DeltaV2`       | number[] | m/s    | 到达端速度增量向量 [x,y,z]    |
-| `DV1_Mag`       | number   | m/s    | 出发端速度增量模               |
-| `DV2_Mag`       | number   | m/s    | 到达端速度增量模               |
-| `RV1`           | number[] | m, m/s | 出发时日心系位置速度(长度 6:位置 3 + 速度 3) |
-| `RV2`           | number[] | m, m/s | 到达时日心系位置速度(长度 6)         |
+| 字段名                 | 类型       | 单位     | 说明                                                                 |
+| ------------------- | -------- | ------ | ------------------------------------------------------------------ |
+| `DepartureTime`     | string   | —      | 出发时间(UTC 字符串)                                                     |
+| `ArrivalTime`       | string   | —      | 到达时间(UTC 字符串)                                                     |
+| `TimeOfFlightDays`  | number   | 天      | 飞行时间                                                               |
+| `DeltaV1`           | number[] | m/s    | 天体出发速度增量(即出发双曲超速矢量) [x,y,z]                                       |
+| `DV1_Mag`           | number   | m/s    | 天体出发速度增量大小(即出发双曲超速矢量大小)                                           |
+| `DeltaV2`           | number[] | m/s    | 天体到达速度增量(即到达双曲超速矢量) [x,y,z]                                       |
+| `DV2_Mag`           | number   | m/s    | 天体到达速度增量大小(即到达双曲超速矢量大小)                                           |
+| `RV1`               | number[] | m, m/s | 出发时位置速度(日心系),长度 6:位置 3 + 速度 3                                    |
+| `RV2`               | number[] | m, m/s | 到达时位置速度(日心系),长度 6:位置 3 + 速度 3                                    |
+| `ArrivalLightAngle` | number   | deg    | 到达时刻太阳光照角;相对速度 `DeltaV2` 与 `R2` 的夹角,一般用于撞击小行星的末端分析               |
 
 
 ## 注意事项
@@ -89,6 +91,8 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
 - 时间字符串使用 UTC ISO8601,例如 `2028-06-01T00:00:00Z`;区间必须为 `Start/Stop` 用 `/` 连接。
 - `MinTofDays`、`MaxTofDays` 为整数(天);须满足 `MinTofDays` <= `MaxTofDays`。步长 `DepartureStepDay`、`ArrivalStepDay` 为天。
 - `MaxDepartureDV`、`MaxArrivalDV` 为整数(m/s),用于过滤超出上限的转移解。出发端通常对应地球出发 Vinf(`C3 = Vinf^2`);到达端通常对应到达 Vinf(撞击速度或制动速度)。
+- `DeltaV1`/`DeltaV2` 为双曲超速矢量;`TimeOfFlightDays` 为飞行时间(天)。
+- `ArrivalLightAngle` 单位为度,是到达相对速度 `DeltaV2` 与到达位置 `R2`(`RV2` 前 3 个分量)的夹角,常用于撞击小行星的末端光照/几何分析。
 - 行星名称与天体星历技能中约定一致(如 `Earth`、`Mars`);小行星可用名称或 MPC 编号样式字符串。
 - 小行星不传 `*Elements` 时依赖 MPC 等外部数据,可能因网络或服务不可用而失败。
 - 判定成功:HTTP 200 且 `IsSuccess` 为 `true`。
@@ -98,7 +102,7 @@ description: 行星与小行星之间的 Lambert 转移轨道计算。出发/到
 1. 参数预检:确认四个名称/区间字段非空;区间格式正确;若给出 TOF/DV 上限则检查单位与 `MinTofDays` <= `MaxTofDays`;若需离线小行星根数则填全 `*Elements`。
 2. 请求构造:按字段名构造 JSON,`null` 的 `*Elements` 可省略或显式传 `null`。
 3. 结果判定:HTTP 200 + `IsSuccess === true`。
-4. 输出归一化:摘要出发/到达天体、时间网格与参考系;列出 `TransferResults` 中各方案的 `DepartureTime`、`ArrivalTime`、`DV1_Mag`、`DV2_Mag`。
+4. 输出归一化:摘要出发/到达天体、时间网格与参考系;列出 `TransferResults` 中各方案的 `DepartureTime`、`ArrivalTime`、`TimeOfFlightDays`、`DV1_Mag`、`DV2_Mag`、`ArrivalLightAngle`。
 
 ## 调用示例
 
