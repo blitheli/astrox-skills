@@ -1,7 +1,5 @@
 {
   "TargetName": "Ceres",
-  "ObserverName": "Sun",
-  "ObserverFrame": "MEANECLPJ2000",
-  "Start": "",
-  "Stop": ""
+  "ObserverFrame": "MeanEclpJ2000",
+  "Stop": "2026-12-31T00:00:00Z"
 }

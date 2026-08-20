@@ -3,7 +3,7 @@
   "info": {
     "title": "ASTROX Web API(.Net 10)",
     "description": "航天算法库(blitheli)",
-    "version": "2026-08-19"
+    "version": "2026-08-20"
   },
   "servers": [
     {
@@ -120,7 +120,7 @@
           "Celestial"
         ],
         "summary": "mpc小行星星历计算",
-        "description": "根据小行星的名称(或编号),调用 https://data.minorplanetcenter.net/api/get-orb 获取轨道根数(MJD TDT历元)<br> 按照使用Heliocentric3day积分器进行轨道递推(固定3天步长) <br>输出星历为日心系(MeanEclpJ2000,ICRF,...由输入参数指定)",
+        "description": "根据小行星的名称(或编号),调用 https://data.minorplanetcenter.net/api/get-orb 获取轨道根数(MJD TDT历元)<br> 也可直接提供MPC轨道根数进行计算 <br>按照使用Heliocentric3day积分器进行轨道递推(固定3天步长) <br>输出星历为日心系(MeanEclpJ2000,ICRF,...由输入参数指定)",
         "operationId": "mpc",
         "requestBody": {
           "content": {
@@ -4363,18 +4363,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgDirectionAgDirectionRADec"
+            "$ref": "#/components/schemas/AgDirectionAgDirectionXYZ"
           },
           {
-            "$ref": "#/components/schemas/AgDirectionAgDirectionXYZ"
+            "$ref": "#/components/schemas/AgDirectionAgDirectionRADec"
           }
         ],
         "description": "指向接口  <br>具体实现类:  <br>-AgDirectionRADec(\"$type\":\"RADec\")  <br>-AgDirectionXYZ(\"$type\":\"XYZ\")  <br>",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "RADec": "#/components/schemas/AgDirectionAgDirectionRADec",
-            "XYZ": "#/components/schemas/AgDirectionAgDirectionXYZ"
+            "XYZ": "#/components/schemas/AgDirectionAgDirectionXYZ",
+            "RADec": "#/components/schemas/AgDirectionAgDirectionRADec"
           }
         }
       },
@@ -4438,22 +4438,22 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgOrientationOrientationAzEl"
+            "$ref": "#/components/schemas/AgOrientationOrientationEulerAngles"
           },
           {
             "$ref": "#/components/schemas/AgOrientationOrientationQuaternion"
           },
           {
-            "$ref": "#/components/schemas/AgOrientationOrientationEulerAngles"
+            "$ref": "#/components/schemas/AgOrientationOrientationAzEl"
           }
         ],
         "description": "指向接口  <br>具体实现类:  <br>-OrientationAzEl(\"$type\":\"AzEl\")  <br>-OrientationQuaternion(\"$type\":\"Quaternion\")  <br>-OrientationEulerAngles(\"$type\":\"EulerAngles\")  <br>",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "AzEl": "#/components/schemas/AgOrientationOrientationAzEl",
+            "EulerAngles": "#/components/schemas/AgOrientationOrientationEulerAngles",
             "Quaternion": "#/components/schemas/AgOrientationOrientationQuaternion",
-            "EulerAngles": "#/components/schemas/AgOrientationOrientationEulerAngles"
+            "AzEl": "#/components/schemas/AgOrientationOrientationAzEl"
           }
         }
       },
@@ -4613,26 +4613,26 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
           },
           {
             "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector"
           }
         ],
         "description": "瞬时脉冲机动姿态控制参数接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "VelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector",
-            "ThrustVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector",
+            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector",
             "Attitude": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude",
-            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
+            "VelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector",
+            "ThrustVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector"
           }
         }
       },
@@ -4931,26 +4931,26 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector"
           },
           {
             "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector"
           }
         ],
         "description": "瞬时脉冲机动姿态控制参数接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "ThrustVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector",
             "VelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector",
+            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector",
             "Attitude": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude",
-            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector"
+            "ThrustVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector"
           }
         }
       },
@@ -5438,13 +5438,13 @@
             "$ref": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote"
           },
           {
-            "$ref": "#/components/schemas/AgVAElementAgVAElementSpherical"
+            "$ref": "#/components/schemas/AgVAElementAgVAElementCartesian"
           },
           {
             "$ref": "#/components/schemas/AgVAElementAgVAElementKeplerian"
           },
           {
-            "$ref": "#/components/schemas/AgVAElementAgVAElementCartesian"
+            "$ref": "#/components/schemas/AgVAElementAgVAElementSpherical"
           }
         ],
         "description": "轨道参数基类",
@@ -5452,9 +5452,9 @@
           "propertyName": "$type",
           "mapping": {
             "TargetVecOut": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote",
-            "Spherical": "#/components/schemas/AgVAElementAgVAElementSpherical",
+            "Cartesian": "#/components/schemas/AgVAElementAgVAElementCartesian",
             "Keplerian": "#/components/schemas/AgVAElementAgVAElementKeplerian",
-            "Cartesian": "#/components/schemas/AgVAElementAgVAElementCartesian"
+            "Spherical": "#/components/schemas/AgVAElementAgVAElementSpherical"
           }
         }
       },
@@ -6262,19 +6262,19 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop"
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence"
           },
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence"
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow"
           },
           {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite"
           },
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate"
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive"
           },
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive"
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate"
           },
           {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSInitialState"
@@ -6283,21 +6283,21 @@
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence"
           },
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow"
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop"
           }
         ],
         "description": "Astrogator段的基类",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Stop": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop",
             "TargetSequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence",
+            "Follow": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow",
             "ManeuverFinite": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite",
-            "Propagate": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate",
             "ManeuverImpulsive": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive",
+            "Propagate": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate",
             "InitialState": "#/components/schemas/AgVAMCSSegmentAgVAMCSInitialState",
             "Sequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence",
-            "Follow": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow"
+            "Stop": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop"
           }
         }
       },
@@ -7166,30 +7166,30 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition"
+            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
           },
           {
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition"
           },
           {
-            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition"
+            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition"
           },
           {
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
           }
         ],
         "description": "轨道递推终止条件接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Epoch": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition",
-            "Scalar": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition",
             "Periapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition",
-            "Duration": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition",
-            "Apoapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
+            "Apoapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition",
+            "Scalar": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition",
+            "Epoch": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition",
+            "Duration": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition"
           }
         }
       },
@@ -7857,13 +7857,7 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarDuration"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarCartographic"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarKeplerianElement"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarEpoch"
           },
           {
             "$ref": "#/components/schemas/CalcScalarCalcScalarModifiedKeplerianElement"
@@ -7875,32 +7869,38 @@
             "$ref": "#/components/schemas/CalcScalarCalcScalarSphericalElement"
           },
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarBPlane"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement"
           },
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarDuration"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarBPlane"
           },
           {
             "$ref": "#/components/schemas/CalcScalarCalcScalarRelative"
           },
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarEpoch"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarKeplerianElement"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarCartographic"
           }
         ],
         "description": "标量计算对象(可用于轨道积分终止条件、段Results参数设置)",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Duration": "#/components/schemas/CalcScalarCalcScalarDuration",
-            "Cartographic": "#/components/schemas/CalcScalarCalcScalarCartographic",
-            "KeplerianElement": "#/components/schemas/CalcScalarCalcScalarKeplerianElement",
+            "Epoch": "#/components/schemas/CalcScalarCalcScalarEpoch",
             "ModifiedKeplerianElement": "#/components/schemas/CalcScalarCalcScalarModifiedKeplerianElement",
             "PointElement": "#/components/schemas/CalcScalarCalcScalarPointElement",
             "SphericalElement": "#/components/schemas/CalcScalarCalcScalarSphericalElement",
-            "BPlane": "#/components/schemas/CalcScalarCalcScalarBPlane",
             "DeltaSpherical": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement",
+            "Duration": "#/components/schemas/CalcScalarCalcScalarDuration",
+            "BPlane": "#/components/schemas/CalcScalarCalcScalarBPlane",
             "Relative": "#/components/schemas/CalcScalarCalcScalarRelative",
-            "Epoch": "#/components/schemas/CalcScalarCalcScalarEpoch"
+            "KeplerianElement": "#/components/schemas/CalcScalarCalcScalarKeplerianElement",
+            "Cartographic": "#/components/schemas/CalcScalarCalcScalarCartographic"
           }
         }
       },
@@ -9494,34 +9494,31 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLH"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHCBF"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMars"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCSun"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixed"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNC"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLH"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCzmlOrientation"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun"
@@ -9533,62 +9530,65 @@
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHCBF"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLH"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCSun"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMars"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCzmlOrientation"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixed"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesComposite"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHCBF"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon"
           }
         ],
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "VVLH": "#/components/schemas/CrdnAxesCrdnAxesVVLH",
+            "VVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun",
+            "VVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars",
+            "VVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon",
             "VVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVVLHCBF",
-            "VNC(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVNCMars",
-            "VNC(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVNCSun",
-            "VNC(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon",
-            "VNC(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth",
-            "VNC(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF",
-            "Fixed": "#/components/schemas/CrdnAxesCrdnAxesFixed",
             "VNC": "#/components/schemas/CrdnAxesCrdnAxesVNC",
             "LVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars",
+            "VVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth",
+            "VVLH": "#/components/schemas/CrdnAxesCrdnAxesVVLH",
+            "CzmlOrientation": "#/components/schemas/CrdnAxesCzmlOrientation",
             "LVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun",
             "LVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMoon",
             "LVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth",
-            "LVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesLVLHCBF",
+            "VNC(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF",
+            "VNC(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth",
             "LVLH": "#/components/schemas/CrdnAxesCrdnAxesLVLH",
-            "VVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars",
-            "VVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun",
-            "VVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon",
-            "VVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth",
-            "CzmlOrientation": "#/components/schemas/CrdnAxesCzmlOrientation",
-            "FixedAtEpoch": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch",
+            "VNC(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVNCSun",
+            "VNC(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVNCMars",
+            "Fixed": "#/components/schemas/CrdnAxesCrdnAxesFixed",
             "Composite": "#/components/schemas/CrdnAxesCrdnAxesComposite",
-            "AlignedAndConstrained": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained"
+            "AlignedAndConstrained": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained",
+            "FixedAtEpoch": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch",
+            "LVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesLVLHCBF",
+            "VNC(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon"
           }
         }
       },
@@ -12448,30 +12448,30 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/IContraintConstraintSunExclusionAngle"
+            "$ref": "#/components/schemas/IContraintConstraintElevationAngle"
           },
           {
             "$ref": "#/components/schemas/IContraintConstraintMoonExclusionAngle"
           },
           {
-            "$ref": "#/components/schemas/IContraintConstraintElevationAngle"
-          },
-          {
-            "$ref": "#/components/schemas/IContraintConstraintRange"
+            "$ref": "#/components/schemas/IContraintConstraintSunExclusionAngle"
           },
           {
             "$ref": "#/components/schemas/IContraintConstraintAzElMask"
+          },
+          {
+            "$ref": "#/components/schemas/IContraintConstraintRange"
           }
         ],
         "description": "对象约束接口  <br>具体实现类:  <br>-ConstraintElevationAngle(\"$type\":\"ElevationAngle\")  <br>-ConstraintRange(\"$type\":\"Range\")  <br>-ConstraintAzElMask(\"$type\":\"AzElMask\")  <br>-ConstraintSunExclusionAngle(\"$type\":\"SunExclusionAngle\")  <br>-ConstraintMoonExclusionAngle(\"$type\":\"MoonExclusionAngle\")",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "SunExclusionAngle": "#/components/schemas/IContraintConstraintSunExclusionAngle",
-            "MoonExclusionAngle": "#/components/schemas/IContraintConstraintMoonExclusionAngle",
             "ElevationAngle": "#/components/schemas/IContraintConstraintElevationAngle",
-            "Range": "#/components/schemas/IContraintConstraintRange",
-            "AzElMask": "#/components/schemas/IContraintConstraintAzElMask"
+            "MoonExclusionAngle": "#/components/schemas/IContraintConstraintMoonExclusionAngle",
+            "SunExclusionAngle": "#/components/schemas/IContraintConstraintSunExclusionAngle",
+            "AzElMask": "#/components/schemas/IContraintConstraintAzElMask",
+            "Range": "#/components/schemas/IContraintConstraintRange"
           }
         }
       },
@@ -12637,13 +12637,13 @@
             "$ref": "#/components/schemas/ICoverageGridCoverageGridLatLonBounds"
           },
           {
-            "$ref": "#/components/schemas/ICoverageGridCoverageGridLatitudeBounds"
-          },
-          {
             "$ref": "#/components/schemas/ICoverageGridCoverageGridGlobal"
           },
           {
             "$ref": "#/components/schemas/ICoverageGridCovGridLatLonBounds"
+          },
+          {
+            "$ref": "#/components/schemas/ICoverageGridCoverageGridLatitudeBounds"
           }
         ],
         "description": "覆盖分析中的网格定义接口  <br>参见派生类型(json反序列化时,最前面加$type:...)  <br>- CovGridLatLonBounds($type:CbLatLonBounds)  <br>- CoverageGridGlobal($type:Global)  <br>- CoverageGridLatitudeBounds($type:LatitudeBounds)  <br>- CoverageGridLatLonBounds($type:LatLonBounds)  <br>",
@@ -12651,9 +12651,9 @@
           "propertyName": "$type",
           "mapping": {
             "LatLonBounds": "#/components/schemas/ICoverageGridCoverageGridLatLonBounds",
-            "LatitudeBounds": "#/components/schemas/ICoverageGridCoverageGridLatitudeBounds",
             "Global": "#/components/schemas/ICoverageGridCoverageGridGlobal",
-            "CbLatLonBounds": "#/components/schemas/ICoverageGridCovGridLatLonBounds"
+            "CbLatLonBounds": "#/components/schemas/ICoverageGridCovGridLatLonBounds",
+            "LatitudeBounds": "#/components/schemas/ICoverageGridCoverageGridLatitudeBounds"
           }
         }
       },
@@ -12866,18 +12866,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/IEntityObjectEntityPathGroup"
+            "$ref": "#/components/schemas/IEntityObjectEntityPath"
           },
           {
-            "$ref": "#/components/schemas/IEntityObjectEntityPath"
+            "$ref": "#/components/schemas/IEntityObjectEntityPathGroup"
           }
         ],
         "description": "对象接口(参见实现类)，主要用于Access对象  <br>具体实现类:  <br>-EntityPath(\"$type\":\"EntityPath\")  <br>-EntityPathGroup(\"$type\":\"EntityPathGroup\") ",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "EntityPathGroup": "#/components/schemas/IEntityObjectEntityPathGroup",
-            "EntityPath": "#/components/schemas/IEntityObjectEntityPath"
+            "EntityPath": "#/components/schemas/IEntityObjectEntityPath",
+            "EntityPathGroup": "#/components/schemas/IEntityObjectEntityPathGroup"
           }
         }
       },
@@ -13010,19 +13010,7 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions"
-          },
-          {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionCzml"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionSite"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionBallistic"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionTwoBody"
           },
           {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionJ2"
@@ -13034,30 +13022,42 @@
             "$ref": "#/components/schemas/IEntityPositionEntityPositionCentralBody"
           },
           {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionBallistic"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionSite"
+          },
+          {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionHPOP"
           },
           {
             "$ref": "#/components/schemas/IEntityPositionAstrogatorMCS"
           },
           {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent"
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionTwoBody"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions"
           }
         ],
         "description": "对象位置参数接口(参见实现类)  <br>具体实现类:  <br>-EntityPositionSite(\"$type\":\"SitePosition\")  <br>-EntityPositionCzml(\"$type\":\"CzmlPosition\")  <br>-EntityPositionCzmlPositions(\"$type\":\"CzmlPositions\")  <br>-EntityPositionTwoBody(\"$type\":\"TwoBody\")  <br>-EntityPositionJ2(\"$type\":\"J2\")  <br>-EntityPositionSGP4(\"$type\":\"SGP4\")  <br>-EntityPositionCentralBody(\"$type\":\"CentralBody\") <br>-EntityPositionBallistic(\"$type\":\"Ballistic\") <br>-EntityPositionSimpleAscent(\"$type\":\"SimpleAscent\") <br>-EntityPositionHPOP(\"$type\":\"HPOP\") <br>-AstrogatorMCS(\"$type\":\"AstrogatorMCS\")",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "CzmlPositions": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions",
             "CzmlPosition": "#/components/schemas/IEntityPositionEntityPositionCzml",
-            "SitePosition": "#/components/schemas/IEntityPositionEntityPositionSite",
-            "Ballistic": "#/components/schemas/IEntityPositionEntityPositionBallistic",
-            "TwoBody": "#/components/schemas/IEntityPositionEntityPositionTwoBody",
             "J2": "#/components/schemas/IEntityPositionEntityPositionJ2",
             "SGP4": "#/components/schemas/IEntityPositionEntityPositionSGP4",
             "CentralBody": "#/components/schemas/IEntityPositionEntityPositionCentralBody",
+            "Ballistic": "#/components/schemas/IEntityPositionEntityPositionBallistic",
+            "SimpleAscent": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent",
+            "SitePosition": "#/components/schemas/IEntityPositionEntityPositionSite",
             "HPOP": "#/components/schemas/IEntityPositionEntityPositionHPOP",
             "AstrogatorMCS": "#/components/schemas/IEntityPositionAstrogatorMCS",
-            "SimpleAscent": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent"
+            "TwoBody": "#/components/schemas/IEntityPositionEntityPositionTwoBody",
+            "CzmlPositions": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions"
           }
         }
       },
@@ -13283,9 +13283,25 @@
             "description": "本数据的时间段（默认为null,CompositePositionProperty时使用）  <br>数据形式为：\"2023-11-06T04:10:00Z/2023-11-06T04:25:00Z\""
           },
           "cartesian": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
             "description": "位置数组[X, Y, Z](m),相对referenceFrame  <br>通常为多个点[Time, X, Y, Z, Time, X, Y, Z, ...],Time为历元秒"
           },
           "cartesianVelocity": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "type": "number",
+              "format": "double"
+            },
             "description": "位置速度数组[X, Y, Z, dX, dY, dZ](m,m/s),相对referenceFrame  <br>通常为多个点[Time, X, Y, Z, dX, dY, dZ, Time, X, Y, Z, dX, dY, dZ, ...],Time为历元秒"
           }
         },
@@ -13760,18 +13776,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/IGravityFunctionGravityFieldFunction"
+            "$ref": "#/components/schemas/IGravityFunctionTwoBodyFunction"
           },
           {
-            "$ref": "#/components/schemas/IGravityFunctionTwoBodyFunction"
+            "$ref": "#/components/schemas/IGravityFunctionGravityFieldFunction"
           }
         ],
         "description": "引力模型接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "GravityField": "#/components/schemas/IGravityFunctionGravityFieldFunction",
-            "TwoBody": "#/components/schemas/IGravityFunctionTwoBodyFunction"
+            "TwoBody": "#/components/schemas/IGravityFunctionTwoBodyFunction",
+            "GravityField": "#/components/schemas/IGravityFunctionGravityFieldFunction"
           }
         }
       },
@@ -14753,19 +14769,19 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSSequenceResults"
-          },
-          {
             "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverFiniteResults"
           },
           {
             "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverImpulsiveResults"
           },
           {
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSPropagateResults"
+          },
+          {
             "$ref": "#/components/schemas/MCSSegmentResultsMCSTargetSequenceResults"
           },
           {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSPropagateResults"
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSSequenceResults"
           },
           {
             "$ref": "#/components/schemas/MCSSegmentResultsBase"
@@ -15405,12 +15421,12 @@
         "properties": {
           "TargetName": {
             "type": "string",
-            "description": "小行星名称或编号,Ceres,Apophis,99942",
+            "description": "小行星名称或编号,Ceres,Apophis,99942 (若已有MPC轨道根数可不输入,使用MpcOrbElements输入具体参数)",
             "default": "Ceres"
           },
           "ObserverFrame": {
             "type": "string",
-            "description": "日心坐标系(缺省为\"MeanEclpJ2000\"),可选: <br>FIXED: 中心天体固定系, <br>INERTIAL: 中心天体惯性系, <br>MeanEclpJ2000: J2000平黄道坐标系, <br>J2000: J2000坐标系",
+            "description": "日心坐标系(缺省为\"MeanEclpJ2000\"),可选: <br>FIXED: 中心天体固定系 <br>INERTIAL: 中心天体惯性系 <br>J2000: J2000坐标系 <br>ICRF: 国际天球参考系 <br>MeanEclpJ2000: J2000平黄道坐标系 <br>EclpJ2000ICRF: J2000平黄道坐标系(ICRF)",
             "default": "MeanEclpJ2000"
           },
           "Start": {
@@ -15420,12 +15436,28 @@
           "Stop": {
             "type": "string",
             "description": "结束时刻(UTCG)(\"yyyy-MM-ddTHH:mm:ssZ\")，缺省可不输入,表示Start+1年"
+          },
+          "TargetElements": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "小行星的MPC轨道根数,若此参数不为null,则直接使用此轨道根数进行积分,而不通过网络查询MPC获取. <br>坐标系为日心平黄道坐标系.注意有两种:1 MeanEclpJ2000(JPL使用)和 2 EclpJ2000ICRF(MPC使用).默认EclpJ2000ICRF",
+                "$ref": "#/components/schemas/MpcOrbElements"
+              }
+            ]
           }
         }
       },
       "MpcOrbElements": {
         "type": "object",
         "properties": {
+          "ReferenceFrame": {
+            "type": "string",
+            "description": "坐标系名称(MeanEclpJ2000或EclpJ2000ICRF),缺省:EclpJ2000ICRF",
+            "default": "EclpJ2000ICRF"
+          },
           "EpochMjdTdt": {
             "type": "number",
             "description": "轨道根数历元 (MJD TDT)",
@@ -15479,7 +15511,8 @@
             "format": "double",
             "default": 126.23043
           }
-        }
+        },
+        "description": "MPC 轨道根数解析结果(日心平黄道坐标系)"
       },
       "MpcOutput": {
         "type": "object",
@@ -15493,7 +15526,7 @@
             "description": "结果信息(主要是存储失败的原因)"
           },
           "OrbitElements": {
-            "description": "MPC小行星轨道根数解析结果",
+            "description": "MPC小行星轨道根数解析结果(日心平黄道坐标系.注意有两种:1 MeanEclpJ2000(JPL使用)和 2 EclpJ2000ICRF(MPC使用) ",
             "$ref": "#/components/schemas/MpcOrbElements"
           },
           "Position": {
@@ -16495,18 +16528,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensityScData"
+            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData"
           },
           {
-            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData"
+            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensityScData"
           }
         ],
         "description": "视太阳的光照参数(遮挡率、视太阳高度角、...)",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "SolarIntensityScData": "#/components/schemas/SolarIntensityDataSolarIntensityScData",
-            "SolarIntensitySiteData": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData"
+            "SolarIntensitySiteData": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData",
+            "SolarIntensityScData": "#/components/schemas/SolarIntensityDataSolarIntensityScData"
           }
         }
       },

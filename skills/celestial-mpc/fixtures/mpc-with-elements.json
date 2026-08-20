@@ -1,0 +1,14 @@
+{
+  "TargetName": "2015 XF261",
+  "ObserverFrame": "MeanEclpJ2000",
+  "TargetElements": {
+    "EpochMjdTdt": 61000,
+    "SemimajorAxis": 0.9898367,
+    "Eccentricity": 0.3190276,
+    "Inclination": 0.79379,
+    "Raan": 209.81828,
+    "ArgOfPeriapsis": 100.88187,
+    "MeanAnomaly": 126.23043,
+    "ReferenceFrame": "EclpJ2000ICRF"
+  }
+}
