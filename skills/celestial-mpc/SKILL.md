@@ -86,6 +86,10 @@ description: 根据小行星名称或编号从 MPC 获取轨道根数并计算�
 - `Start` 缺省为轨道历元;若显式给出,不得早于该历元。
 - `Stop` 缺省为 `Start + 1` 年。
 - 积分器为 Heliocentric3day,步长固定 3 天,请求中无需(也不能)改步长。
+- **Heliocentric3day 仅作用于 `[Start, Stop]`**;从轨道历元 `EpochMjdTdt` 到 `Start` 用二体/Kepler 推进。因此相同 `TargetElements` + 相同 `Stop`、不同 `Start`(即不同 n-body 弧长)时,`Stop` 处日心状态一般不一致(行星摄动只在 n-body 窗口累积)。2021 FL1 复现见下方 fixtures(`1day` vs `epoch-to-2049`;短窗 `6day` 末点与 `1day` 一致)。
+- 文档将空/`Start` 缺省记为轨道历元,但对 `EpochMjdTdt=61200`(TDT `2026-06-09T00:00`)实测缺省 `Start` 为 `2026-06-10T00:00:00.000Z`(与历元差一天);显式 `Start=2026-06-10` 与缺省一致,`true-epoch-june9` 对照真实 MJD 日历日。
+- `(Stop-Start) < 3` 天时会细分 3 天步长(例如 1 天跨度 → 步长 8 h = 28800 s,4 个点);长跨度用 259200 s(3 d)并加 stub 步落到 `Stop`。
+- fixtures 中 `Q=0.6740515` 为 OpenAPI 缺省(2015 XF261);对 2021 FL1 由 `a`、`e` 得 `q≈0.213` AU,活服务按 `a`/`e` 积分(忽略不一致的 `Q`)。保留用户原 `Q` 以便字节可比。
 - 输出星历为日心系,坐标系由 `ObserverFrame` 指定,缺省 `MeanEclpJ2000`。`ObserverFrame` 与根数坐标系 `ReferenceFrame` 不是同一字段。
 - 日心平黄道有两种:`MeanEclpJ2000`(JPL)与 `EclpJ2000ICRF`(MPC)。传入或解读 `TargetElements`/`OrbitElements` 时按来源选择,缺省 `EclpJ2000ICRF`。
 - 未提供 `TargetElements` 时依赖外部 MPC(`https://data.minorplanetcenter.net/api/get-orb`);MPC 不可用则调用失败。
@@ -138,9 +142,30 @@ curl "${BASE_URL}/celestial/mpc" \
   --data-binary @skills/celestial-mpc/fixtures/mpc-with-elements.json
 ```
 
+### 示例 4:2021 FL1 短窗(1 天)vs 历元至 2049(对比 Stop 状态)
+
+```bash
+export BASE_URL=http://astrox.cn:8765
+# 短 n-body 窗:Start=2049-03-02 → Stop=2049-03-03
+curl "${BASE_URL}/celestial/mpc" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/celestial-mpc/fixtures/mpc-2021fl1-elements-1day-2049.json
+
+# 缺省 Start(实测 → 2026-06-10)→ Stop=2049-03-03;末点与上例不同
+curl "${BASE_URL}/celestial/mpc" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary @skills/celestial-mpc/fixtures/mpc-2021fl1-elements-epoch-to-2049.json
+```
+
 ## Fixtures
 
 - `skills/celestial-mpc/fixtures/mpc-min.json`:最小可运行请求(仅指定 `TargetName`,由服务端查 MPC)。
 - `skills/celestial-mpc/fixtures/mpc-defaults.json`:指定 `ObserverFrame` 与 `Stop` 的请求模板。
 - `skills/celestial-mpc/fixtures/mpc-with-elements.json`:含 `TargetElements`(根数坐标系 `EclpJ2000ICRF`),不经 MPC 网络查询。
+- `skills/celestial-mpc/fixtures/mpc-2021fl1-elements-1day-2049.json`:2021 FL1 根数;`Start`/`Stop` 为 2049-03-02→03(1 天 n-body,细分步长)。
+- `skills/celestial-mpc/fixtures/mpc-2021fl1-elements-epoch-to-2049.json`:同根数;省略 `Start`(缺省历元/实测 2026-06-10),`Stop` 2049-03-03。
+- `skills/celestial-mpc/fixtures/mpc-2021fl1-elements-true-epoch-june9-to-2049.json`:同根数;显式 `Start=2026-06-09`(MJD 61200 TDT 日历日)→ 2049-03-03。
+- `skills/celestial-mpc/fixtures/mpc-2021fl1-elements-6day-2049.json`:同根数;2049-02-25→03-03(6 天短窗,末点与 1 天案一致)。
 
