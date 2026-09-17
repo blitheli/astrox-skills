@@ -1,0 +1,13 @@
+{
+  "Description": "月球南极坑顶部地面点视太阳光照强度",
+  "Start": "2024-01-01T00:00:00Z",
+  "Stop": "2024-01-02T00:00:00Z",
+  "Position": {
+    "$type": "SitePosition",
+    "CentralBody": "Moon",
+    "cartographicDegrees": [83.492794, -89.484167, 713],
+    "clampToGround": true,
+    "HeightAboveGround": 0
+  },
+  "TimeStepSec": 3600
+}
