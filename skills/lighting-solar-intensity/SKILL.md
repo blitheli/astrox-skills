@@ -29,8 +29,8 @@ description: 计算地面站或飞行器相对视太阳的光照强度参数(太
 | 参数名                 | 类型       | 必须  | 说明                                                                                         |
 | ------------------- | -------- | --- | ------------------------------------------------------------------------------------------ |
 | `Description`       | string   | 否   | 说明                                                                                         |
-| `Start`             | string   | 是   | 分析开始时刻 (UTCG) (`yyyy-MM-ddTHH:mm:ssZ`)                                                     |
-| `Stop`              | string   | 是   | 分析结束时刻 (UTCG) (`yyyy-MM-ddTHH:mm:ssZ`)                                                     |
+| `Start`             | string   | 是   | 分析开始时刻 (UTCG);常用 ISO8601 (`yyyy-MM-ddTHH:mm:ssZ`),WebApi 亦接受 STK 风格日期(见 `site-moon-pole.json`) |
+| `Stop`              | string   | 是   | 分析结束时刻 (UTCG);格式同 `Start`                                                                  |
 | `Position`          | object   | 是   | 位置对象 (IEntityPosition),详见 `skills/shared-docs/api-schemas/IEntityPosition.md`              |
 | `AzElMaskData`      | number[] | 否   | 仅地面站;地形遮罩扁平数组 `[az,el,az,el,...]`,单位:弧度 (rad);可先调 `/Terrain/AzElMask` 再传入                |
 | `TimeStepSec`       | number   | 否   | 计算步长,单位:秒 (s);缺省 3600                                                                      |
@@ -94,7 +94,7 @@ description: 计算地面站或飞行器相对视太阳的光照强度参数(太
 ## 注意事项
 
 - 必填:`Start`、`Stop`、`Position`
-- 时间格式:ISO8601 UTC (`yyyy-MM-ddTHH:mm:ssZ`)
+- 时间格式:优先 ISO8601 UTC (`yyyy-MM-ddTHH:mm:ssZ`);正式 fixture `site-moon-pole.json` 使用 STK 风格日期(`26 Mar 2024 00:36:46.000`),WebApi 实测可解析
 - 坐标单位:经纬度为度 (deg),高度为米 (m);`AzElMaskData` 为弧度 (rad)
 - 星历:DE430;仅考虑光延迟,不考虑光行差,与 STK 一致
 - 遮挡逻辑:提供 `OccultationBodies` 则用列表;否则按中心天体默认(见上表)。第 1 个遮挡天体为中心天体
@@ -106,40 +106,69 @@ description: 计算地面站或飞行器相对视太阳的光照强度参数(太
 
 1. 参数预检
   - 检查必填字段:`Start`、`Stop`、`Position`
-  - 检查 UTC 时间格式与 `Start < Stop`
+  - 检查时间可解析且 `Start < Stop`
 2. 位置判定
   - 地面站 vs 飞行器;地面站可按需附带 `AzElMaskData`
   - 需要自定义遮挡时设置 `OccultationBodies`(第 1 个为中心天体)
 3. 请求构造
-  - 按接口契约原样传参
+  - 按接口契约原样传参(含正式 fixture 中的 STK 日期 / 完整 `AzElMaskData`)
 4. 结果判定
   - 先判 HTTP 状态,再判 `IsSuccess`
 5. 输出归一化
-  - 按 `$type` 解读 `Datas`;摘要 Intensity / PercentShadow / CurrentCondition(飞行器) 或 ApparentSolarElevation(地面站)
+  - 按 `$type` 解读 `Datas`;摘要 Intensity / PercentShadow / CurrentCondition(飞行器) 或 ApparentSolarElevation / TerrainElevation(地面站)
 
 ## 调用示例
 
-### 示例 1:月面站视太阳光照强度
+正式 fixtures 来自 `ASTROX.AeroSpace.Tests/Lighting/SolarIntensity_*.cs`(C# raw string JSON 原样落盘)。
 
-**场景**:月球南极坑顶部地面点,计算 1 日视太阳光照强度,步长 1 小时。
+### 示例 1:月球 TwoBody 卫星(进出本影)
+
+**场景**:月球中心 TwoBody 卫星,约 30 s 窗口、步长 1 s,覆盖 SunLight → Umbra。
 
 ```bash
 export BASE_URL=http://astrox.cn:8765
 curl "${BASE_URL}/Lighting/SolarIntensity" \
   --request POST \
   --header 'Content-Type: application/json' \
-  --data-binary "@lighting-solar-intensity/fixtures/site-moon-pole.json"
+  --data-binary "@lighting-solar-intensity/fixtures/satellite-moon-twobody.json"
 ```
 
-### 示例 2:月球 TwoBody 卫星视太阳光照强度
+### 示例 2:月球南极站(STK 日期,无地形)
 
-**场景**:月球中心 TwoBody 轨道卫星,计算 1 小时视太阳光照强度,步长 60 秒。
+**场景**:南极坑顶部地面点;Start/Stop 为 STK 风格日期字符串,与测试一致。
 
 ```bash
 curl "${BASE_URL}/Lighting/SolarIntensity" \
   --request POST \
   --header 'Content-Type: application/json' \
-  --data-binary "@lighting-solar-intensity/fixtures/satellite-moon-twobody.json"
+  --data-binary "@lighting-solar-intensity/fixtures/site-moon-pole.json"
+```
+
+### 示例 3:地球 St.Helens(含地形遮罩)
+
+```bash
+curl "${BASE_URL}/Lighting/SolarIntensity" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@lighting-solar-intensity/fixtures/site-earth-sthelens-terrain-mask.json"
+```
+
+### 示例 4:月球 Bruno 坑(含地形遮罩)
+
+```bash
+curl "${BASE_URL}/Lighting/SolarIntensity" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@lighting-solar-intensity/fixtures/site-moon-bruno-terrain-mask.json"
+```
+
+### 示例 5:月球南极 CE7(含地形遮罩)
+
+```bash
+curl "${BASE_URL}/Lighting/SolarIntensity" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@lighting-solar-intensity/fixtures/site-moon-ce7-terrain-mask.json"
 ```
 
 ## 本地快速验证(可选)
@@ -154,43 +183,25 @@ curl "${BASE_URL}/Lighting/SolarIntensity" \
 
 ## 更多示例与测试数据 (fixtures)
 
+来源目录:`ASTROX.AeroSpace.Tests/Lighting/`(上游 MSTest)。当前正式 fixtures 未附 `OccultationBodies`(走默认遮挡);带地形的示例均保留完整 `AzElMaskData`。
 
-| 文件                                                              | 用途简述                                      |
-| --------------------------------------------------------------- | ----------------------------------------- |
-| `lighting-solar-intensity/fixtures/site-moon-pole.json`         | 月球南极坑顶地面点,1 日强度序列,步长 3600 s               |
-| `lighting-solar-intensity/fixtures/satellite-moon-twobody.json` | 月球 TwoBody 卫星,1 小时强度序列,步长 60 s            |
 
-后续可补充带 `AzElMaskData` / `OccultationBodies` 的示例。
+| 文件                                                                      | 来源测试                                              | 用途简述                                              |
+| ----------------------------------------------------------------------- | ------------------------------------------------- | ------------------------------------------------- |
+| `lighting-solar-intensity/fixtures/satellite-moon-twobody.json`         | `SolarIntensity_MoonTwoBody_250519.cs`            | 月球 TwoBody,30 s / 1 s,进出本影                        |
+| `lighting-solar-intensity/fixtures/site-moon-pole.json`                 | `SolarIntensity_MoonPoleSite_250530.cs`           | 月球南极站,STK 日期,无地形,10 s / 1 s                       |
+| `lighting-solar-intensity/fixtures/site-earth-sthelens-terrain-mask.json` | `SolarIntensity_EarthStHelens_TerrainMask_250529.cs` | 地球 St.Helens,含 AzElMaskData,1 s / 0.1 s           |
+| `lighting-solar-intensity/fixtures/site-moon-bruno-terrain-mask.json`   | `SolarIntensity_MoonBruno_TerrainMask_250519.cs`  | 月球 Bruno 坑,含 AzElMaskData,1 s / 0.1 s             |
+| `lighting-solar-intensity/fixtures/site-moon-ce7-terrain-mask.json`     | `SolarIntensity_MoonSpCe7_TerrainMask_250529.cs`  | 月球南极 CE7,含 AzElMaskData,1 h / 600 s               |
+
 
 ## 响应示例
 
-以下为对仓库 fixtures 实测精简样例(各取 `Datas[0]`)。
+以下为对正式 fixtures 实测精简样例(HTTP 200,`IsSuccess: true`)。
 
-### 地面站 (SolarIntensitySiteData)
+### 飞行器 (SolarIntensityScData) — `satellite-moon-twobody.json`
 
-```json
-{
-  "IsSuccess": true,
-  "Message": "Success",
-  "Datas": [
-    {
-      "$type": "SolarIntensitySiteData",
-      "ApparentSolarAzimuth": -139.361687386768,
-      "ApparentSolarElevation": 1.1620686980242079,
-      "TerrainElevation": 0,
-      "Time": "2024-01-01T00:00:00.000Z",
-      "Intensity": 1,
-      "PercentShadow": 0,
-      "ApparentSolarRange": 147328829.79611424,
-      "SolarDiskHalfAngle": 0.2705568353481385,
-      "SolarGrazingAngle": 2.8032563416695377,
-      "RelativeAngle": 91.16206869802421
-    }
-  ]
-}
-```
-
-### 飞行器 (SolarIntensityScData)
+首点 SunLight、末点 Umbra:
 
 ```json
 {
@@ -201,13 +212,75 @@ curl "${BASE_URL}/Lighting/SolarIntensity" \
       "$type": "SolarIntensityScData",
       "CurrentCondition": "SunLight",
       "Obstruction": "None",
-      "Time": "2023-02-01T00:00:00.000Z",
+      "Time": "2022-09-05T05:17:50.000Z",
       "Intensity": 1,
       "PercentShadow": 0,
-      "ApparentSolarRange": 147636784.44319654,
-      "SolarDiskHalfAngle": 0.26999247835254836,
-      "SolarGrazingAngle": 70.53810474391656,
-      "RelativeAngle": 134.2746514441337
+      "ApparentSolarRange": 150965936.69045085,
+      "SolarDiskHalfAngle": 0.264038469650829,
+      "SolarGrazingAngle": 0.4544763358404801,
+      "RelativeAngle": 58.96690764506119
+    },
+    {
+      "$type": "SolarIntensityScData",
+      "CurrentCondition": "Umbra",
+      "Obstruction": "Moon",
+      "Time": "2022-09-05T05:18:20.000Z",
+      "Intensity": 0,
+      "PercentShadow": 1,
+      "ApparentSolarRange": 150965975.72998947,
+      "SolarDiskHalfAngle": 0.26403840137045687,
+      "SolarGrazingAngle": -0.35322160315655227,
+      "RelativeAngle": 58.15920970606418
+    }
+  ]
+}
+```
+
+### 地面站无地形 (SolarIntensitySiteData) — `site-moon-pole.json`
+
+STK 日期输入,响应时间为 ISO UTC:
+
+```json
+{
+  "IsSuccess": true,
+  "Message": "Success",
+  "Datas": [
+    {
+      "$type": "SolarIntensitySiteData",
+      "ApparentSolarAzimuth": -94.00806767739705,
+      "ApparentSolarElevation": 0.26640335913966,
+      "TerrainElevation": 0,
+      "Time": "2024-03-26T00:36:46.000Z",
+      "Intensity": 1,
+      "PercentShadow": 0,
+      "ApparentSolarRange": 149626258.27850586,
+      "SolarDiskHalfAngle": 0.2664025545350163,
+      "SolarGrazingAngle": 0.2664033591396694,
+      "RelativeAngle": 90.26640335913967
+    }
+  ]
+}
+```
+
+### 地面站含地形 — `site-earth-sthelens-terrain-mask.json`
+
+```json
+{
+  "IsSuccess": true,
+  "Message": "Success",
+  "Datas": [
+    {
+      "$type": "SolarIntensitySiteData",
+      "ApparentSolarAzimuth": 120.08658520860196,
+      "ApparentSolarElevation": 33.965875000718434,
+      "TerrainElevation": 33.703433141880744,
+      "Time": "2022-09-05T17:02:24.000Z",
+      "Intensity": 0.9996491519915867,
+      "PercentShadow": 0.00035084800841331856,
+      "ApparentSolarRange": 150821034.09767714,
+      "SolarDiskHalfAngle": 0.26429214865724276,
+      "SolarGrazingAngle": 0.26244185883769205,
+      "RelativeAngle": 123.96587500071843
     }
   ]
 }
