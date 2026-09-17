@@ -50,6 +50,11 @@
       "fixturesDir": "skills/lighting-solar-aer/fixtures"
     },
     {
+      "name": "lighting-solar-intensity",
+      "skillFile": "skills/lighting-solar-intensity/SKILL.md",
+      "fixturesDir": "skills/lighting-solar-intensity/fixtures"
+    },
+    {
       "name": "query-city",
       "skillFile": "skills/query-city/SKILL.md",
       "fixturesDir": "skills/query-city/fixtures"

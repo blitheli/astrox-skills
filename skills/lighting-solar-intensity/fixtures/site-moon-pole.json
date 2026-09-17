@@ -1,0 +1,15 @@
+{
+  "Description": "南极坑顶部一点的光照,不考虑地形",
+  "Start": "26 Mar 2024 00:36:46.000",
+  "Stop": "26 Mar 2024 00:36:56.000",
+  "Position": {
+    "$type": "SitePosition",
+    "CentralBody": "Moon",
+    "cartographicDegrees": [
+      83.492794,
+      -89.484167,
+      0
+    ]
+  },
+  "TimeStepSec": 1.0
+}

@@ -1,0 +1,22 @@
+{
+  "Description": "Moon 卫星的光照强度、视太阳半径等参数",
+  "Start": "2022-09-05T05:17:50Z",
+  "Stop": "2022-09-05T05:18:20Z",
+  "Position": {
+    "$type": "TwoBody",
+    "CentralBody": "Moon",
+    "GravitationalParameter": 4902800305555.4,
+    "OrbitEpoch": "5 Sep 2022 04:00:00.000000",
+    "CoordSystem": "Inertial",
+    "CoordType": "Classical",
+    "OrbitalElements": [
+      2037400,
+      0,
+      45,
+      0,
+      90,
+      0
+    ]
+  },
+  "TimeStepSec": 1.0
+}
