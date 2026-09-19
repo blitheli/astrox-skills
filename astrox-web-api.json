@@ -3,7 +3,7 @@
   "info": {
     "title": "ASTROX Web API(.Net 10)",
     "description": "航天算法库(blitheli)",
-    "version": "2026-08-20"
+    "version": "2026-09-19"
   },
   "servers": [
     {
@@ -11,212 +11,6 @@
     }
   ],
   "paths": {
-    "/celestial/ephemeris": {
-      "post": {
-        "tags": [
-          "Celestial"
-        ],
-        "summary": "天体星历计算",
-        "description": "根据输入的天体名称、观测者名称、观测者坐标系、分析开始时刻、分析结束时刻和积分步长，计算目标天体在分析时间段内的星历数据，并以CZML Position格式输出。",
-        "operationId": "ephermeris",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EphemerisInput"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EphemerisInput"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/EphemerisInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CzmlPositionOut"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CzmlPositionOut"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CzmlPositionOut"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/celestial/CbAxesRotation": {
-      "post": {
-        "tags": [
-          "Celestial"
-        ],
-        "summary": "天体坐标系旋转计算",
-        "description": "计算某历元时刻，天体A坐标轴到天体B坐标轴的旋转四元数及角速度。<br>坐标系可选: FIXED(固定系), INERTIAL(惯性系), J2000, ICRF, MeanEclpJ2000。<br>涉及月球Fixed系时默认加载JPL DE430历表。",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CbAxesRotationInput"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CbAxesRotationInput"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CbAxesRotationInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/CbAxesRotationOut"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CbAxesRotationOut"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CbAxesRotationOut"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/celestial/mpc": {
-      "post": {
-        "tags": [
-          "Celestial"
-        ],
-        "summary": "mpc小行星星历计算",
-        "description": "根据小行星的名称(或编号),调用 https://data.minorplanetcenter.net/api/get-orb 获取轨道根数(MJD TDT历元)<br> 也可直接提供MPC轨道根数进行计算 <br>按照使用Heliocentric3day积分器进行轨道递推(固定3天步长) <br>输出星历为日心系(MeanEclpJ2000,ICRF,...由输入参数指定)",
-        "operationId": "mpc",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MpcInput"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MpcInput"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/MpcInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/MpcOutput"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MpcOutput"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MpcOutput"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/celestial/transfer": {
-      "post": {
-        "tags": [
-          "Celestial"
-        ],
-        "summary": "天体之间Lambert转移轨道计算",
-        "description": "行星(小行星)之间的Lambert转移轨道计算 <br>小行星按照 Heliocentric 积分器进行轨道递推 <br>出发天体和到达天体均支持: 行星(Earth,Mars,Ceres...)以及小行星(MPC编号/名称,如:Apophis,2015 XF261)<br>小行星可直接输入历元轨道参数,则不需要网络查询! <br>计算结果参考系通常为日心:MeanEclpJ2000,ICRF...",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlanetTransferInput"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlanetTransferInput"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/PlanetTransferInput"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlanetTransferOutput"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlanetTransferOutput"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PlanetTransferOutput"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/access/AccessComputeV2": {
       "post": {
         "tags": [
@@ -717,6 +511,212 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/LifeTimeTLE_Output"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/celestial/ephemeris": {
+      "post": {
+        "tags": [
+          "Celestial"
+        ],
+        "summary": "天体星历计算",
+        "description": "根据输入的天体名称、观测者名称、观测者坐标系、分析开始时刻、分析结束时刻和积分步长，计算目标天体在分析时间段内的星历数据，并以CZML Position格式输出。",
+        "operationId": "ephermeris",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EphemerisInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EphemerisInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EphemerisInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CzmlPositionOut"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CzmlPositionOut"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CzmlPositionOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/celestial/mpc": {
+      "post": {
+        "tags": [
+          "Celestial"
+        ],
+        "summary": "mpc小行星星历计算",
+        "description": "根据近地小行星(NEA)名称或编号,从本地 Data/MPC/NEA.txt 读取轨道根数(MJD TDT历元,MeanEclpJ2000)<br> 也可直接提供MPC轨道根数(TargetElements)进行计算; 非 NEA 请传 TargetElements<br> 已编号对象仍可用临时编号查询(如 2009 BL71 → (528807))<br> 使用自适应Heliocentric积分器递推,再Hermite插值重采样到固定步长输出网格 <br>输出星历为日心系(MeanEclpJ2000,ICRF,...由输入参数指定); 每日凌晨刷新 NEA.txt",
+        "operationId": "mpc",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MpcInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MpcInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MpcInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/MpcOutput"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MpcOutput"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MpcOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/celestial/transfer": {
+      "post": {
+        "tags": [
+          "Celestial"
+        ],
+        "summary": "天体之间Lambert转移轨道计算",
+        "description": "行星(小行星)之间的Lambert转移轨道计算 <br>小行星按照 Heliocentric 积分器进行轨道递推 <br>出发天体和到达天体均支持: 行星(Earth,Mars,Ceres...)以及近地小行星(NEA 编号/名称,如:Apophis,2015 XF261)<br>小行星可直接输入历元轨道参数(TargetElements),则不需要从 NEA.txt 查找! <br>计算结果参考系通常为日心:MeanEclpJ2000,ICRF...<br>每条转移解输出 MinRangeAu/MaxRangeAu: 转移弧(出发→到达)上相对太阳的日心径向最近/最远距离(AU)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanetTransferInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanetTransferInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanetTransferInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanetTransferOutput"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanetTransferOutput"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanetTransferOutput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/celestial/CbAxesRotation": {
+      "post": {
+        "tags": [
+          "Celestial"
+        ],
+        "summary": "天体坐标系旋转计算",
+        "description": "计算某历元时刻，天体A坐标轴到天体B坐标轴的旋转四元数及角速度。<br>坐标系可选: FIXED(固定系), INERTIAL(惯性系), J2000, ICRF, MeanEclpJ2000, EclpJ2000ICRF。<br>涉及月球Fixed系时默认加载JPL DE430历表。",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CbAxesRotationInput"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CbAxesRotationInput"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CbAxesRotationInput"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CbAxesRotationOut"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CbAxesRotationOut"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CbAxesRotationOut"
                 }
               }
             }
@@ -1958,7 +1958,6 @@
             "in": "query",
             "description": "质量比参数u:(m2/(m1+m2)),m2为次级天体质量",
             "schema": {
-              "type": "number",
               "format": "double"
             }
           }
@@ -1969,29 +1968,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               }
             }
@@ -2012,7 +1999,6 @@
             "in": "query",
             "description": "主天体的引力参数(m^3/s^2)",
             "schema": {
-              "type": "number",
               "format": "double",
               "default": 398600441800000
             }
@@ -2022,7 +2008,6 @@
             "in": "query",
             "description": "次级天体的引力参数(m^3/s^2)",
             "schema": {
-              "type": "number",
               "format": "double",
               "default": 4904869500000
             }
@@ -2032,7 +2017,6 @@
             "in": "query",
             "description": "主次天体会合坐标系平均距离(m)",
             "schema": {
-              "type": "number",
               "format": "double",
               "default": 384400000
             }
@@ -2126,7 +2110,6 @@
             "in": "query",
             "description": "无量纲振幅 Ax(范围约 0.05 - 0.1928)",
             "schema": {
-              "type": "number",
               "format": "double",
               "default": 0.192
             }
@@ -2178,7 +2161,6 @@
             "in": "query",
             "description": "无量纲振幅 Az(范围约 0.022 - 0.199)",
             "schema": {
-              "type": "number",
               "format": "double",
               "default": 0.05
             }
@@ -2230,7 +2212,6 @@
             "in": "query",
             "description": "远离月球一侧无量纲振幅 Ax(范围约 0.078 - 0.520, 约 30000 - 200000 km)",
             "schema": {
-              "type": "number",
               "format": "double",
               "default": 0.1801
             }
@@ -2496,29 +2477,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               }
             }
@@ -2538,29 +2507,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "number",
-                  "format": "double"
-                }
+                "type": "array"
               }
             },
             "text/json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "number",
-                  "format": "double"
-                }
+                "type": "array"
               }
             },
             "application/*+json": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "number",
-                  "format": "double"
-                }
+                "type": "array"
               }
             }
           },
@@ -2623,29 +2580,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               }
             }
@@ -2686,29 +2631,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "number",
-                    "format": "double"
-                  }
+                  "type": "array"
                 }
               }
             }
@@ -4054,7 +3987,6 @@
             "in": "query",
             "description": "最小近地点高度(m),查询结果中近地点高度大于此数值",
             "schema": {
-              "type": "number",
               "format": "double"
             }
           },
@@ -4063,7 +3995,6 @@
             "in": "query",
             "description": "最大近地点高度(m)，查询结果中近地点高度小于此数值",
             "schema": {
-              "type": "number",
               "format": "double"
             }
           },
@@ -4072,7 +4003,6 @@
             "in": "query",
             "description": "最小远地点高度(m)，查询结果中远地点高度大于此数值",
             "schema": {
-              "type": "number",
               "format": "double"
             }
           },
@@ -4081,7 +4011,6 @@
             "in": "query",
             "description": "最大远地点高度(m)，查询结果中远地点高度小于此数值",
             "schema": {
-              "type": "number",
               "format": "double"
             }
           },
@@ -4090,7 +4019,6 @@
             "in": "query",
             "description": "最小轨道倾角(deg)",
             "schema": {
-              "type": "number",
               "format": "double"
             }
           },
@@ -4099,7 +4027,6 @@
             "in": "query",
             "description": "最大轨道倾角(deg)",
             "schema": {
-              "type": "number",
               "format": "double"
             }
           }
@@ -4139,22 +4066,18 @@
             "description": "时刻(UTCG)(yyyy-MM-ddTHH:mm:ss.fffZ"
           },
           "Azimuth": {
-            "type": "number",
             "description": "方位角(deg)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "高度角(deg)",
             "format": "double"
           },
           "Range": {
-            "type": "number",
             "description": "距离(m)",
             "format": "double"
           },
           "RangeDot": {
-            "type": "number",
             "description": "距离变化导数(m/s)",
             "format": "double"
           }
@@ -4173,7 +4096,6 @@
             "description": "Access结束时刻(UTCG)(yyyy-MM-ddTHH:mm:ss.fffZ)"
           },
           "Duration": {
-            "type": "number",
             "description": "Access时长(s)",
             "format": "double"
           },
@@ -4265,17 +4187,14 @@
         "type": "object",
         "properties": {
           "Duration": {
-            "type": "number",
             "description": "覆盖时长(秒)",
             "format": "double"
           },
           "PercentUnder": {
-            "type": "number",
             "description": "小于此覆盖时长的覆盖弧段数百分比(0-100)",
             "format": "double"
           },
           "PercentOver": {
-            "type": "number",
             "description": "大于此覆盖时长的覆盖弧段数百分比(0-100)",
             "format": "double"
           }
@@ -4306,7 +4225,6 @@
             "default": "2022-04-25T08:00:00Z"
           },
           "OutStep": {
-            "type": "number",
             "description": "输出时间步长(s),缺省:60s",
             "format": "double",
             "default": 60
@@ -4363,18 +4281,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgDirectionAgDirectionXYZ"
+            "$ref": "#/components/schemas/AgDirectionAgDirectionRADec"
           },
           {
-            "$ref": "#/components/schemas/AgDirectionAgDirectionRADec"
+            "$ref": "#/components/schemas/AgDirectionAgDirectionXYZ"
           }
         ],
         "description": "指向接口  <br>具体实现类:  <br>-AgDirectionRADec(\"$type\":\"RADec\")  <br>-AgDirectionXYZ(\"$type\":\"XYZ\")  <br>",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "XYZ": "#/components/schemas/AgDirectionAgDirectionXYZ",
-            "RADec": "#/components/schemas/AgDirectionAgDirectionRADec"
+            "RADec": "#/components/schemas/AgDirectionAgDirectionRADec",
+            "XYZ": "#/components/schemas/AgDirectionAgDirectionXYZ"
           }
         }
       },
@@ -4387,17 +4305,14 @@
             "type": "string"
           },
           "RA": {
-            "type": "number",
             "description": "赤经: X-Y平面内从X轴向Y轴的角度(deg)",
             "format": "double"
           },
           "Dec": {
-            "type": "number",
             "description": "赤纬: 相对于X-Y平面的角度(deg),向+Z方向为正",
             "format": "double"
           },
           "Magnitude": {
-            "type": "number",
             "description": "幅值(无量纲)",
             "format": "double",
             "default": 1
@@ -4414,17 +4329,14 @@
             "type": "string"
           },
           "X": {
-            "type": "number",
             "description": "X分量",
             "format": "double"
           },
           "Y": {
-            "type": "number",
             "description": "Y分量",
             "format": "double"
           },
           "Z": {
-            "type": "number",
             "description": "Z分量",
             "format": "double"
           }
@@ -4438,10 +4350,10 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgOrientationOrientationEulerAngles"
+            "$ref": "#/components/schemas/AgOrientationOrientationQuaternion"
           },
           {
-            "$ref": "#/components/schemas/AgOrientationOrientationQuaternion"
+            "$ref": "#/components/schemas/AgOrientationOrientationEulerAngles"
           },
           {
             "$ref": "#/components/schemas/AgOrientationOrientationAzEl"
@@ -4451,8 +4363,8 @@
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "EulerAngles": "#/components/schemas/AgOrientationOrientationEulerAngles",
             "Quaternion": "#/components/schemas/AgOrientationOrientationQuaternion",
+            "EulerAngles": "#/components/schemas/AgOrientationOrientationEulerAngles",
             "AzEl": "#/components/schemas/AgOrientationOrientationAzEl"
           }
         }
@@ -4466,12 +4378,10 @@
             "type": "string"
           },
           "Azimuth": {
-            "type": "number",
             "description": "方位角(deg)，父坐标系XY平面内,指向方向与X轴的夹角,+Y轴方向为正",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "高度角(deg)，父坐标系XY平面与指向方向的夹角，向+Z轴方向为正",
             "format": "double"
           }
@@ -4490,17 +4400,14 @@
             "type": "string"
           },
           "A": {
-            "type": "number",
             "description": "Euler A旋转角度(deg)",
             "format": "double"
           },
           "B": {
-            "type": "number",
             "description": "Euler B旋转角度(deg)",
             "format": "double"
           },
           "C": {
-            "type": "number",
             "description": "Euler C旋转角度(deg)",
             "format": "double"
           }
@@ -4516,22 +4423,18 @@
             "type": "string"
           },
           "QS": {
-            "type": "number",
             "description": "四元数QS, 标量部分(cos(A/2))",
             "format": "double"
           },
           "QX": {
-            "type": "number",
             "description": "四元数QX, 向量部分X分量(nx*sin(A/2)",
             "format": "double"
           },
           "QY": {
-            "type": "number",
             "description": "四元数QY, 向量部分Y分量(ny*sin(A/2)",
             "format": "double"
           },
           "QZ": {
-            "type": "number",
             "description": "四元数QZ, 向量部分Z分量(nz*sin(A/2)",
             "format": "double"
           }
@@ -4570,10 +4473,9 @@
             "default": "Earth"
           },
           "Tolerance": {
-            "type": "number",
             "description": "误差(缺省为1e-6°)(针对近点角)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "RepeatCount": {
             "type": "integer",
@@ -4582,7 +4484,6 @@
             "default": 1
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -4613,26 +4514,26 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude"
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector"
           },
           {
             "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude"
           }
         ],
         "description": "瞬时脉冲机动姿态控制参数接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector",
-            "Attitude": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude",
+            "ThrustVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector",
             "VelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteVelocityVector",
-            "ThrustVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteThrustVector"
+            "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAntiVelocityVector",
+            "Attitude": "#/components/schemas/AgVAAttitudeControlFiniteAgVAAttitudeControlFiniteAttitude"
           }
         }
       },
@@ -4676,41 +4577,34 @@
             "default": "VNC(Earth)"
           },
           "QX": {
-            "type": "number",
             "description": "四元数Qx(nx*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QY": {
-            "type": "number",
             "description": "四元数Qy(ny*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QZ": {
-            "type": "number",
             "description": "四元数Qz(nz*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QS": {
-            "type": "number",
             "description": "四元数Qs(Cos(A/2))",
             "format": "double",
             "default": 1
           },
           "A": {
-            "type": "number",
             "description": "欧拉角A(deg)",
             "format": "double"
           },
           "B": {
-            "type": "number",
             "description": "欧拉角B(deg)",
             "format": "double"
           },
           "C": {
-            "type": "number",
             "description": "欧拉角C(deg)",
             "format": "double"
           },
@@ -4746,28 +4640,23 @@
             "default": "VNC(Earth)"
           },
           "Azimuth": {
-            "type": "number",
             "description": "推力矢量的球面坐标系方位角(deg)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "推力矢量的球面坐标系高度角(deg)",
             "format": "double"
           },
           "X": {
-            "type": "number",
             "description": "推力矢量的X分量",
             "format": "double",
             "default": 1
           },
           "Y": {
-            "type": "number",
             "description": "推力矢量的Y分量",
             "format": "double"
           },
           "Z": {
-            "type": "number",
             "description": "推力矢量的Z分量",
             "format": "double"
           }
@@ -4820,41 +4709,34 @@
             "default": "VNC(Earth)"
           },
           "QX": {
-            "type": "number",
             "description": "四元数Qx(nx*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QY": {
-            "type": "number",
             "description": "四元数Qy(ny*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QZ": {
-            "type": "number",
             "description": "四元数Qz(nz*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QS": {
-            "type": "number",
             "description": "四元数Qs(Cos(A/2))",
             "format": "double",
             "default": 1
           },
           "A": {
-            "type": "number",
             "description": "欧拉角A(deg)",
             "format": "double"
           },
           "B": {
-            "type": "number",
             "description": "欧拉角B(deg)",
             "format": "double"
           },
           "C": {
-            "type": "number",
             "description": "欧拉角C(deg)",
             "format": "double"
           },
@@ -4885,28 +4767,23 @@
             "default": "VNC(Earth)"
           },
           "Azimuth": {
-            "type": "number",
             "description": "推力矢量的球面坐标系方位角(deg)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "推力矢量的球面坐标系高度角(deg)",
             "format": "double"
           },
           "X": {
-            "type": "number",
             "description": "推力矢量的X分量",
             "format": "double",
             "default": 1
           },
           "Y": {
-            "type": "number",
             "description": "推力矢量的Y分量",
             "format": "double"
           },
           "Z": {
-            "type": "number",
             "description": "推力矢量的Z分量",
             "format": "double"
           }
@@ -4931,26 +4808,26 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector"
-          },
-          {
             "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude"
+            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector"
           },
           {
-            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector"
+            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude"
           }
         ],
         "description": "瞬时脉冲机动姿态控制参数接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "VelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector",
             "AntiVelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAntiVelocityVector",
-            "Attitude": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude",
-            "ThrustVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector"
+            "ThrustVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveThrustVector",
+            "VelocityVector": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveVelocityVector",
+            "Attitude": "#/components/schemas/AgVAAttitudeControlImpulsiveAgVAAttitudeControlImpulsiveAttitude"
           }
         }
       },
@@ -4963,7 +4840,6 @@
             "type": "string"
           },
           "DeltaVMagnitude": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           }
@@ -4979,7 +4855,6 @@
             "type": "string"
           },
           "DeltaVMagnitude": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           },
@@ -4994,41 +4869,34 @@
             "default": "VNC(Earth)"
           },
           "QX": {
-            "type": "number",
             "description": "四元数Qx(nx*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QY": {
-            "type": "number",
             "description": "四元数Qy(ny*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QZ": {
-            "type": "number",
             "description": "四元数Qz(nz*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QS": {
-            "type": "number",
             "description": "四元数Qs(Cos(A/2))",
             "format": "double",
             "default": 1
           },
           "A": {
-            "type": "number",
             "description": "欧拉角A(deg)",
             "format": "double"
           },
           "B": {
-            "type": "number",
             "description": "欧拉角B(deg)",
             "format": "double"
           },
           "C": {
-            "type": "number",
             "description": "欧拉角C(deg)",
             "format": "double"
           },
@@ -5059,32 +4927,26 @@
             "default": "VNC(Earth)"
           },
           "Azimuth": {
-            "type": "number",
             "description": "DeltaV球面坐标系方位角(deg)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "DeltaV球面坐标系高度角(deg)",
             "format": "double"
           },
           "Magnitude": {
-            "type": "number",
             "description": "DeltaV大小(m/s)",
             "format": "double"
           },
           "X": {
-            "type": "number",
             "description": "DeltaV的X分量(m/s)",
             "format": "double"
           },
           "Y": {
-            "type": "number",
             "description": "DeltaV的Y分量(m/s)",
             "format": "double"
           },
           "Z": {
-            "type": "number",
             "description": "DeltaV的Z分量(m/s)",
             "format": "double"
           }
@@ -5100,7 +4962,6 @@
             "type": "string"
           },
           "DeltaVMagnitude": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           }
@@ -5111,7 +4972,6 @@
         "type": "object",
         "properties": {
           "DeltaVMagnitude": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           }
@@ -5122,7 +4982,6 @@
         "type": "object",
         "properties": {
           "DeltaVMagnitude": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           },
@@ -5137,41 +4996,34 @@
             "default": "VNC(Earth)"
           },
           "QX": {
-            "type": "number",
             "description": "四元数Qx(nx*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QY": {
-            "type": "number",
             "description": "四元数Qy(ny*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QZ": {
-            "type": "number",
             "description": "四元数Qz(nz*Sin(A/2))",
             "format": "double",
             "default": 0
           },
           "QS": {
-            "type": "number",
             "description": "四元数Qs(Cos(A/2))",
             "format": "double",
             "default": 1
           },
           "A": {
-            "type": "number",
             "description": "欧拉角A(deg)",
             "format": "double"
           },
           "B": {
-            "type": "number",
             "description": "欧拉角B(deg)",
             "format": "double"
           },
           "C": {
-            "type": "number",
             "description": "欧拉角C(deg)",
             "format": "double"
           },
@@ -5197,32 +5049,26 @@
             "default": "VNC(Earth)"
           },
           "Azimuth": {
-            "type": "number",
             "description": "DeltaV球面坐标系方位角(deg)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "DeltaV球面坐标系高度角(deg)",
             "format": "double"
           },
           "Magnitude": {
-            "type": "number",
             "description": "DeltaV大小(m/s)",
             "format": "double"
           },
           "X": {
-            "type": "number",
             "description": "DeltaV的X分量(m/s)",
             "format": "double"
           },
           "Y": {
-            "type": "number",
             "description": "DeltaV的Y分量(m/s)",
             "format": "double"
           },
           "Z": {
-            "type": "number",
             "description": "DeltaV的Z分量(m/s)",
             "format": "double"
           }
@@ -5233,7 +5079,6 @@
         "type": "object",
         "properties": {
           "DeltaVMagnitude": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           }
@@ -5264,12 +5109,10 @@
             "description": "最终值(大部分为double类型,日期为string类型)。此数值在优化后更新，不作为输入"
           },
           "Correction": {
-            "type": "number",
             "description": "修正值(InitialValue + Correction = FinalValue)。 <br>若作为输入，则优化时初值就加上此数值。优化后也更新此数值。",
             "format": "double"
           },
           "LastUpdate": {
-            "type": "number",
             "description": "最后一次迭代的更新值。此数值在优化后更新，不作为输入",
             "format": "double"
           },
@@ -5278,7 +5121,6 @@
             "description": "变量维度(Time,DateFormat,Angle....) <br>如果变量是历元时刻，则此数值为DateFormat"
           },
           "MaxStep": {
-            "type": "number",
             "description": "最大步长",
             "format": "double"
           },
@@ -5287,7 +5129,6 @@
             "description": "所属段名称"
           },
           "Perturbation": {
-            "type": "number",
             "description": "摄动值(用于计算数值导数)",
             "format": "double"
           },
@@ -5297,13 +5138,11 @@
             "default": "NoScaling"
           },
           "ScalingValue": {
-            "type": "number",
             "description": "归一化值",
             "format": "double",
             "default": 1
           },
           "Tolerance": {
-            "type": "number",
             "description": "容差(当收敛条件为\"两者相等或最后控制参数更新容差\"",
             "format": "double",
             "default": 0.0001
@@ -5314,10 +5153,6 @@
           },
           "Values": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "迭代过程中的值列表(此数值在优化后更新) <br>若为Epoch类型,则为相对初始值的历元秒"
           }
         },
@@ -5356,7 +5191,6 @@
             "description": "单位(暂时未用)"
           },
           "Difference": {
-            "type": "number",
             "description": "差值(CurrentValue-DesiredValue)。若为时刻，则为相差的秒数",
             "format": "double"
           },
@@ -5366,29 +5200,22 @@
             "default": "NoScaling"
           },
           "ScalingValue": {
-            "type": "number",
             "description": "归一化值",
             "format": "double",
             "default": 1
           },
           "Tolerance": {
-            "type": "number",
             "description": "容差(当前值和约束值的差别小于此数值时认为约束满足)",
             "format": "double",
-            "default": 0.1
+            "default": 0.10000000000000001
           },
           "Weight": {
-            "type": "number",
             "description": "权重(暂时未用)",
             "format": "double",
             "default": 1
           },
           "Values": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "迭代过程中的值列表(此数值在优化后更新) <br>若为Epoch，则为相对期望值的历元秒"
           }
         },
@@ -5398,15 +5225,13 @@
         "type": "object",
         "properties": {
           "Trip": {
-            "type": "number",
             "description": "积分时长(s)(可正负)",
             "format": "double"
           },
           "Tolerance": {
-            "type": "number",
             "description": "允许误差(s)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "Name": {
             "type": "string",
@@ -5435,26 +5260,26 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote"
+            "$ref": "#/components/schemas/AgVAElementAgVAElementSpherical"
           },
           {
-            "$ref": "#/components/schemas/AgVAElementAgVAElementCartesian"
+            "$ref": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote"
           },
           {
             "$ref": "#/components/schemas/AgVAElementAgVAElementKeplerian"
           },
           {
-            "$ref": "#/components/schemas/AgVAElementAgVAElementSpherical"
+            "$ref": "#/components/schemas/AgVAElementAgVAElementCartesian"
           }
         ],
         "description": "轨道参数基类",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
+            "Spherical": "#/components/schemas/AgVAElementAgVAElementSpherical",
             "TargetVecOut": "#/components/schemas/AgVAElementAgVAElementTargetVectorOutgoingAsymptote",
-            "Cartesian": "#/components/schemas/AgVAElementAgVAElementCartesian",
             "Keplerian": "#/components/schemas/AgVAElementAgVAElementKeplerian",
-            "Spherical": "#/components/schemas/AgVAElementAgVAElementSpherical"
+            "Cartesian": "#/components/schemas/AgVAElementAgVAElementCartesian"
           }
         }
       },
@@ -5467,32 +5292,26 @@
             "type": "string"
           },
           "X": {
-            "type": "number",
             "description": "X坐标(m)",
             "format": "double"
           },
           "Y": {
-            "type": "number",
             "description": "Y坐标(m)",
             "format": "double"
           },
           "Z": {
-            "type": "number",
             "description": "Z坐标(m)",
             "format": "double"
           },
           "Vx": {
-            "type": "number",
             "description": "Vx速度(m/s)",
             "format": "double"
           },
           "Vy": {
-            "type": "number",
             "description": "Vy速度(m/s)",
             "format": "double"
           },
           "Vz": {
-            "type": "number",
             "description": "Vz速度(m/s)",
             "format": "double"
           }
@@ -5512,42 +5331,34 @@
             "description": "轨道类型(缺省: Osculating, 其它:KozailzsakMean)，当为Kozai时，内部使用默认的J2数值"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2)",
             "format": "double"
           },
           "SemiMajorAxis": {
-            "type": "number",
             "description": "半长轴(m)",
             "format": "double"
           },
           "Eccentricity": {
-            "type": "number",
             "description": "偏心率",
             "format": "double"
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(deg)",
             "format": "double"
           },
           "RAAN": {
-            "type": "number",
             "description": "升交点赤经(deg)",
             "format": "double"
           },
           "ArgOfPeriapsis": {
-            "type": "number",
             "description": "近地点幅角(deg)",
             "format": "double"
           },
           "MeanAnomaly": {
-            "type": "number",
             "description": "平近点角(deg)(由AnomalyType属性决定，如果为Mean，则使用此参数,True则使用TrueAnomaly)",
             "format": "double"
           },
           "TrueAnomaly": {
-            "type": "number",
             "description": "真近点角(deg)(由AnomalyType属性决定，如果为True，则使用此参数,Mean则使用MeanAnomaly)",
             "format": "double"
           },
@@ -5557,7 +5368,6 @@
             "default": "True"
           },
           "Period": {
-            "type": "number",
             "description": "轨道周期(s)",
             "format": "double"
           }
@@ -5573,32 +5383,26 @@
             "type": "string"
           },
           "RightAscension": {
-            "type": "number",
             "description": "赤经(deg)",
             "format": "double"
           },
           "Declination": {
-            "type": "number",
             "description": "赤纬(deg)",
             "format": "double"
           },
           "RadiusMagnitude": {
-            "type": "number",
             "description": "地心距(m)",
             "format": "double"
           },
           "HorizFPA": {
-            "type": "number",
             "description": "水平路径角(deg)",
             "format": "double"
           },
           "VelocityAzimuth": {
-            "type": "number",
             "description": "速度方位角(deg)",
             "format": "double"
           },
           "VelocityMagnitude": {
-            "type": "number",
             "description": "速度大小(m/s)",
             "format": "double"
           }
@@ -5614,37 +5418,30 @@
             "type": "string"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2)",
             "format": "double"
           },
           "RadiusOfPeriapsis": {
-            "type": "number",
             "description": "近心点半径(km)",
             "format": "double"
           },
           "C3": {
-            "type": "number",
             "description": "C3能量(km^2/s^2), C3 = -mu/a",
             "format": "double"
           },
           "AsympRA": {
-            "type": "number",
             "description": "出射渐近线赤经(deg)",
             "format": "double"
           },
           "AsympDec": {
-            "type": "number",
             "description": "出射渐近线赤纬(deg)",
             "format": "double"
           },
           "VelAzAtPeriapsis": {
-            "type": "number",
             "description": "近心点速度方位角(deg)",
             "format": "double"
           },
           "TrueAnomaly": {
-            "type": "number",
             "description": "真近点角(deg)",
             "format": "double"
           }
@@ -5655,32 +5452,26 @@
         "type": "object",
         "properties": {
           "X": {
-            "type": "number",
             "description": "X坐标(m)",
             "format": "double"
           },
           "Y": {
-            "type": "number",
             "description": "Y坐标(m)",
             "format": "double"
           },
           "Z": {
-            "type": "number",
             "description": "Z坐标(m)",
             "format": "double"
           },
           "Vx": {
-            "type": "number",
             "description": "Vx速度(m/s)",
             "format": "double"
           },
           "Vy": {
-            "type": "number",
             "description": "Vy速度(m/s)",
             "format": "double"
           },
           "Vz": {
-            "type": "number",
             "description": "Vz速度(m/s)",
             "format": "double"
           }
@@ -5695,42 +5486,34 @@
             "description": "轨道类型(缺省: Osculating, 其它:KozailzsakMean)，当为Kozai时，内部使用默认的J2数值"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2)",
             "format": "double"
           },
           "SemiMajorAxis": {
-            "type": "number",
             "description": "半长轴(m)",
             "format": "double"
           },
           "Eccentricity": {
-            "type": "number",
             "description": "偏心率",
             "format": "double"
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(deg)",
             "format": "double"
           },
           "RAAN": {
-            "type": "number",
             "description": "升交点赤经(deg)",
             "format": "double"
           },
           "ArgOfPeriapsis": {
-            "type": "number",
             "description": "近地点幅角(deg)",
             "format": "double"
           },
           "MeanAnomaly": {
-            "type": "number",
             "description": "平近点角(deg)(由AnomalyType属性决定，如果为Mean，则使用此参数,True则使用TrueAnomaly)",
             "format": "double"
           },
           "TrueAnomaly": {
-            "type": "number",
             "description": "真近点角(deg)(由AnomalyType属性决定，如果为True，则使用此参数,Mean则使用MeanAnomaly)",
             "format": "double"
           },
@@ -5740,7 +5523,6 @@
             "default": "True"
           },
           "Period": {
-            "type": "number",
             "description": "轨道周期(s)",
             "format": "double"
           }
@@ -5751,32 +5533,26 @@
         "type": "object",
         "properties": {
           "RightAscension": {
-            "type": "number",
             "description": "赤经(deg)",
             "format": "double"
           },
           "Declination": {
-            "type": "number",
             "description": "赤纬(deg)",
             "format": "double"
           },
           "RadiusMagnitude": {
-            "type": "number",
             "description": "地心距(m)",
             "format": "double"
           },
           "HorizFPA": {
-            "type": "number",
             "description": "水平路径角(deg)",
             "format": "double"
           },
           "VelocityAzimuth": {
-            "type": "number",
             "description": "速度方位角(deg)",
             "format": "double"
           },
           "VelocityMagnitude": {
-            "type": "number",
             "description": "速度大小(m/s)",
             "format": "double"
           }
@@ -5790,18 +5566,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstant"
+            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstAcc"
           },
           {
-            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstAcc"
+            "$ref": "#/components/schemas/AgVAEngineAgVAEngineConstant"
           }
         ],
         "description": "发动机基类接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "EngineConstant": "#/components/schemas/AgVAEngineAgVAEngineConstant",
-            "EngineConstAcc": "#/components/schemas/AgVAEngineAgVAEngineConstAcc"
+            "EngineConstAcc": "#/components/schemas/AgVAEngineAgVAEngineConstAcc",
+            "EngineConstant": "#/components/schemas/AgVAEngineAgVAEngineConstant"
           }
         }
       },
@@ -5814,22 +5590,19 @@
             "type": "string"
           },
           "Acceleration": {
-            "type": "number",
             "description": "恒定加速度数值(m/s^2)",
             "format": "double",
             "default": 0.5
           },
           "Isp": {
-            "type": "number",
             "description": "恒定比冲(s)",
             "format": "double",
             "default": 300
           },
           "g": {
-            "type": "number",
             "description": "地球海平面重力加速度(m/s^2)",
             "format": "double",
-            "default": 9.80665
+            "default": 9.8066499999999994
           },
           "Name": {
             "type": "string",
@@ -5855,22 +5628,19 @@
             "type": "string"
           },
           "Thrust": {
-            "type": "number",
             "description": "恒定推力数值(N)",
             "format": "double",
             "default": 500
           },
           "Isp": {
-            "type": "number",
             "description": "恒定比冲(s)",
             "format": "double",
             "default": 300
           },
           "g": {
-            "type": "number",
             "description": "地球海平面重力加速度(m/s^2)",
             "format": "double",
-            "default": 9.80665
+            "default": 9.8066499999999994
           },
           "Name": {
             "type": "string",
@@ -5891,22 +5661,19 @@
         "type": "object",
         "properties": {
           "Acceleration": {
-            "type": "number",
             "description": "恒定加速度数值(m/s^2)",
             "format": "double",
             "default": 0.5
           },
           "Isp": {
-            "type": "number",
             "description": "恒定比冲(s)",
             "format": "double",
             "default": 300
           },
           "g": {
-            "type": "number",
             "description": "地球海平面重力加速度(m/s^2)",
             "format": "double",
-            "default": 9.80665
+            "default": 9.8066499999999994
           },
           "Name": {
             "type": "string",
@@ -5927,22 +5694,19 @@
         "type": "object",
         "properties": {
           "Thrust": {
-            "type": "number",
             "description": "恒定推力数值(N)",
             "format": "double",
             "default": 500
           },
           "Isp": {
-            "type": "number",
             "description": "恒定比冲(s)",
             "format": "double",
             "default": 300
           },
           "g": {
-            "type": "number",
             "description": "地球海平面重力加速度(m/s^2)",
             "format": "double",
-            "default": 9.80665
+            "default": 9.8066499999999994
           },
           "Name": {
             "type": "string",
@@ -6057,12 +5821,10 @@
             "description": "约束矢量名称"
           },
           "LeadDuration": {
-            "type": "number",
             "description": "前导时长(s)",
             "format": "double"
           },
           "TrailDuration": {
-            "type": "number",
             "description": "滞后时长(s)",
             "format": "double"
           },
@@ -6084,7 +5846,6 @@
             "description": "终止条件集合，请查看接口IAgVAStoppingConditionElement的派生类"
           },
           "ThrustEfficiency": {
-            "type": "number",
             "description": "推力效率(0.98 to 1.02)(缺省为1.0，表示额定推力)",
             "format": "double",
             "default": 1
@@ -6150,12 +5911,10 @@
             "description": "约束矢量名称"
           },
           "LeadDuration": {
-            "type": "number",
             "description": "前导时长(s)",
             "format": "double"
           },
           "TrailDuration": {
-            "type": "number",
             "description": "滞后时长(s)",
             "format": "double"
           },
@@ -6262,7 +6021,13 @@
         "type": "object",
         "anyOf": [
           {
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive"
+          },
+          {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence"
           },
           {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow"
@@ -6271,16 +6036,10 @@
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite"
           },
           {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive"
-          },
-          {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate"
           },
           {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSInitialState"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence"
           },
           {
             "$ref": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop"
@@ -6290,13 +6049,13 @@
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
+            "ManeuverImpulsive": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive",
             "TargetSequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSTargetSequence",
+            "Sequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence",
             "Follow": "#/components/schemas/AgVAMCSSegmentAgVAMCSFollow",
             "ManeuverFinite": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverFinite",
-            "ManeuverImpulsive": "#/components/schemas/AgVAMCSSegmentAgVAMCSManeuverImpulsive",
             "Propagate": "#/components/schemas/AgVAMCSSegmentAgVAMCSPropagate",
             "InitialState": "#/components/schemas/AgVAMCSSegmentAgVAMCSInitialState",
-            "Sequence": "#/components/schemas/AgVAMCSSegmentAgVAMCSSequence",
             "Stop": "#/components/schemas/AgVAMCSSegmentAgVAMCSStop"
           }
         }
@@ -6344,52 +6103,43 @@
             "description": "分离方式终止条件集合(仅当Separation为\"Specify\"时有效)"
           },
           "XOffset": {
-            "type": "number",
             "description": "相对领航员本体坐标系X轴的偏移距离(m)",
             "format": "double"
           },
           "YOffset": {
-            "type": "number",
             "description": "相对领航员本体坐标系Y轴的偏移距离(m)",
             "format": "double"
           },
           "ZOffset": {
-            "type": "number",
             "description": "相对领航员本体坐标系Z轴的偏移距离(m)",
             "format": "double"
           },
           "DryMass": {
-            "type": "number",
             "description": "结构质量(kg),缺省:500.0",
             "format": "double",
             "default": 500
           },
           "FuelMass": {
-            "type": "number",
             "description": "燃料质量(kg),缺省:500.0",
             "format": "double",
             "default": 500
           },
           "Cd": {
-            "type": "number",
             "description": "大气阻力系数(通常取2.2)",
             "format": "double",
-            "default": 2.2
+            "default": 2.2000000000000002
           },
           "Cr": {
-            "type": "number",
             "description": "光压系数(2.0为完全反射,1.0为不反射, 缺省:1.0)",
             "format": "double",
             "default": 1
           },
           "DragArea": {
-            "type": "number",
             "description": "大气阻力面积(m^2),缺省:20.0",
             "format": "double",
             "default": 20
           },
           "SRPArea": {
-            "type": "number",
             "description": "光压面积(m^2),缺省:20.0",
             "format": "double",
             "default": 20
@@ -6498,12 +6248,10 @@
             "description": "约束矢量名称"
           },
           "LeadDuration": {
-            "type": "number",
             "description": "前导时长(s)",
             "format": "double"
           },
           "TrailDuration": {
-            "type": "number",
             "description": "滞后时长(s)",
             "format": "double"
           },
@@ -6525,7 +6273,6 @@
             "description": "终止条件集合，请查看接口IAgVAStoppingConditionElement的派生类"
           },
           "ThrustEfficiency": {
-            "type": "number",
             "description": "推力效率(0.98 to 1.02)(缺省为1.0，表示额定推力)",
             "format": "double",
             "default": 1
@@ -6596,12 +6343,10 @@
             "description": "约束矢量名称"
           },
           "LeadDuration": {
-            "type": "number",
             "description": "前导时长(s)",
             "format": "double"
           },
           "TrailDuration": {
-            "type": "number",
             "description": "滞后时长(s)",
             "format": "double"
           },
@@ -6869,10 +6614,9 @@
             "default": "Earth"
           },
           "Tolerance": {
-            "type": "number",
             "description": "误差(缺省为1e-6°)(针对近点角)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "RepeatCount": {
             "type": "integer",
@@ -6881,7 +6625,6 @@
             "default": 1
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -7060,13 +6803,11 @@
             "default": "AnyThreshold"
           },
           "Tolerance": {
-            "type": "number",
             "description": "误差(缺省为1e-6)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "Trip": {
-            "type": "number",
             "description": "积分终止数值(单位: m,deg...)",
             "format": "double"
           },
@@ -7121,37 +6862,31 @@
             "$ref": "#/components/schemas/AgVAElement"
           },
           "DryMass": {
-            "type": "number",
             "description": "结构质量(kg)",
             "format": "double",
             "default": 500
           },
           "FuelMass": {
-            "type": "number",
             "description": "燃料质量(kg)",
             "format": "double",
             "default": 500
           },
           "Cd": {
-            "type": "number",
             "description": "大气阻力系数(通常取2.2)",
             "format": "double",
-            "default": 2.2
+            "default": 2.2000000000000002
           },
           "Cr": {
-            "type": "number",
             "description": "光压系数，(2.0为完全反射，1.0为不反射)",
             "format": "double",
             "default": 1
           },
           "DragArea": {
-            "type": "number",
             "description": "大气阻力面积(m^2)",
             "format": "double",
             "default": 20
           },
           "SRPArea": {
-            "type": "number",
             "description": "光压面积(m^2)",
             "format": "double",
             "default": 20
@@ -7166,30 +6901,30 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition"
-          },
-          {
-            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
-          },
-          {
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition"
           },
           {
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition"
           },
           {
             "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition"
+          },
+          {
+            "$ref": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
           }
         ],
         "description": "轨道递推终止条件接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Periapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition",
-            "Apoapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition",
             "Scalar": "#/components/schemas/AgVAStoppingConditionElementAgVAScalarStoppingCondition",
+            "Periapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAPeriapsisStoppingCondition",
             "Epoch": "#/components/schemas/AgVAStoppingConditionElementAgVAEpochStoppingCondition",
-            "Duration": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition"
+            "Duration": "#/components/schemas/AgVAStoppingConditionElementAgVADurationStoppingCondition",
+            "Apoapsis": "#/components/schemas/AgVAStoppingConditionElementAgVAApoapsisStoppingCondition"
           }
         }
       },
@@ -7211,10 +6946,9 @@
             "default": "Earth"
           },
           "Tolerance": {
-            "type": "number",
             "description": "误差(缺省为1e-6°)(针对近点角)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "RepeatCount": {
             "type": "integer",
@@ -7223,7 +6957,6 @@
             "default": 1
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -7256,15 +6989,13 @@
             "type": "string"
           },
           "Trip": {
-            "type": "number",
             "description": "积分时长(s)(可正负)",
             "format": "double"
           },
           "Tolerance": {
-            "type": "number",
             "description": "允许误差(s)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "Name": {
             "type": "string",
@@ -7339,10 +7070,9 @@
             "default": "Earth"
           },
           "Tolerance": {
-            "type": "number",
             "description": "误差(缺省为1e-6°)(针对近点角)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "RepeatCount": {
             "type": "integer",
@@ -7351,7 +7081,6 @@
             "default": 1
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -7393,13 +7122,11 @@
             "default": "AnyThreshold"
           },
           "Tolerance": {
-            "type": "number",
             "description": "误差(缺省为1e-6)",
             "format": "double",
-            "default": 0.000001
+            "default": 0.00000099999999999999995
           },
           "Trip": {
-            "type": "number",
             "description": "积分终止数值(单位: m,deg...)",
             "format": "double"
           },
@@ -7558,10 +7285,6 @@
           },
           "AzElMaskData": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "所有方位角对应的高度角数据(单位:rad)(方位角1，高度角1，方位角2，高度角2...)"
           }
         },
@@ -7584,25 +7307,21 @@
             "description": "分析结束时间(UTC)(yyyy-MM-ddTHH:mm:ss.fffZ)"
           },
           "TolMaxDistance": {
-            "type": "number",
             "description": "两卫星接近的最大距离(km)(缺省为5km)",
             "format": "double",
             "default": 5
           },
           "TolCrossDt": {
-            "type": "number",
             "description": "交点时刻筛选时间误差(s)(缺省为10s)",
             "format": "double",
             "default": 10
           },
           "TolTheta": {
-            "type": "number",
             "description": "交点筛选时，轨道面夹角阈值(deg)(缺省为1°)(低于此值，不进行交点筛选，直接Access，但会增加计算时长)",
             "format": "double",
             "default": 1
           },
           "TolDh": {
-            "type": "number",
             "description": "近地点远地点高度筛选误差(km)(缺省为30km)",
             "format": "double",
             "default": 30
@@ -7633,25 +7352,21 @@
             "description": "分析结束时间(UTC)(\"yyyy-MM-ddTHH:mm:ss.fffZ\")"
           },
           "TolMaxDistance": {
-            "type": "number",
             "description": "两卫星接近的最大距离(km)(缺省为5km)",
             "format": "double",
             "default": 5
           },
           "TolCrossDt": {
-            "type": "number",
             "description": "交点时刻筛选时间误差(s)(缺省为10s)",
             "format": "double",
             "default": 10
           },
           "TolTheta": {
-            "type": "number",
             "description": "交点筛选时，轨道面夹角阈值(deg)(缺省为1°)(低于此值，不进行交点筛选，直接Access，但会增加计算时长)",
             "format": "double",
             "default": 1
           },
           "TolDh": {
-            "type": "number",
             "description": "近地点远地点高度筛选误差(km)(缺省为30km)",
             "format": "double",
             "default": 30
@@ -7782,22 +7497,18 @@
             "description": "最近距离时刻(UTCG)"
           },
           "CA_MinRange": {
-            "type": "number",
             "description": "最近距离(km)",
             "format": "double"
           },
           "CA_Theta": {
-            "type": "number",
             "description": "轨道面夹角(deg)",
             "format": "double"
           },
           "CA_DeltaV": {
-            "type": "number",
             "description": "相对速度(km/s)",
             "format": "double"
           },
           "CA_Probability": {
-            "type": "number",
             "description": "碰撞概率(1为完全碰撞)",
             "format": "double"
           }
@@ -7828,22 +7539,18 @@
             "description": "最近距离时刻(UTCG)"
           },
           "CA_MinRange": {
-            "type": "number",
             "description": "最近距离(km)",
             "format": "double"
           },
           "CA_Theta": {
-            "type": "number",
             "description": "轨道面夹角(deg)",
             "format": "double"
           },
           "CA_DeltaV": {
-            "type": "number",
             "description": "相对速度(km/s)",
             "format": "double"
           },
           "CA_Probability": {
-            "type": "number",
             "description": "碰撞概率(1为完全碰撞)",
             "format": "double"
           }
@@ -7857,7 +7564,13 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarEpoch"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarRelative"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarSphericalElement"
           },
           {
             "$ref": "#/components/schemas/CalcScalarCalcScalarModifiedKeplerianElement"
@@ -7866,41 +7579,35 @@
             "$ref": "#/components/schemas/CalcScalarCalcScalarPointElement"
           },
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarSphericalElement"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarDuration"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarBPlane"
-          },
-          {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarRelative"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarCartographic"
           },
           {
             "$ref": "#/components/schemas/CalcScalarCalcScalarKeplerianElement"
           },
           {
-            "$ref": "#/components/schemas/CalcScalarCalcScalarCartographic"
+            "$ref": "#/components/schemas/CalcScalarCalcScalarBPlane"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarEpoch"
+          },
+          {
+            "$ref": "#/components/schemas/CalcScalarCalcScalarDuration"
           }
         ],
         "description": "标量计算对象(可用于轨道积分终止条件、段Results参数设置)",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "Epoch": "#/components/schemas/CalcScalarCalcScalarEpoch",
+            "Relative": "#/components/schemas/CalcScalarCalcScalarRelative",
+            "DeltaSpherical": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement",
+            "SphericalElement": "#/components/schemas/CalcScalarCalcScalarSphericalElement",
             "ModifiedKeplerianElement": "#/components/schemas/CalcScalarCalcScalarModifiedKeplerianElement",
             "PointElement": "#/components/schemas/CalcScalarCalcScalarPointElement",
-            "SphericalElement": "#/components/schemas/CalcScalarCalcScalarSphericalElement",
-            "DeltaSpherical": "#/components/schemas/CalcScalarCalcScalarDeltaSphericalElement",
-            "Duration": "#/components/schemas/CalcScalarCalcScalarDuration",
-            "BPlane": "#/components/schemas/CalcScalarCalcScalarBPlane",
-            "Relative": "#/components/schemas/CalcScalarCalcScalarRelative",
+            "Cartographic": "#/components/schemas/CalcScalarCalcScalarCartographic",
             "KeplerianElement": "#/components/schemas/CalcScalarCalcScalarKeplerianElement",
-            "Cartographic": "#/components/schemas/CalcScalarCalcScalarCartographic"
+            "BPlane": "#/components/schemas/CalcScalarCalcScalarBPlane",
+            "Epoch": "#/components/schemas/CalcScalarCalcScalarEpoch",
+            "Duration": "#/components/schemas/CalcScalarCalcScalarDuration"
           }
         }
       },
@@ -7923,7 +7630,6 @@
             "description": "参数名称,具体为：<br>BDotR: B平面矢量R分量(单位:m),Dimension:Distance <br>BDotT: B平面矢量T分量(单位:m),Dimension:Distance <br>"
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -8129,7 +7835,6 @@
             "description": "参数名称,具体为：<br>AltitudeOfPeriapsis: 近心点高度(单位:m),Dimension:Distance <br>AltitudeOfApoapsis: 远心点高度(单位:m),Dimension:Distance <br>RadiusOfPeriapsis: 近心点距离(单位:m),Dimension:Distance <br>RadiusOfApoapsis: 远心点距离(单位:m),Dimension:Distance <br>Inclination: 倾角(单位:deg),Dimension:Angle <br>ArgumentOfPeriapsis: 近地点角(单位:deg),Dimension:Angle <br>ArgumentOfLatitude: 纬度幅角(单位:deg),Dimension:Angle <br>RAAN: 升交点赤经(单位:deg),Dimension:Angle <br>TrueAnomaly: 真近点角(单位:deg),Dimension:Angle <br>MeanAnomaly: 平近点角(单位:deg),Dimension:Angle <br>Eccentricity: 偏心率,Dimension:None <br>Period: 轨道周期(单位:s),Dimension:Time <br>SemimajorAxis: 半长轴(单位:m),Dimension:Distance <br>"
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -8183,7 +7888,6 @@
             "description": "参数名称,具体为：<br>AltitudeOfPeriapsis: 近心点高度(单位:m),Dimension:Distance <br>AltitudeOfApoapsis: 远心点高度(单位:m),Dimension:Distance <br>RadiusOfPeriapsis: 近心点半径(单位:m),Dimension:Distance <br>RadiusOfApoapsis: 远心点半径(单位:m),Dimension:Distance <br>Inclination: 倾角(单位:deg),Dimension:Angle <br>ArgumentOfPeriapsis: 近地点角(单位:deg),Dimension:Angle <br>ArgumentOfLatitude: 纬度幅角(单位:deg),Dimension:Angle <br>RAAN: 升交点赤经(单位:deg),Dimension:Angle <br>TrueAnomaly: 真近点角(单位:deg),Dimension:Angle <br>MeanAnomaly: 平近点角(单位:deg),Dimension:Angle <br>Eccentricity: 偏心率,Dimension:None <br>Period: 轨道周期(单位:s),Dimension:Time <br>SemimajorAxis: 半长轴(单位:m),Dimension:Distance <br>"
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -8492,7 +8196,6 @@
             "description": "参数名称,具体为：<br>AltitudeOfPeriapsis: 近心点高度(单位:m),Dimension:Distance <br>AltitudeOfApoapsis: 远心点高度(单位:m),Dimension:Distance <br>RadiusOfPeriapsis: 近心点半径(单位:m),Dimension:Distance <br>RadiusOfApoapsis: 远心点半径(单位:m),Dimension:Distance <br>Inclination: 倾角(单位:deg),Dimension:Angle <br>ArgumentOfPeriapsis: 近地点角(单位:deg),Dimension:Angle <br>ArgumentOfLatitude: 纬度幅角(单位:deg),Dimension:Angle <br>RAAN: 升交点赤经(单位:deg),Dimension:Angle <br>TrueAnomaly: 真近点角(单位:deg),Dimension:Angle <br>MeanAnomaly: 平近点角(单位:deg),Dimension:Angle <br>Eccentricity: 偏心率,Dimension:None <br>Period: 轨道周期(单位:s),Dimension:Time <br>SemimajorAxis: 半长轴(单位:m),Dimension:Distance <br>"
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体对应的引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -8655,10 +8358,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "旋转结果[qx,qy,qz,qw]或[qx,qy,qz,qw,Wx,Wy,Wz](order为1时)"
           }
         }
@@ -8833,12 +8532,10 @@
             "format": "int32"
           },
           "Latitude": {
-            "type": "number",
             "description": "城市纬度(rad)",
             "format": "double"
           },
           "Longitude": {
-            "type": "number",
             "description": "城市经度(rad)",
             "format": "double"
           },
@@ -8856,25 +8553,21 @@
         "type": "object",
         "properties": {
           "innerHalfAngle": {
-            "type": "number",
             "description": "圆锥内半角(dge),默认为0",
             "format": "double",
             "default": 0
           },
           "outerHalfAngle": {
-            "type": "number",
             "description": "圆锥外半角(deg),默认为45",
             "format": "double",
             "default": 45
           },
           "minimumClockAngle": {
-            "type": "number",
             "description": "切面起始角(deg),默认为0",
             "format": "double",
             "default": 0
           },
           "maximumClockAngle": {
-            "type": "number",
             "description": "切面终止角(deg),默认为360",
             "format": "double",
             "default": 360
@@ -8900,16 +8593,11 @@
             "description": "说明"
           },
           "MaxRange": {
-            "type": "number",
             "description": "遮罩最大距离(km),仅做说明用",
             "format": "double"
           },
           "AzElMaskData": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "所有方位角对应的高度角数据(单位:rad)(方位角1，高度角1，方位角2，高度角2...)"
           }
         },
@@ -8926,13 +8614,11 @@
             "description": "说明"
           },
           "MinimumValue": {
-            "type": "number",
             "description": "仰角最小值(deg),缺省为0",
             "format": "double",
             "default": 0
           },
           "MaximumValue": {
-            "type": "number",
             "description": "仰角最大值(deg)(仅当IsMaximumEnabled为true时，此值才有效),缺省为90",
             "format": "double",
             "default": 90
@@ -8956,13 +8642,11 @@
             "description": "说明"
           },
           "MinimumValue": {
-            "type": "number",
             "description": "最小距离(km)",
             "format": "double",
             "default": 0
           },
           "MaximumValue": {
-            "type": "number",
             "description": "最大距离(km)(仅当IsMaximumEnabled为true时，此值才有效),缺省为1e20",
             "format": "double",
             "default": 100000000000000000000
@@ -9015,29 +8699,24 @@
             "default": "Earth"
           },
           "MinLatitude": {
-            "type": "number",
             "description": "最小纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MaxLatitude": {
-            "type": "number",
             "description": "最大纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MinLongitude": {
-            "type": "number",
             "description": "最小经度(deg)(-180°,180°),缺省:-180",
             "format": "double",
             "default": -180
           },
           "MaxLongitude": {
-            "type": "number",
             "description": "最大经度(deg)(-180°,180°)，缺省:180",
             "format": "double",
             "default": 180
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省:6",
             "format": "double",
             "default": 6
@@ -9048,7 +8727,6 @@
             "default": true
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -9071,22 +8749,18 @@
             "description": "资源名称"
           },
           "MinimumCoveragePercent": {
-            "type": "number",
             "description": "最小覆盖百分比(0-100)",
             "format": "double"
           },
           "MaximumCoveragePercent": {
-            "type": "number",
             "description": "最大覆盖百分比(0-100)",
             "format": "double"
           },
           "AverageCoveragePercent": {
-            "type": "number",
             "description": "平均覆盖百分比(0-100)",
             "format": "double"
           },
           "AccumulatedCoveragePercent": {
-            "type": "number",
             "description": "累计覆盖百分比(0-100)",
             "format": "double"
           }
@@ -9102,13 +8776,11 @@
             "default": "Earth"
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省为6°",
             "format": "double",
             "default": 6
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -9153,29 +8825,24 @@
             "default": "Earth"
           },
           "MinLatitude": {
-            "type": "number",
             "description": "最小纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MaxLatitude": {
-            "type": "number",
             "description": "最大纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MinLongitude": {
-            "type": "number",
             "description": "最小经度(deg)(-180°,180°),缺省:0",
             "format": "double",
             "default": 0
           },
           "MaxLongitude": {
-            "type": "number",
             "description": "最大经度(deg)(-180°,180°)，缺省:180",
             "format": "double",
             "default": 180
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省:6",
             "format": "double",
             "default": 6
@@ -9186,7 +8853,6 @@
             "default": true
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -9207,23 +8873,19 @@
             "default": "Earth"
           },
           "MinLatitude": {
-            "type": "number",
             "description": "最小纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MaxLatitude": {
-            "type": "number",
             "description": "最大纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省为6°",
             "format": "double",
             "default": 6
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -9248,7 +8910,6 @@
             "description": "网格点类型(Cartographic)"
           },
           "Height": {
-            "type": "number",
             "description": "网格点为大地坐标时,所有点的大地高度(m)",
             "format": "double"
           },
@@ -9360,7 +9021,6 @@
             "default": false
           },
           "Step": {
-            "type": "number",
             "description": "计算步长(s)(默认为60s)  <br>仅仅覆盖计算时不需要此参数  <br>用于部分报告计算使用:ReportCoverageByAsset,ReportPercentCoverage",
             "format": "double",
             "default": 60
@@ -9424,7 +9084,6 @@
             "description": "Report 所有覆盖间隙弧段时长分布数据(Gap Duration)  <br>统计所有网格点的覆盖空隙弧段的分布  <br>覆盖间隙包含分析时段的首末时刻  <br>此处为某网格点对所有资源的覆盖间隙(需考虑最小覆盖资源数)  <br>从小到大排序弧段集合，统计不同时长下的弧段数百分比"
           },
           "PercentCovered": {
-            "type": "number",
             "description": "Report: 所有网格点累计被覆盖的百分比(1-100)",
             "format": "double"
           },
@@ -9494,70 +9153,70 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon"
+            "$ref": "#/components/schemas/CrdnAxesCzmlOrientation"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHCBF"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNC"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars"
-          },
-          {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth"
           },
           {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLH"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCzmlOrientation"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMoon"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth"
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF"
           },
           {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLH"
+          },
+          {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLH"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCSun"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMars"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixed"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesComposite"
-          },
-          {
-            "$ref": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch"
           },
           {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLH"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesComposite"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesFixed"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMars"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCSun"
+          },
+          {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHCBF"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMoon"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars"
+          },
+          {
+            "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNC"
           },
           {
             "$ref": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon"
@@ -9566,28 +9225,28 @@
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "VVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun",
-            "VVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars",
-            "VVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon",
-            "VVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVVLHCBF",
-            "VNC": "#/components/schemas/CrdnAxesCrdnAxesVNC",
-            "LVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars",
-            "VVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth",
-            "VVLH": "#/components/schemas/CrdnAxesCrdnAxesVVLH",
             "CzmlOrientation": "#/components/schemas/CrdnAxesCzmlOrientation",
-            "LVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun",
-            "LVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMoon",
-            "LVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth",
+            "VVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVVLHCBF",
+            "VVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVVLHEarth",
+            "VVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMoon",
             "VNC(CBF)": "#/components/schemas/CrdnAxesCrdnAxesVNCCBF",
+            "VVLH": "#/components/schemas/CrdnAxesCrdnAxesVVLH",
             "VNC(Earth)": "#/components/schemas/CrdnAxesCrdnAxesVNCEarth",
-            "LVLH": "#/components/schemas/CrdnAxesCrdnAxesLVLH",
-            "VNC(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVNCSun",
-            "VNC(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVNCMars",
-            "Fixed": "#/components/schemas/CrdnAxesCrdnAxesFixed",
-            "Composite": "#/components/schemas/CrdnAxesCrdnAxesComposite",
-            "AlignedAndConstrained": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained",
             "FixedAtEpoch": "#/components/schemas/CrdnAxesCrdnAxesFixedAtEpoch",
+            "VVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVVLHMars",
+            "LVLH": "#/components/schemas/CrdnAxesCrdnAxesLVLH",
+            "AlignedAndConstrained": "#/components/schemas/CrdnAxesCrdnAxesAlignedAndConstrained",
+            "Composite": "#/components/schemas/CrdnAxesCrdnAxesComposite",
+            "Fixed": "#/components/schemas/CrdnAxesCrdnAxesFixed",
+            "VNC(Mars)": "#/components/schemas/CrdnAxesCrdnAxesVNCMars",
+            "VVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVVLHSun",
+            "VNC(Sun)": "#/components/schemas/CrdnAxesCrdnAxesVNCSun",
             "LVLH(CBF)": "#/components/schemas/CrdnAxesCrdnAxesLVLHCBF",
+            "LVLH(Earth)": "#/components/schemas/CrdnAxesCrdnAxesLVLHEarth",
+            "LVLH(Moon)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMoon",
+            "LVLH(Sun)": "#/components/schemas/CrdnAxesCrdnAxesLVLHSun",
+            "LVLH(Mars)": "#/components/schemas/CrdnAxesCrdnAxesLVLHMars",
+            "VNC": "#/components/schemas/CrdnAxesCrdnAxesVNC",
             "VNC(Moon)": "#/components/schemas/CrdnAxesCrdnAxesVNCMoon"
           }
         }
@@ -10526,10 +10185,6 @@
           },
           "unitQuaternion": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "姿态四元素(x,y,z,w),Fixed坐标系  <br>通常为多点[Time, X, Y, Z, W, Time, X, Y, Z, W, ...],Time为epoch历元秒"
           },
           "Name": {
@@ -10718,25 +10373,16 @@
         "properties": {
           "Position": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "网格点的坐标  <br>Type为Cartographic时,(大地纬度,经度(rad))"
           },
           "GridCellBoundaryVertices": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              }
+              "type": "array"
             },
             "description": "网格点的包围边界顶点坐标(按照顺序组成边界)  <br>Type为Cartographic时,(大地纬度(rad)、经度(rad))"
           },
           "Weight": {
-            "type": "number",
             "description": "权重数值(默认为面积m^2)",
             "format": "double"
           }
@@ -10763,7 +10409,6 @@
             "type": "string"
           },
           "Duration": {
-            "type": "number",
             "format": "double"
           }
         }
@@ -10798,10 +10443,6 @@
           },
           "unitQuaternion": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "姿态四元素(x,y,z,w),Fixed坐标系  <br>通常为多点[Time, X, Y, Z, W, Time, X, Y, Z, W, ...],Time为epoch历元秒"
           },
           "Name": {
@@ -10850,7 +10491,6 @@
             "$ref": "#/components/schemas/EntityPositionCzml"
           },
           "Period": {
-            "type": "number",
             "description": "轨道周期(s)(主要用于近地轨道)",
             "format": "double",
             "default": 6000
@@ -10878,25 +10518,13 @@
             "type": "string"
           },
           "cartesian": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            }
+            "type": "array"
           },
           "unitQuaternion": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            }
+            "type": "array"
           },
           "cartesianTranslation": {
-            "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            }
+            "type": "array"
           }
         }
       },
@@ -10927,17 +10555,12 @@
             "type": "string"
           },
           "A2M": {
-            "type": "number",
             "format": "double"
           },
           "AzElVel": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              }
+              "type": "array"
             }
           },
           "ComputeLifeOfTime": {
@@ -10958,11 +10581,9 @@
             "type": "string"
           },
           "MassTotal": {
-            "type": "number",
             "format": "double"
           },
           "MinLc": {
-            "type": "number",
             "format": "double"
           }
         }
@@ -10988,44 +10609,24 @@
           "AzElVel": {
             "type": "array",
             "items": {
-              "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              }
+              "type": "array"
             },
             "description": "所有碎片的解体参数: Az(deg),El(deg),Vel(m/s),A2M(m^2/kg)"
           },
           "LifeYears": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "所有碎片的轨道寿命(year),若没计算或者计算失败皆为25年"
           },
           "AltitudeOfPerigee": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "所有碎片的近地点高度(km)"
           },
           "AltitudeOfApogee": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "所有碎片的远地点高度(km)"
           },
           "Periods": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "所有碎片的轨道周期(min)"
           }
         }
@@ -11054,37 +10655,31 @@
             "default": "AF"
           },
           "DeltaV": {
-            "type": "number",
             "description": "相对速度大小(m/s)",
             "format": "double",
             "default": 400
           },
           "A2M": {
-            "type": "number",
             "description": "碎片的面值比参数(m^2/kg)",
             "format": "double",
             "default": 0.002
           },
           "MinAzimuth": {
-            "type": "number",
             "description": "方位角最小值(deg)(TEME系下的VVLH)",
             "format": "double",
             "default": 40
           },
           "MaxAzimuth": {
-            "type": "number",
             "description": "方位角最大值(deg)(TEME系下的VVLH)",
             "format": "double",
             "default": 180
           },
           "MinElevation": {
-            "type": "number",
             "description": "高度角最小值(deg)(TEME系下的VVLH)",
             "format": "double",
             "default": 0
           },
           "MaxElevation": {
-            "type": "number",
             "description": "高度角最大值(deg)(TEME系下的VVLH)",
             "format": "double",
             "default": 2
@@ -11105,12 +10700,10 @@
         "type": "object",
         "properties": {
           "Azimuth": {
-            "type": "number",
             "description": "方位角(rad)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "最大高度角(rad)",
             "format": "double"
           },
@@ -11135,12 +10728,10 @@
         "type": "object",
         "properties": {
           "Distance": {
-            "type": "number",
             "description": "距中心点的距离(m)(高度角连线上)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "当前距离的地形遮挡的最大高度角(rad)",
             "format": "double"
           }
@@ -11224,7 +10815,6 @@
             "default": "2022-06-27T04:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省为5s",
             "format": "double",
             "default": 5
@@ -11235,25 +10825,21 @@
             "default": "Earth"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13",
             "format": "double",
             "default": 398600441500000
           },
           "LaunchLatitude": {
-            "type": "number",
             "description": "发射点大地纬度(deg)",
             "format": "double",
             "default": 0
           },
           "LaunchLongitude": {
-            "type": "number",
             "description": "发射点地理经度(deg)",
             "format": "double",
             "default": 0
           },
           "LaunchAltitude": {
-            "type": "number",
             "description": "发射点高度(m)",
             "format": "double",
             "default": 0
@@ -11264,25 +10850,21 @@
             "default": "DeltaV"
           },
           "BallisticTypeValue": {
-            "type": "number",
             "description": "弹道类型对应的数值  <br>DeltaV:           m/s  <br>DeltaV_MinEcc :   m/s  <br>ApogeeAlt:        m  <br>TimeOfFlight:     s",
             "format": "double",
-            "default": 6901.943
+            "default": 6901.9430000000002
           },
           "ImpactLatitude": {
-            "type": "number",
             "description": "关机点大地纬度(deg)",
             "format": "double",
             "default": 20
           },
           "ImpactLongitude": {
-            "type": "number",
             "description": "关机点地理经度(deg)",
             "format": "double",
             "default": 20
           },
           "ImpactAltitude": {
-            "type": "number",
             "description": "关机点高度(m)",
             "format": "double",
             "default": 0
@@ -11353,10 +10935,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "位置数组[X, Y, Z](m),相对referenceFrame  <br>通常为多个点[Time, X, Y, Z, Time, X, Y, Z, ...],Time为历元秒"
           },
           "cartesianVelocity": {
@@ -11364,10 +10942,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "位置速度数组[X, Y, Z, dX, dY, dZ](m,m/s),相对referenceFrame  <br>通常为多个点[Time, X, Y, Z, dX, dY, dZ, Time, X, Y, Z, dX, dY, dZ, ...],Time为历元秒"
           }
         },
@@ -11435,10 +11009,6 @@
           },
           "OrbitalElements": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "轨道根数  <br>Classical:[半长径(m)，偏心率，轨道倾角(deg)，近点角距(deg)，升交点赤经(deg)，真近点角(deg)]  <br>Cartesian:[x(m),y(m),z(m),Vx(m/s),Vy(m/s),Vz(m/s)]",
             "default": [
               6678137,
@@ -11450,31 +11020,26 @@
             ]
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13<br>Sun: 1.3271244004193938E20",
             "format": "double",
             "default": 398600441500000
           },
           "CoefficientOfDrag": {
-            "type": "number",
             "description": "大气阻力系数，缺省为2.2",
             "format": "double",
-            "default": 2.2
+            "default": 2.2000000000000002
           },
           "AreaMassRatioDrag": {
-            "type": "number",
             "description": "气动面积与质量比(m^2/kg)，缺省为0.02",
             "format": "double",
             "default": 0.02
           },
           "CoefficientOfSRP": {
-            "type": "number",
             "description": "光压系数，缺省为1.0",
             "format": "double",
             "default": 1
           },
           "AreaMassRatioSRP": {
-            "type": "number",
             "description": "光压面积与质量比(m^2/kg)，缺省为0.02",
             "format": "double",
             "default": 0.02
@@ -11504,7 +11069,6 @@
             "default": "2022-04-18T16:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省60s",
             "format": "double",
             "default": 60
@@ -11515,22 +11079,19 @@
             "default": "Earth"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13",
             "format": "double",
             "default": 398600441500000
           },
           "J2NormalizedValue": {
-            "type": "number",
             "description": "J2项归一化数值(引力场文件中C20的负值)。缺省: 地球EGM2008:0.000484165143790815, 其它:火星MRO110C:0.8750222171673000E-03",
             "format": "double",
-            "default": 0.000484165143790815
+            "default": 0.00048416514379081503
           },
           "RefDistance": {
-            "type": "number",
             "description": "参考椭球体半长轴(m)。缺省时: 地球EGM2008:6378136.3",
             "format": "double",
-            "default": 6378136.3
+            "default": 6378136.2999999998
           },
           "OrbitEpoch": {
             "type": "string",
@@ -11549,10 +11110,6 @@
           },
           "OrbitalElements": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "轨道根数,具体根数由CoordType决定",
             "default": [
               6678140,
@@ -11583,7 +11140,6 @@
             "default": "2021-05-02T12:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省60s",
             "format": "double",
             "default": 60
@@ -11635,7 +11191,6 @@
             "default": "2022-05-23T04:10:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省为5s",
             "format": "double",
             "default": 5
@@ -11646,43 +11201,36 @@
             "default": "Earth"
           },
           "LaunchLatitude": {
-            "type": "number",
             "description": "发射点大地纬度(deg)",
             "format": "double",
-            "default": 28.60835
+            "default": 28.608350000000002
           },
           "LaunchLongitude": {
-            "type": "number",
             "description": "发射点地理经度(deg)",
             "format": "double",
-            "default": -80.60418
+            "default": -80.604179999999999
           },
           "LaunchAltitude": {
-            "type": "number",
             "description": "发射点高度(m)",
             "format": "double",
             "default": 0
           },
           "BurnoutVelocity": {
-            "type": "number",
             "description": "关机点速度(Fixed系)(m/s)",
             "format": "double",
-            "default": 7725.84
+            "default": 7725.8400000000001
           },
           "BurnoutLatitude": {
-            "type": "number",
             "description": "关机点大地纬度(deg)",
             "format": "double",
-            "default": 25.051
+            "default": 25.050999999999998
           },
           "BurnoutLongitude": {
-            "type": "number",
             "description": "关机点地理经度(deg)",
             "format": "double",
-            "default": -51.326
+            "default": -51.326000000000001
           },
           "BurnoutAltitude": {
-            "type": "number",
             "description": "关机点高度(m)",
             "format": "double",
             "default": 300000
@@ -11703,10 +11251,6 @@
           },
           "cartographicDegrees": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "椭球体的大地坐标(Longitude(deg), Latitude(deg), Height(m))  <br>地球:WGS84椭球体  <br>月球:1737.4km的圆球体",
             "default": [
               100,
@@ -11720,7 +11264,6 @@
             "default": false
           },
           "HeightAboveGround": {
-            "type": "number",
             "description": "相对地面高度(m)",
             "format": "double",
             "default": 0
@@ -11746,7 +11289,6 @@
             "default": "2022-04-18T16:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省60s",
             "format": "double",
             "default": 60
@@ -11757,7 +11299,6 @@
             "default": "Earth"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13<br>Sun: 1.3271244004193938E20",
             "format": "double",
             "default": 398600441500000
@@ -11779,10 +11320,6 @@
           },
           "OrbitalElements": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "轨道器轨道根数,具体根数由CoordType决定 <br>Classical时：(半长径(m)，偏心率，轨道倾角(deg)，近点角距(deg)，升交点经度(deg)，真近点角(deg)) <br>Cartesian时: X(m),Y(m),Z(m),Vx(m/s),Vy(m/s),Vz(m/s)",
             "default": [
               6678140,
@@ -11814,7 +11351,7 @@
           },
           "ObserverFrame": {
             "type": "string",
-            "description": "观测者坐标系(缺省为\"MeanEclpJ2000\"),可选: <br>FIXED: 中心天体固定系, <br>INERTIAL: 中心天体惯性系, <br>MeanEclpJ2000: J2000平黄道坐标系, <br>J2000: J2000坐标系",
+            "description": "观测者坐标系(缺省为\"MeanEclpJ2000\"),可选: <br>FIXED: 中心天体固定系, <br>INERTIAL: 中心天体惯性系, <br>MeanEclpJ2000: J2000平黄道坐标系, <br>EclpJ2000ICRF: J2000平黄道ICRF坐标系, <br>J2000: J2000坐标系",
             "default": "MeanEclpJ2000"
           },
           "Start": {
@@ -11826,7 +11363,6 @@
             "description": "分析结束时刻(UTCG)(\"yyyy-MM-ddTHH:mm:ssZ\")，缺省可不输入,表示当年的12月31日"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省86400s",
             "format": "double",
             "default": 86400
@@ -11917,7 +11453,6 @@
             "default": false
           },
           "Step": {
-            "type": "number",
             "description": "计算步长(s)(默认为60s)  <br>仅仅覆盖计算时不需要此参数  <br>用于部分报告计算使用:ReportCoverageByAsset,ReportPercentCoverage",
             "format": "double",
             "default": 60
@@ -12009,7 +11544,6 @@
             "default": false
           },
           "Step": {
-            "type": "number",
             "description": "计算步长(s)(默认为60s)  <br>仅仅覆盖计算时不需要此参数  <br>用于部分报告计算使用:ReportCoverageByAsset,ReportPercentCoverage",
             "format": "double",
             "default": 60
@@ -12053,17 +11587,14 @@
             "description": "地面站所属网络名称"
           },
           "Latitude": {
-            "type": "number",
             "description": "地面站纬度(rad)",
             "format": "double"
           },
           "Longitude": {
-            "type": "number",
             "description": "地面站经度(rad)",
             "format": "double"
           },
           "Altitude": {
-            "type": "number",
             "description": "地面站高度(m)",
             "format": "double"
           },
@@ -12092,7 +11623,6 @@
             "$ref": "#/components/schemas/KeplerElements"
           },
           "tof": {
-            "type": "number",
             "description": "飞行时长(s)",
             "format": "double"
           }
@@ -12118,13 +11648,11 @@
             "default": "2023-08-11T04:00:00Z"
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(deg)",
             "format": "double",
             "default": 10
           },
           "SubSatellitePoint": {
-            "type": "number",
             "description": "定点地理经度(deg)",
             "format": "double",
             "default": 0
@@ -12177,17 +11705,14 @@
         "type": "object",
         "properties": {
           "Duration": {
-            "type": "number",
             "description": "覆盖空隙时长(秒)",
             "format": "double"
           },
           "PercentUnder": {
-            "type": "number",
             "description": "小于此覆盖空隙时长的弧段数百分比(0-100)",
             "format": "double"
           },
           "PercentOver": {
-            "type": "number",
             "description": "大于此覆盖空隙时长的弧段数百分比(0-100)",
             "format": "double"
           }
@@ -12204,11 +11729,9 @@
             "type": "string"
           },
           "Duration": {
-            "type": "number",
             "format": "double"
           },
           "Percent": {
-            "type": "number",
             "format": "double"
           }
         }
@@ -12272,22 +11795,18 @@
         "type": "object",
         "properties": {
           "EpochSeconds": {
-            "type": "number",
             "description": "当前时刻(历元累计秒)",
             "format": "double"
           },
           "Minimum": {
-            "type": "number",
             "description": "最小值",
             "format": "double"
           },
           "Maximum": {
-            "type": "number",
             "description": "最大值",
             "format": "double"
           },
           "Average": {
-            "type": "number",
             "description": "平均值",
             "format": "double"
           }
@@ -12315,7 +11834,6 @@
             "default": false
           },
           "Period": {
-            "type": "number",
             "description": "无量纲周期",
             "format": "double"
           },
@@ -12324,10 +11842,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "周期轨道的初值(位于xz平面上)(已微分迭代后)"
           },
           "InitialX0": {
@@ -12335,10 +11849,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "周期轨道计算时的初始值(位于xz平面上）"
           },
           "ListT": {
@@ -12346,10 +11856,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "周期轨道一个周期的数值积分的时间数组(无量纲)"
           },
           "ListX": {
@@ -12358,11 +11864,7 @@
               "array"
             ],
             "items": {
-              "type": "array",
-              "items": {
-                "type": "number",
-                "format": "double"
-              }
+              "type": "array"
             },
             "description": "周期轨道一个周期的数值积分的位置、速度数组(无量纲)"
           }
@@ -12421,19 +11923,16 @@
             "default": "Constant Values"
           },
           "F10p7": {
-            "type": "number",
             "description": "太阳辐射通量F10.7（缺省150.0）",
             "format": "double",
             "default": 150
           },
           "F10p7Avg": {
-            "type": "number",
             "description": "太阳辐射通量平均值F10.7（缺省150.0）",
             "format": "double",
             "default": 150
           },
           "Kp": {
-            "type": "number",
             "description": "地磁指数Kp（缺省3.0）planetary index",
             "format": "double",
             "default": 3
@@ -12454,13 +11953,13 @@
             "$ref": "#/components/schemas/IContraintConstraintMoonExclusionAngle"
           },
           {
-            "$ref": "#/components/schemas/IContraintConstraintSunExclusionAngle"
-          },
-          {
             "$ref": "#/components/schemas/IContraintConstraintAzElMask"
           },
           {
             "$ref": "#/components/schemas/IContraintConstraintRange"
+          },
+          {
+            "$ref": "#/components/schemas/IContraintConstraintSunExclusionAngle"
           }
         ],
         "description": "对象约束接口  <br>具体实现类:  <br>-ConstraintElevationAngle(\"$type\":\"ElevationAngle\")  <br>-ConstraintRange(\"$type\":\"Range\")  <br>-ConstraintAzElMask(\"$type\":\"AzElMask\")  <br>-ConstraintSunExclusionAngle(\"$type\":\"SunExclusionAngle\")  <br>-ConstraintMoonExclusionAngle(\"$type\":\"MoonExclusionAngle\")",
@@ -12469,9 +11968,9 @@
           "mapping": {
             "ElevationAngle": "#/components/schemas/IContraintConstraintElevationAngle",
             "MoonExclusionAngle": "#/components/schemas/IContraintConstraintMoonExclusionAngle",
-            "SunExclusionAngle": "#/components/schemas/IContraintConstraintSunExclusionAngle",
             "AzElMask": "#/components/schemas/IContraintConstraintAzElMask",
-            "Range": "#/components/schemas/IContraintConstraintRange"
+            "Range": "#/components/schemas/IContraintConstraintRange",
+            "SunExclusionAngle": "#/components/schemas/IContraintConstraintSunExclusionAngle"
           }
         }
       },
@@ -12494,16 +11993,11 @@
             "description": "说明"
           },
           "MaxRange": {
-            "type": "number",
             "description": "遮罩最大距离(km),仅做说明用",
             "format": "double"
           },
           "AzElMaskData": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "所有方位角对应的高度角数据(单位:rad)(方位角1，高度角1，方位角2，高度角2...)"
           }
         },
@@ -12525,13 +12019,11 @@
             "description": "说明"
           },
           "MinimumValue": {
-            "type": "number",
             "description": "仰角最小值(deg),缺省为0",
             "format": "double",
             "default": 0
           },
           "MaximumValue": {
-            "type": "number",
             "description": "仰角最大值(deg)(仅当IsMaximumEnabled为true时，此值才有效),缺省为90",
             "format": "double",
             "default": 90
@@ -12560,7 +12052,6 @@
             "description": "说明"
           },
           "MinimumValue": {
-            "type": "number",
             "description": "月球规避角最小值(deg),缺省为0",
             "format": "double",
             "default": 0
@@ -12584,13 +12075,11 @@
             "description": "说明"
           },
           "MinimumValue": {
-            "type": "number",
             "description": "最小距离(km)",
             "format": "double",
             "default": 0
           },
           "MaximumValue": {
-            "type": "number",
             "description": "最大距离(km)(仅当IsMaximumEnabled为true时，此值才有效),缺省为1e20",
             "format": "double",
             "default": 100000000000000000000
@@ -12619,7 +12108,6 @@
             "description": "说明"
           },
           "MinimumValue": {
-            "type": "number",
             "description": "太阳规避角最小值(deg),缺省为0",
             "format": "double",
             "default": 0
@@ -12677,29 +12165,24 @@
             "default": "Earth"
           },
           "MinLatitude": {
-            "type": "number",
             "description": "最小纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MaxLatitude": {
-            "type": "number",
             "description": "最大纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MinLongitude": {
-            "type": "number",
             "description": "最小经度(deg)(-180°,180°),缺省:-180",
             "format": "double",
             "default": -180
           },
           "MaxLongitude": {
-            "type": "number",
             "description": "最大经度(deg)(-180°,180°)，缺省:180",
             "format": "double",
             "default": 180
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省:6",
             "format": "double",
             "default": 6
@@ -12710,7 +12193,6 @@
             "default": true
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -12732,13 +12214,11 @@
             "default": "Earth"
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省为6°",
             "format": "double",
             "default": 6
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -12771,29 +12251,24 @@
             "default": "Earth"
           },
           "MinLatitude": {
-            "type": "number",
             "description": "最小纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MaxLatitude": {
-            "type": "number",
             "description": "最大纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MinLongitude": {
-            "type": "number",
             "description": "最小经度(deg)(-180°,180°),缺省:0",
             "format": "double",
             "default": 0
           },
           "MaxLongitude": {
-            "type": "number",
             "description": "最大经度(deg)(-180°,180°)，缺省:180",
             "format": "double",
             "default": 180
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省:6",
             "format": "double",
             "default": 6
@@ -12804,7 +12279,6 @@
             "default": true
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -12830,23 +12304,19 @@
             "default": "Earth"
           },
           "MinLatitude": {
-            "type": "number",
             "description": "最小纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "MaxLatitude": {
-            "type": "number",
             "description": "最大纬度(deg)(-90°,90°)",
             "format": "double"
           },
           "Resolution": {
-            "type": "number",
             "description": "网格间的最大角间距(deg),缺省为6°",
             "format": "double",
             "default": 6
           },
           "Height": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double",
             "default": 0
@@ -12866,18 +12336,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/IEntityObjectEntityPath"
+            "$ref": "#/components/schemas/IEntityObjectEntityPathGroup"
           },
           {
-            "$ref": "#/components/schemas/IEntityObjectEntityPathGroup"
+            "$ref": "#/components/schemas/IEntityObjectEntityPath"
           }
         ],
         "description": "对象接口(参见实现类)，主要用于Access对象  <br>具体实现类:  <br>-EntityPath(\"$type\":\"EntityPath\")  <br>-EntityPathGroup(\"$type\":\"EntityPathGroup\") ",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "EntityPath": "#/components/schemas/IEntityObjectEntityPath",
-            "EntityPathGroup": "#/components/schemas/IEntityObjectEntityPathGroup"
+            "EntityPathGroup": "#/components/schemas/IEntityObjectEntityPathGroup",
+            "EntityPath": "#/components/schemas/IEntityObjectEntityPath"
           }
         }
       },
@@ -13010,54 +12480,54 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionCzml"
-          },
-          {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionJ2"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionSGP4"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionCentralBody"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionBallistic"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionSite"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionEntityPositionHPOP"
-          },
-          {
-            "$ref": "#/components/schemas/IEntityPositionAstrogatorMCS"
           },
           {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionTwoBody"
           },
           {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionCentralBody"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionHPOP"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionBallistic"
+          },
+          {
             "$ref": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionCzml"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionSite"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionAstrogatorMCS"
+          },
+          {
+            "$ref": "#/components/schemas/IEntityPositionEntityPositionSGP4"
           }
         ],
         "description": "对象位置参数接口(参见实现类)  <br>具体实现类:  <br>-EntityPositionSite(\"$type\":\"SitePosition\")  <br>-EntityPositionCzml(\"$type\":\"CzmlPosition\")  <br>-EntityPositionCzmlPositions(\"$type\":\"CzmlPositions\")  <br>-EntityPositionTwoBody(\"$type\":\"TwoBody\")  <br>-EntityPositionJ2(\"$type\":\"J2\")  <br>-EntityPositionSGP4(\"$type\":\"SGP4\")  <br>-EntityPositionCentralBody(\"$type\":\"CentralBody\") <br>-EntityPositionBallistic(\"$type\":\"Ballistic\") <br>-EntityPositionSimpleAscent(\"$type\":\"SimpleAscent\") <br>-EntityPositionHPOP(\"$type\":\"HPOP\") <br>-AstrogatorMCS(\"$type\":\"AstrogatorMCS\")",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "CzmlPosition": "#/components/schemas/IEntityPositionEntityPositionCzml",
             "J2": "#/components/schemas/IEntityPositionEntityPositionJ2",
-            "SGP4": "#/components/schemas/IEntityPositionEntityPositionSGP4",
-            "CentralBody": "#/components/schemas/IEntityPositionEntityPositionCentralBody",
-            "Ballistic": "#/components/schemas/IEntityPositionEntityPositionBallistic",
-            "SimpleAscent": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent",
-            "SitePosition": "#/components/schemas/IEntityPositionEntityPositionSite",
-            "HPOP": "#/components/schemas/IEntityPositionEntityPositionHPOP",
-            "AstrogatorMCS": "#/components/schemas/IEntityPositionAstrogatorMCS",
             "TwoBody": "#/components/schemas/IEntityPositionEntityPositionTwoBody",
-            "CzmlPositions": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions"
+            "CentralBody": "#/components/schemas/IEntityPositionEntityPositionCentralBody",
+            "HPOP": "#/components/schemas/IEntityPositionEntityPositionHPOP",
+            "SimpleAscent": "#/components/schemas/IEntityPositionEntityPositionSimpleAscent",
+            "Ballistic": "#/components/schemas/IEntityPositionEntityPositionBallistic",
+            "CzmlPositions": "#/components/schemas/IEntityPositionEntityPositionCzmlPositions",
+            "CzmlPosition": "#/components/schemas/IEntityPositionEntityPositionCzml",
+            "SitePosition": "#/components/schemas/IEntityPositionEntityPositionSite",
+            "AstrogatorMCS": "#/components/schemas/IEntityPositionAstrogatorMCS",
+            "SGP4": "#/components/schemas/IEntityPositionEntityPositionSGP4"
           }
         }
       },
@@ -13148,7 +12618,6 @@
             "default": "2022-06-27T04:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省为5s",
             "format": "double",
             "default": 5
@@ -13159,25 +12628,21 @@
             "default": "Earth"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13",
             "format": "double",
             "default": 398600441500000
           },
           "LaunchLatitude": {
-            "type": "number",
             "description": "发射点大地纬度(deg)",
             "format": "double",
             "default": 0
           },
           "LaunchLongitude": {
-            "type": "number",
             "description": "发射点地理经度(deg)",
             "format": "double",
             "default": 0
           },
           "LaunchAltitude": {
-            "type": "number",
             "description": "发射点高度(m)",
             "format": "double",
             "default": 0
@@ -13188,25 +12653,21 @@
             "default": "DeltaV"
           },
           "BallisticTypeValue": {
-            "type": "number",
             "description": "弹道类型对应的数值  <br>DeltaV:           m/s  <br>DeltaV_MinEcc :   m/s  <br>ApogeeAlt:        m  <br>TimeOfFlight:     s",
             "format": "double",
-            "default": 6901.943
+            "default": 6901.9430000000002
           },
           "ImpactLatitude": {
-            "type": "number",
             "description": "关机点大地纬度(deg)",
             "format": "double",
             "default": 20
           },
           "ImpactLongitude": {
-            "type": "number",
             "description": "关机点地理经度(deg)",
             "format": "double",
             "default": 20
           },
           "ImpactAltitude": {
-            "type": "number",
             "description": "关机点高度(m)",
             "format": "double",
             "default": 0
@@ -13283,25 +12744,9 @@
             "description": "本数据的时间段（默认为null,CompositePositionProperty时使用）  <br>数据形式为：\"2023-11-06T04:10:00Z/2023-11-06T04:25:00Z\""
           },
           "cartesian": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "位置数组[X, Y, Z](m),相对referenceFrame  <br>通常为多个点[Time, X, Y, Z, Time, X, Y, Z, ...],Time为历元秒"
           },
           "cartesianVelocity": {
-            "type": [
-              "null",
-              "array"
-            ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "位置速度数组[X, Y, Z, dX, dY, dZ](m,m/s),相对referenceFrame  <br>通常为多个点[Time, X, Y, Z, dX, dY, dZ, Time, X, Y, Z, dX, dY, dZ, ...],Time为历元秒"
           }
         },
@@ -13379,10 +12824,6 @@
           },
           "OrbitalElements": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "轨道根数  <br>Classical:[半长径(m)，偏心率，轨道倾角(deg)，近点角距(deg)，升交点赤经(deg)，真近点角(deg)]  <br>Cartesian:[x(m),y(m),z(m),Vx(m/s),Vy(m/s),Vz(m/s)]",
             "default": [
               6678137,
@@ -13394,31 +12835,26 @@
             ]
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13<br>Sun: 1.3271244004193938E20",
             "format": "double",
             "default": 398600441500000
           },
           "CoefficientOfDrag": {
-            "type": "number",
             "description": "大气阻力系数，缺省为2.2",
             "format": "double",
-            "default": 2.2
+            "default": 2.2000000000000002
           },
           "AreaMassRatioDrag": {
-            "type": "number",
             "description": "气动面积与质量比(m^2/kg)，缺省为0.02",
             "format": "double",
             "default": 0.02
           },
           "CoefficientOfSRP": {
-            "type": "number",
             "description": "光压系数，缺省为1.0",
             "format": "double",
             "default": 1
           },
           "AreaMassRatioSRP": {
-            "type": "number",
             "description": "光压面积与质量比(m^2/kg)，缺省为0.02",
             "format": "double",
             "default": 0.02
@@ -13453,7 +12889,6 @@
             "default": "2022-04-18T16:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省60s",
             "format": "double",
             "default": 60
@@ -13464,22 +12899,19 @@
             "default": "Earth"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13",
             "format": "double",
             "default": 398600441500000
           },
           "J2NormalizedValue": {
-            "type": "number",
             "description": "J2项归一化数值(引力场文件中C20的负值)。缺省: 地球EGM2008:0.000484165143790815, 其它:火星MRO110C:0.8750222171673000E-03",
             "format": "double",
-            "default": 0.000484165143790815
+            "default": 0.00048416514379081503
           },
           "RefDistance": {
-            "type": "number",
             "description": "参考椭球体半长轴(m)。缺省时: 地球EGM2008:6378136.3",
             "format": "double",
-            "default": 6378136.3
+            "default": 6378136.2999999998
           },
           "OrbitEpoch": {
             "type": "string",
@@ -13498,10 +12930,6 @@
           },
           "OrbitalElements": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "轨道根数,具体根数由CoordType决定",
             "default": [
               6678140,
@@ -13537,7 +12965,6 @@
             "default": "2021-05-02T12:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省60s",
             "format": "double",
             "default": 60
@@ -13594,7 +13021,6 @@
             "default": "2022-05-23T04:10:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省为5s",
             "format": "double",
             "default": 5
@@ -13605,43 +13031,36 @@
             "default": "Earth"
           },
           "LaunchLatitude": {
-            "type": "number",
             "description": "发射点大地纬度(deg)",
             "format": "double",
-            "default": 28.60835
+            "default": 28.608350000000002
           },
           "LaunchLongitude": {
-            "type": "number",
             "description": "发射点地理经度(deg)",
             "format": "double",
-            "default": -80.60418
+            "default": -80.604179999999999
           },
           "LaunchAltitude": {
-            "type": "number",
             "description": "发射点高度(m)",
             "format": "double",
             "default": 0
           },
           "BurnoutVelocity": {
-            "type": "number",
             "description": "关机点速度(Fixed系)(m/s)",
             "format": "double",
-            "default": 7725.84
+            "default": 7725.8400000000001
           },
           "BurnoutLatitude": {
-            "type": "number",
             "description": "关机点大地纬度(deg)",
             "format": "double",
-            "default": 25.051
+            "default": 25.050999999999998
           },
           "BurnoutLongitude": {
-            "type": "number",
             "description": "关机点地理经度(deg)",
             "format": "double",
-            "default": -51.326
+            "default": -51.326000000000001
           },
           "BurnoutAltitude": {
-            "type": "number",
             "description": "关机点高度(m)",
             "format": "double",
             "default": 300000
@@ -13667,10 +13086,6 @@
           },
           "cartographicDegrees": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "椭球体的大地坐标(Longitude(deg), Latitude(deg), Height(m))  <br>地球:WGS84椭球体  <br>月球:1737.4km的圆球体",
             "default": [
               100,
@@ -13684,7 +13099,6 @@
             "default": false
           },
           "HeightAboveGround": {
-            "type": "number",
             "description": "相对地面高度(m)",
             "format": "double",
             "default": 0
@@ -13715,7 +13129,6 @@
             "default": "2022-04-18T16:00:00.000Z"
           },
           "Step": {
-            "type": "number",
             "description": "积分步长(s),缺省60s",
             "format": "double",
             "default": 60
@@ -13726,7 +13139,6 @@
             "default": "Earth"
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13<br>Sun: 1.3271244004193938E20",
             "format": "double",
             "default": 398600441500000
@@ -13748,10 +13160,6 @@
           },
           "OrbitalElements": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "轨道器轨道根数,具体根数由CoordType决定 <br>Classical时：(半长径(m)，偏心率，轨道倾角(deg)，近点角距(deg)，升交点经度(deg)，真近点角(deg)) <br>Cartesian时: X(m),Y(m),Z(m),Vx(m/s),Vy(m/s),Vz(m/s)",
             "default": [
               6678140,
@@ -13776,18 +13184,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/IGravityFunctionTwoBodyFunction"
+            "$ref": "#/components/schemas/IGravityFunctionGravityFieldFunction"
           },
           {
-            "$ref": "#/components/schemas/IGravityFunctionGravityFieldFunction"
+            "$ref": "#/components/schemas/IGravityFunctionTwoBodyFunction"
           }
         ],
         "description": "引力模型接口",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "TwoBody": "#/components/schemas/IGravityFunctionTwoBodyFunction",
-            "GravityField": "#/components/schemas/IGravityFunctionGravityFieldFunction"
+            "GravityField": "#/components/schemas/IGravityFunctionGravityFieldFunction",
+            "TwoBody": "#/components/schemas/IGravityFunctionTwoBodyFunction"
           }
         }
       },
@@ -13872,7 +13280,6 @@
             "description": "用户自定义信息"
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -13931,34 +13338,29 @@
             "default": false
           },
           "InitialStep": {
-            "type": "number",
             "description": "初始积分步长(s)，缺省为60(s)",
             "format": "double",
             "default": 60
           },
           "MaxStep": {
-            "type": "number",
             "description": "最大积分步长(s)，缺省为86400(s)",
             "format": "double",
             "default": 86400
           },
           "MinStep": {
-            "type": "number",
             "description": "最小积分步长(s)，缺省为1e-9(s)",
             "format": "double",
-            "default": 1e-9
+            "default": 0.0000000010000000000000001
           },
           "MaxAbsErr": {
-            "type": "number",
             "description": "绝对误差，缺省为1e-10",
             "format": "double",
-            "default": 1e-10
+            "default": 0.0000000001
           },
           "MaxRelErr": {
-            "type": "number",
             "description": "相对误差)，缺省为1e-13",
             "format": "double",
-            "default": 1e-13
+            "default": 0.0000000000001
           },
           "MaxIterations": {
             "type": "integer",
@@ -14223,19 +13625,16 @@
             "default": "Constant Values"
           },
           "F10p7": {
-            "type": "number",
             "description": "太阳辐射通量F10.7（缺省150.0）",
             "format": "double",
             "default": 150
           },
           "F10p7Avg": {
-            "type": "number",
             "description": "太阳辐射通量平均值F10.7（缺省150.0）",
             "format": "double",
             "default": 150
           },
           "Kp": {
-            "type": "number",
             "description": "地磁指数Kp（缺省3.0）planetary index",
             "format": "double",
             "default": 3
@@ -14247,43 +13646,36 @@
         "type": "object",
         "properties": {
           "SemimajorAxis": {
-            "type": "number",
             "description": "轨道半长轴(m)",
             "format": "double",
             "default": 6878137
           },
           "Eccentricity": {
-            "type": "number",
             "description": "轨道偏心率",
             "format": "double",
             "default": 0
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(deg)",
             "format": "double",
             "default": 28.5
           },
           "ArgumentOfPeriapsis": {
-            "type": "number",
             "description": "近地点幅角(deg)",
             "format": "double",
             "default": 0
           },
           "RightAscensionOfAscendingNode": {
-            "type": "number",
             "description": "升交点赤经(deg)",
             "format": "double",
             "default": 0
           },
           "TrueAnomaly": {
-            "type": "number",
             "description": "真近点角(deg)",
             "format": "double",
             "default": 0
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "引力常数(m^3/s^2),默认值为地球引力常数",
             "format": "double",
             "default": 398600441800000
@@ -14300,43 +13692,36 @@
             "default": "2023-09-26T12:00:00.000Z"
           },
           "SemimajorAxis": {
-            "type": "number",
             "description": "轨道半长轴(m)",
             "format": "double",
             "default": 6878137
           },
           "Eccentricity": {
-            "type": "number",
             "description": "轨道偏心率",
             "format": "double",
             "default": 0
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(deg)",
             "format": "double",
             "default": 28.5
           },
           "ArgumentOfPeriapsis": {
-            "type": "number",
             "description": "近地点幅角(deg)",
             "format": "double",
             "default": 0
           },
           "RightAscensionOfAscendingNode": {
-            "type": "number",
             "description": "升交点赤经(deg)",
             "format": "double",
             "default": 0
           },
           "TrueAnomaly": {
-            "type": "number",
             "description": "真近点角(deg)",
             "format": "double",
             "default": 0
           },
           "GravitationalParameter": {
-            "type": "number",
             "description": "引力常数(m^3/s^2),默认值为地球引力常数",
             "format": "double",
             "default": 398600441800000
@@ -14354,10 +13739,6 @@
         "properties": {
           "RV1": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "初始位置速度:x,y,z(m),Vx,Vy,Vz(m/s),支持多个初始RV,在数组中往后添加即可",
             "default": [
               1112487.3869553704,
@@ -14370,10 +13751,6 @@
           },
           "RV2": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "末态位置速度：x,y,z(m),Vx,Vy,Vz(m/s),支持多个末态RV,在数组中往后添加即可",
             "default": [
               -4963330.254157325,
@@ -14385,17 +13762,12 @@
             ]
           },
           "Gm": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13<br>Sun: 1.3271244004193938E20",
             "format": "double",
             "default": 398600441500000
           },
           "TOF": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "飞行时间(s),支持多个Lambert算例,在数组中往后添加即可",
             "default": [
               817.42573018326
@@ -14427,26 +13799,14 @@
           },
           "DV1": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "起点速度增量(ΔVx,ΔVy,ΔVz)(m/s),若输入为多个Lambert算例,则这里也为多个结果"
           },
           "DV2": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "终点速度增量(ΔVx,ΔVy,ΔVz)(m/s),若输入为多个Lambert算例,则这里也为多个结果"
           },
           "Positions": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "转移轨道位置序列(x,y,z,...)(m),仅单个算例且 GetPathPoints=true 时输出;长度为 NumberOfPathPoints×3,包含首末两点位置。否则为空数组。"
           }
         }
@@ -14461,26 +13821,14 @@
         "properties": {
           "FaSheDian": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "发射点大地坐标(经度(deg),纬度(deg)，高度(m))(cartographicDegrees)"
           },
           "LuoDian": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "落点大地坐标(经度(deg),纬度(deg)，高度(m))(cartographicDegrees)"
           },
           "ZoneXYs": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "边界点参数(前为+X轴,右为+Y轴,单位:km)"
           }
         },
@@ -14499,10 +13847,6 @@
           },
           "cartographicDegrees": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "边界点大地经纬高参数(deg,m)(Cesium中的Polygon参数:cartographicDegrees)  <br>数据格式为:[Longitude, Latitude, Height, Longitude, Latitude, Height, ...]"
           }
         },
@@ -14512,32 +13856,26 @@
         "type": "object",
         "properties": {
           "GravitationalParameter1": {
-            "type": "number",
             "description": "主天体的引力参数(m^3/s^2)",
             "format": "double"
           },
           "GravitationalParameter2": {
-            "type": "number",
             "description": "次级天体的引力参数(m^3/s^2)",
             "format": "double"
           },
           "U": {
-            "type": "number",
             "description": "次级天体的质量系数(m2/(m1+m2))",
             "format": "double"
           },
           "UnitL": {
-            "type": "number",
             "description": "会合坐标系单位长度(m)",
             "format": "double"
           },
           "UnitT": {
-            "type": "number",
             "description": "会合坐标系单位时间(s),无量纲时间对应一圈为2π",
             "format": "double"
           },
           "UnitV": {
-            "type": "number",
             "description": "会合坐标系单位速度(m/s)",
             "format": "double"
           }
@@ -14554,11 +13892,9 @@
             "$ref": "#/components/schemas/TleInfo"
           },
           "Sm": {
-            "type": "number",
             "format": "double"
           },
           "Mass": {
-            "type": "number",
             "format": "double"
           }
         }
@@ -14573,7 +13909,6 @@
             "type": "string"
           },
           "LifeYears": {
-            "type": "number",
             "format": "double"
           }
         }
@@ -14614,12 +13949,10 @@
             ]
           },
           "MeanDuration": {
-            "type": "number",
             "description": "平均时长(s)",
             "format": "double"
           },
           "TotalDuration": {
-            "type": "number",
             "description": "总时长(s)",
             "format": "double"
           }
@@ -14655,10 +13988,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "地形遮罩数据(仅地面站使用) <br>数据格式：(方位角1，高度角1，方位角2，高度角2...)(单位:rad) <br>可先单独获取地面站的地形遮罩数据，然后再调用本算法计算光照"
           },
           "OccultationBodies": {
@@ -14772,16 +14101,16 @@
             "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverFiniteResults"
           },
           {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverImpulsiveResults"
-          },
-          {
-            "$ref": "#/components/schemas/MCSSegmentResultsMCSPropagateResults"
-          },
-          {
             "$ref": "#/components/schemas/MCSSegmentResultsMCSTargetSequenceResults"
           },
           {
             "$ref": "#/components/schemas/MCSSegmentResultsMCSSequenceResults"
+          },
+          {
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSManeuverImpulsiveResults"
+          },
+          {
+            "$ref": "#/components/schemas/MCSSegmentResultsMCSPropagateResults"
           },
           {
             "$ref": "#/components/schemas/MCSSegmentResultsBase"
@@ -14820,7 +14149,6 @@
             "$ref": "#/components/schemas/SegmentState"
           },
           "DurationSec": {
-            "type": "number",
             "description": "段持续时间(秒)",
             "format": "double"
           },
@@ -14873,7 +14201,6 @@
             "$ref": "#/components/schemas/SegmentState"
           },
           "DurationSec": {
-            "type": "number",
             "description": "段持续时间(秒)",
             "format": "double"
           },
@@ -14926,7 +14253,6 @@
             "$ref": "#/components/schemas/SegmentState"
           },
           "DurationSec": {
-            "type": "number",
             "description": "段持续时间(秒)",
             "format": "double"
           },
@@ -14981,7 +14307,6 @@
             "$ref": "#/components/schemas/SegmentState"
           },
           "DurationSec": {
-            "type": "number",
             "description": "段持续时间(秒)",
             "format": "double"
           },
@@ -15040,7 +14365,6 @@
             "$ref": "#/components/schemas/SegmentState"
           },
           "DurationSec": {
-            "type": "number",
             "description": "段持续时间(秒)",
             "format": "double"
           },
@@ -15109,7 +14433,6 @@
             "$ref": "#/components/schemas/SegmentState"
           },
           "DurationSec": {
-            "type": "number",
             "description": "段持续时间(秒)",
             "format": "double"
           },
@@ -15132,17 +14455,14 @@
             "description": "机动结束时刻(\"yyyy-MM-ddTHH:mm:ss.fffZ\")"
           },
           "Duration": {
-            "type": "number",
             "description": "机动持续时间(s)",
             "format": "double"
           },
           "FuelUsed": {
-            "type": "number",
             "description": "实际燃料消耗(kg)",
             "format": "double"
           },
           "DeltaV_Mag": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           },
@@ -15155,10 +14475,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "速度增量(中心天体惯性系)<br> X(m/s), Y(m/s), Z(m/s), Azimuth(deg), Elevation(deg), Magnitude(m/s)"
           },
           "DeltaV_VNC": {
@@ -15166,10 +14482,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "速度增量(中心天体VNC系)<br> X(m/s), Y(m/s), Z(m/s), Azimuth(deg), Elevation(deg), Magnitude(m/s)"
           },
           "DeltaV_Body": {
@@ -15177,10 +14489,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "速度增量(Body系) 未实现，预留 <br> X(m/s), Y(m/s), Z(m/s), Azimuth(deg), Elevation(deg), Magnitude(m/s)"
           },
           "Quanternion": {
@@ -15188,10 +14496,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "姿态四元数(qx, qy, qz, qs)(Body系相对中心天体惯性系) 未实现，预留"
           }
         },
@@ -15213,22 +14517,18 @@
             "description": "是否更新质量(false则表示脉冲速度增量不改变飞行器质量）"
           },
           "Duration": {
-            "type": "number",
             "description": "机动持续时间",
             "format": "double"
           },
           "FuelUsed": {
-            "type": "number",
             "description": "实际燃料消耗(kg)",
             "format": "double"
           },
           "EstimatedFuelUsed": {
-            "type": "number",
             "description": "预估燃料消耗(kg)",
             "format": "double"
           },
           "DeltaV_Mag": {
-            "type": "number",
             "description": "速度增量大小(m/s)",
             "format": "double"
           },
@@ -15241,10 +14541,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "速度增量(中心天体惯性系)<br> X(m/s), Y(m/s), Z(m/s), Azimuth(deg), Elevation(deg), Magnitude(m/s)"
           },
           "DeltaV_VNC": {
@@ -15252,10 +14548,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "速度增量(中心天体VNC系)<br> X(m/s), Y(m/s), Z(m/s), Azimuth(deg), Elevation(deg), Magnitude(m/s)"
           },
           "DeltaV_Body": {
@@ -15263,10 +14555,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "速度增量(Body系) 未实现，预留 <br> X(m/s), Y(m/s), Z(m/s), Azimuth(deg), Elevation(deg), Magnitude(m/s)"
           },
           "Quanternion": {
@@ -15274,10 +14562,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "姿态四元数(qx, qy, qz, qs)(Body系相对中心天体惯性系) 未实现，预留"
           }
         },
@@ -15287,47 +14571,38 @@
         "type": "object",
         "properties": {
           "SemimajorAxis": {
-            "type": "number",
             "description": "轨道半长轴(m)",
             "format": "double"
           },
           "Eccentricity": {
-            "type": "number",
             "description": "轨道偏心率",
             "format": "double"
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(deg)",
             "format": "double"
           },
           "ArgOfPerigee": {
-            "type": "number",
             "description": "近地点幅角(deg)",
             "format": "double"
           },
           "RAAN": {
-            "type": "number",
             "description": "升交点赤经(deg)",
             "format": "double"
           },
           "MeanAnomaly": {
-            "type": "number",
             "description": "平近点角(deg)",
             "format": "double"
           },
           "ArgOfLatitude": {
-            "type": "number",
             "description": "纬度幅角(deg)(w+f)",
             "format": "double"
           },
           "LongitudeOfPerigee": {
-            "type": "number",
             "description": "轨道近地点经度(deg)(RAAN+w)",
             "format": "double"
           },
           "MeanLongitude": {
-            "type": "number",
             "description": "轨道平近点经度(deg)(RAAN+w+M)",
             "format": "double"
           }
@@ -15357,19 +14632,16 @@
             "default": "2023-08-11T04:00:00Z"
           },
           "PerigeeAltitude": {
-            "type": "number",
             "description": "近地点高度(km),常为600km",
             "format": "double",
             "default": 500
           },
           "ApogeeLongitude": {
-            "type": "number",
             "description": "远地点地理经度(deg)",
             "format": "double",
             "default": 100
           },
           "ArgumentOfPeriapsis": {
-            "type": "number",
             "description": "近地点幅角(deg)(常为90°、270°)",
             "format": "double",
             "default": 270
@@ -15421,8 +14693,8 @@
         "properties": {
           "TargetName": {
             "type": "string",
-            "description": "小行星名称或编号,Ceres,Apophis,99942 (若已有MPC轨道根数可不输入,使用MpcOrbElements输入具体参数)",
-            "default": "Ceres"
+            "description": "近地小行星(NEA)名称或编号,如 Apophis / 99942 / (99942); 从本地 Data/MPC/NEA.txt 查找。非 NEA(如 Ceres)请传 TargetElements。若已有轨道根数可不依赖名称查找。",
+            "default": "Apophis"
           },
           "ObserverFrame": {
             "type": "string",
@@ -15437,13 +14709,18 @@
             "type": "string",
             "description": "结束时刻(UTCG)(\"yyyy-MM-ddTHH:mm:ssZ\")，缺省可不输入,表示Start+1年"
           },
+          "Step": {
+            "description": "积分步长(s),缺省86400s,若为0,则表示按内部积分步长输出！",
+            "format": "double",
+            "default": 86400
+          },
           "TargetElements": {
             "oneOf": [
               {
                 "type": "null"
               },
               {
-                "description": "小行星的MPC轨道根数,若此参数不为null,则直接使用此轨道根数进行积分,而不通过网络查询MPC获取. <br>坐标系为日心平黄道坐标系.注意有两种:1 MeanEclpJ2000(JPL使用)和 2 EclpJ2000ICRF(MPC使用).默认EclpJ2000ICRF",
+                "description": "小行星的MPC轨道根数,若此参数不为null,则直接使用此轨道根数进行积分,而不从本地 NEA.txt 查找. <br>坐标系为日心平黄道坐标系. NEA/MPCORB 缺省 MeanEclpJ2000; 也可显式使用 EclpJ2000ICRF。",
                 "$ref": "#/components/schemas/MpcOrbElements"
               }
             ]
@@ -15455,58 +14732,49 @@
         "properties": {
           "ReferenceFrame": {
             "type": "string",
-            "description": "坐标系名称(MeanEclpJ2000或EclpJ2000ICRF),缺省:EclpJ2000ICRF",
-            "default": "EclpJ2000ICRF"
+            "description": "坐标系名称(MeanEclpJ2000或EclpJ2000ICRF),缺省:MeanEclpJ2000(NEA/MPCORB 本地目录)",
+            "default": "MeanEclpJ2000"
           },
           "EpochMjdTdt": {
-            "type": "number",
             "description": "轨道根数历元 (MJD TDT)",
             "format": "double",
             "default": 61000
           },
           "PeriTimeMjdTdt": {
-            "type": "number",
             "description": "近日点时刻 (MJD TDT),作为输入参数时可不输入",
             "format": "double"
           },
           "Q": {
-            "type": "number",
             "description": "近日点距 (AU),作为输入参数时可不输入",
             "format": "double",
-            "default": 0.6740515
+            "default": 0.67405150000000003
           },
           "SemimajorAxis": {
-            "type": "number",
             "description": "半长轴 (AU)",
             "format": "double",
-            "default": 0.9898367
+            "default": 0.98983670000000001
           },
           "Eccentricity": {
-            "type": "number",
             "description": "偏心率",
             "format": "double",
-            "default": 0.3190276
+            "default": 0.31902760000000002
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(deg)",
             "format": "double",
             "default": 0.79379
           },
           "Raan": {
-            "type": "number",
             "description": "升交点赤经/黄经 (deg)",
             "format": "double",
-            "default": 209.81829
+            "default": 209.81828999999999
           },
           "ArgOfPeriapsis": {
-            "type": "number",
             "description": "近日点幅角(deg)",
             "format": "double",
-            "default": 100.88187
+            "default": 100.88187000000001
           },
           "MeanAnomaly": {
-            "type": "number",
             "description": "平近点角 (deg)",
             "format": "double",
             "default": 126.23043
@@ -15526,7 +14794,7 @@
             "description": "结果信息(主要是存储失败的原因)"
           },
           "OrbitElements": {
-            "description": "MPC小行星轨道根数解析结果(日心平黄道坐标系.注意有两种:1 MeanEclpJ2000(JPL使用)和 2 EclpJ2000ICRF(MPC使用) ",
+            "description": "MPC小行星轨道根数解析结果(日心平黄道坐标系; NEA/MPCORB 缺省 MeanEclpJ2000)",
             "$ref": "#/components/schemas/MpcOrbElements"
           },
           "Position": {
@@ -15641,17 +14909,14 @@
         "type": "object",
         "properties": {
           "EpochSeconds": {
-            "type": "number",
             "description": "当前时刻(历元累计秒)",
             "format": "double"
           },
           "PercentCovered": {
-            "type": "number",
             "description": "当前时刻覆盖百分比(0-100)",
             "format": "double"
           },
           "PercentAccumulated": {
-            "type": "number",
             "description": "累计到当前时刻的覆盖百分比(0-100)",
             "format": "double"
           }
@@ -15669,8 +14934,8 @@
         "properties": {
           "SunFrameName": {
             "type": "string",
-            "description": "日心参考系,用于结果输出坐标系(MeanEclpJ2000或ICRF)",
-            "default": "MeanEclpJ2000"
+            "description": "日心参考系,用于结果输出坐标系(MeanEclpJ2000或EclpJ2000ICRF)",
+            "default": "EclpJ2000ICRF"
           },
           "DepartureCbName": {
             "type": "string",
@@ -15699,13 +14964,11 @@
             "default": 10
           },
           "DepartureStepDay": {
-            "type": "number",
             "description": "出发时间步长(单位:天),默认为1天",
             "format": "double",
             "default": 1
           },
           "ArrivalStepDay": {
-            "type": "number",
             "description": "到达时间步长(单位:天),默认为1天",
             "format": "double",
             "default": 1
@@ -15716,7 +14979,7 @@
                 "type": "null"
               },
               {
-                "description": "出发天体的MPC轨道根数(仅出发天体为小行星才需要),若此参数不为null,则直接使用此轨道根数进行积分,而不通过网络查询MPC获取.",
+                "description": "出发天体的MPC轨道根数(仅出发天体为小行星才需要),若此参数不为null,则直接使用此轨道根数进行积分,而不从本地 NEA.txt 查找.",
                 "$ref": "#/components/schemas/MpcOrbElements"
               }
             ]
@@ -15727,7 +14990,7 @@
                 "type": "null"
               },
               {
-                "description": "到达天体的MPC轨道根数(仅到达天体为小行星才需要),若此参数不为null,则直接使用此轨道根数进行积分,而不通过网络查询MPC获取.",
+                "description": "到达天体的MPC轨道根数(仅到达天体为小行星才需要),若此参数不为null,则直接使用此轨道根数进行积分,而不从本地 NEA.txt 查找.",
                 "$ref": "#/components/schemas/MpcOrbElements"
               }
             ]
@@ -15903,34 +15166,29 @@
             "default": false
           },
           "InitialStep": {
-            "type": "number",
             "description": "初始积分步长(s)，缺省为60(s)",
             "format": "double",
             "default": 60
           },
           "MaxStep": {
-            "type": "number",
             "description": "最大积分步长(s)，缺省为86400(s)",
             "format": "double",
             "default": 86400
           },
           "MinStep": {
-            "type": "number",
             "description": "最小积分步长(s)，缺省为1e-9(s)",
             "format": "double",
-            "default": 1e-9
+            "default": 0.0000000010000000000000001
           },
           "MaxAbsErr": {
-            "type": "number",
             "description": "绝对误差，缺省为1e-10",
             "format": "double",
-            "default": 1e-10
+            "default": 0.0000000001
           },
           "MaxRelErr": {
-            "type": "number",
             "description": "相对误差)，缺省为1e-13",
             "format": "double",
-            "default": 1e-13
+            "default": 0.0000000000001
           },
           "MaxIterations": {
             "type": "integer",
@@ -15945,13 +15203,11 @@
         "type": "object",
         "properties": {
           "xHalfAngle": {
-            "type": "number",
             "description": "+Z轴到+X轴的半锥角(deg),默认为45",
             "format": "double",
             "default": 45
           },
           "yHalfAngle": {
-            "type": "number",
             "description": "+Z轴到+Y轴的半锥角(deg),默认为45",
             "format": "double",
             "default": 45
@@ -15993,17 +15249,14 @@
             "description": "结果信息(主要是存储失败的原因)"
           },
           "Minimum": {
-            "type": "number",
             "description": "最小值",
             "format": "double"
           },
           "Maximum": {
-            "type": "number",
             "description": "最大值",
             "format": "double"
           },
           "Average": {
-            "type": "number",
             "description": "平均值",
             "format": "double"
           }
@@ -16141,13 +15394,11 @@
             "default": "2023-08-11T04:00:00Z"
           },
           "Altitude": {
-            "type": "number",
             "description": "轨道高度(km)",
             "format": "double",
             "default": 600
           },
           "LocalTimeOfDescendingNode": {
-            "type": "number",
             "description": "降交点地方时(例如: 14:30PM->14.5, 9:06AM->9.1)",
             "format": "double",
             "default": 14.5
@@ -16288,27 +15539,22 @@
             "description": "轨道描述(若已坠入大气，则包含\"Decayed\"以及日期)"
           },
           "Mass": {
-            "type": "number",
             "description": "卫星质量(kg)",
             "format": "double"
           },
           "Apogee": {
-            "type": "number",
             "description": "远地点高度(m)",
             "format": "double"
           },
           "Perigee": {
-            "type": "number",
             "description": "近地点高度(m)",
             "format": "double"
           },
           "Period": {
-            "type": "number",
             "description": "轨道周期(s),精度约10min",
             "format": "double"
           },
           "Inclination": {
-            "type": "number",
             "description": "轨道倾角(rad)",
             "format": "double"
           },
@@ -16380,57 +15626,46 @@
             "$ref": "#/components/schemas/AgVAElementSpherical"
           },
           "DryMass": {
-            "type": "number",
             "description": "结构质量(kg)",
             "format": "double"
           },
           "FuelMass": {
-            "type": "number",
             "description": "燃料质量(kg)",
             "format": "double"
           },
           "Cd": {
-            "type": "number",
             "description": "大气阻力系数(通常取2.2)",
             "format": "double"
           },
           "Cr": {
-            "type": "number",
             "description": "光压系数，(2.0为完全反射，1.0为不反射)",
             "format": "double"
           },
           "DragArea": {
-            "type": "number",
             "description": "大气阻力面积(m^2)",
             "format": "double"
           },
           "SRPArea": {
-            "type": "number",
             "description": "光压面积(m^2)",
             "format": "double"
           },
           "Geodetic_Latitude": {
-            "type": "number",
             "description": "大地纬度(deg)",
             "format": "double"
           },
           "Geodetic_Longitude": {
-            "type": "number",
             "description": "大地经度(deg)",
             "format": "double"
           },
           "Geodetic_Altitude": {
-            "type": "number",
             "description": "大地高度(m)",
             "format": "double"
           },
           "Geocentric_Latitude": {
-            "type": "number",
             "description": "地心坐标系纬度(deg)",
             "format": "double"
           },
           "Geocentric_Longitude": {
-            "type": "number",
             "description": "地心坐标系经度(deg)",
             "format": "double"
           }
@@ -16445,17 +15680,14 @@
             "description": "时刻(UTCG)(\"yyyy-MM-ddTHH:mm:ss.fffZ\")"
           },
           "Azimuth": {
-            "type": "number",
             "description": "方位角(deg)",
             "format": "double"
           },
           "Elevation": {
-            "type": "number",
             "description": "高度角(deg)",
             "format": "double"
           },
           "Range": {
-            "type": "number",
             "description": "距离(km)",
             "format": "double"
           }
@@ -16528,18 +15760,18 @@
         "type": "object",
         "anyOf": [
           {
-            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData"
+            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensityScData"
           },
           {
-            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensityScData"
+            "$ref": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData"
           }
         ],
         "description": "视太阳的光照参数(遮挡率、视太阳高度角、...)",
         "discriminator": {
           "propertyName": "$type",
           "mapping": {
-            "SolarIntensitySiteData": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData",
-            "SolarIntensityScData": "#/components/schemas/SolarIntensityDataSolarIntensityScData"
+            "SolarIntensityScData": "#/components/schemas/SolarIntensityDataSolarIntensityScData",
+            "SolarIntensitySiteData": "#/components/schemas/SolarIntensityDataSolarIntensitySiteData"
           }
         }
       },
@@ -16564,32 +15796,26 @@
             "description": "UTCG时间(\"yyyy-MM-ddTHH:mm:ss.fffZ\")"
           },
           "Intensity": {
-            "type": "number",
             "description": "太阳圆盘可见性比例(全可见为1，不可见为0)",
             "format": "double"
           },
           "PercentShadow": {
-            "type": "number",
             "description": "太阳圆盘遮挡比例(全部遮挡为1，未被遮挡为0)",
             "format": "double"
           },
           "ApparentSolarRange": {
-            "type": "number",
             "description": "视太阳距离(km)",
             "format": "double"
           },
           "SolarDiskHalfAngle": {
-            "type": "number",
             "description": "视太阳半径(deg)",
             "format": "double"
           },
           "SolarGrazingAngle": {
-            "type": "number",
             "description": "飞行器中心天体边界与视太阳的夹角(deg)",
             "format": "double"
           },
           "RelativeAngle": {
-            "type": "number",
             "description": "相对角度(飞行器中心天体质心到视太阳中心的视角度)",
             "format": "double"
           }
@@ -16605,17 +15831,14 @@
             "type": "string"
           },
           "ApparentSolarAzimuth": {
-            "type": "number",
             "description": "视太阳方位角(deg)(仅考虑光延迟，不考虑光行差)",
             "format": "double"
           },
           "ApparentSolarElevation": {
-            "type": "number",
             "description": "视太阳高度角(deg)(仅考虑光延迟，不考虑光行差)",
             "format": "double"
           },
           "TerrainElevation": {
-            "type": "number",
             "description": "地形高度角(deg)",
             "format": "double"
           },
@@ -16624,32 +15847,26 @@
             "description": "UTCG时间(\"yyyy-MM-ddTHH:mm:ss.fffZ\")"
           },
           "Intensity": {
-            "type": "number",
             "description": "太阳圆盘可见性比例(全可见为1，不可见为0)",
             "format": "double"
           },
           "PercentShadow": {
-            "type": "number",
             "description": "太阳圆盘遮挡比例(全部遮挡为1，未被遮挡为0)",
             "format": "double"
           },
           "ApparentSolarRange": {
-            "type": "number",
             "description": "视太阳距离(km)",
             "format": "double"
           },
           "SolarDiskHalfAngle": {
-            "type": "number",
             "description": "视太阳半径(deg)",
             "format": "double"
           },
           "SolarGrazingAngle": {
-            "type": "number",
             "description": "飞行器中心天体边界与视太阳的夹角(deg)",
             "format": "double"
           },
           "RelativeAngle": {
-            "type": "number",
             "description": "相对角度(飞行器中心天体质心到视太阳中心的视角度)",
             "format": "double"
           }
@@ -16685,14 +15902,9 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "地形遮罩数据(仅地面站使用) <br>数据格式：(方位角1，高度角1，方位角2，高度角2...)(单位:rad) <br>可先单独获取地面站的地形遮罩数据，然后再调用本算法计算光照"
           },
           "TimeStepSec": {
-            "type": "number",
             "description": "计算步长(s),缺省:3600s",
             "format": "double",
             "default": 3600
@@ -16750,37 +15962,30 @@
             "description": "轨道历元(UTCG)(\"yyyy-MM-ddTHH:mm:ss.fffZ\")"
           },
           "BStar": {
-            "type": "number",
             "description": "大气阻力，面值比相关系数",
             "format": "double"
           },
           "Sma": {
-            "type": "number",
             "description": "半长轴(km)",
             "format": "double"
           },
           "Ecc": {
-            "type": "number",
             "description": "偏心率",
             "format": "double"
           },
           "Inc": {
-            "type": "number",
             "description": "轨道倾角(deg)(TEME)",
             "format": "double"
           },
           "W": {
-            "type": "number",
             "description": "近地点俯角(deg)(TEME)",
             "format": "double"
           },
           "RAAN": {
-            "type": "number",
             "description": "升交点赤经(deg)(TEME)",
             "format": "double"
           },
           "TA": {
-            "type": "number",
             "description": "真近点角(deg)(TEME)",
             "format": "double"
           },
@@ -16819,13 +16024,11 @@
             "default": -1
           },
           "StepSize": {
-            "type": "number",
             "description": "某方向计算时的步长(m)(内部根据中心天体半径折算为地心弧度),缺省为30m",
             "format": "double",
             "default": 30
           },
           "MaxSearchRange": {
-            "type": "number",
             "description": "某方向计算的最大距离(km)，(内部根据中心天体半径折算为地心弧度),缺省为15km",
             "format": "double",
             "default": 15
@@ -16872,7 +16075,6 @@
             "default": "DeFile"
           },
           "Mu": {
-            "type": "number",
             "description": "第三体引力常数(m^3/s^2)",
             "format": "double"
           }
@@ -16891,7 +16093,6 @@
             "description": "结束时刻(UTCG)(\"yyyy-MM-ddTHH:mm:ss.fffZ\")"
           },
           "Duration": {
-            "type": "number",
             "description": "时长(s)",
             "format": "double"
           }
@@ -16931,13 +16132,11 @@
         "type": "object",
         "properties": {
           "U": {
-            "type": "number",
             "description": "无量纲质量比(m2/(m1+m2))",
             "format": "double",
-            "default": 0.01215058560962404
+            "default": 0.012150585609624041
           },
           "T0": {
-            "type": "number",
             "description": "初始时刻(无量纲),默认为0.0,一般可不输入",
             "format": "double",
             "default": 0
@@ -16949,10 +16148,6 @@
           },
           "RV0": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "会合坐标系下，初始位置速度(无量纲)",
             "default": [
               1.189017399646985,
@@ -16964,13 +16159,11 @@
             ]
           },
           "TEnd": {
-            "type": "number",
             "description": "结束时刻(无量纲)；可小于 t0 以进行逆向积分",
             "format": "double",
-            "default": 3.384919254474086
+            "default": 3.3849192544740858
           },
           "OutStep": {
-            "type": "number",
             "description": "输出步长绝对值(无量纲)；为 0 表示返回自适应积分全部节点，否则按此步长均匀输出",
             "format": "double",
             "default": 0
@@ -16990,7 +16183,6 @@
             "description": "信息(成功或失败原因)"
           },
           "U": {
-            "type": "number",
             "description": "无量纲质量比(m2/(m1+m2))",
             "format": "double"
           },
@@ -17003,10 +16195,6 @@
               "null",
               "array"
             ],
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "会合坐标系下位置速度数组(无量纲)(t0,x0,y0,z0,vx0,vy0,vz0,t1,x1,y1,z1,vx1,vy1,vz1,...)"
           }
         },
@@ -17025,54 +16213,42 @@
           },
           "DeltaV1": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "天体出发速度增量(m/s)(即出发双曲超速矢量)"
           },
           "DV1_Mag": {
-            "type": "number",
             "description": "天体出发速度增量大小(m/s)(即出发双曲超速矢量大小)",
             "format": "double"
           },
           "DeltaV2": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "天体到达速度增量(m/s)(即到达双曲超速矢量)"
           },
           "DV2_Mag": {
-            "type": "number",
             "description": "天体到达速度增量大小(m/s)(即到达双曲超速矢量大小)",
             "format": "double"
           },
           "RV1": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "出发时位置速度(日心系)(m,m/s)"
           },
           "RV2": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "到达时位置速度(日心系)(m,m/s)"
           },
           "TimeOfFlightDays": {
-            "type": "number",
             "description": "飞行时间(单位:天)",
             "format": "double"
           },
           "ArrivalLightAngle": {
-            "type": "number",
             "description": "到达时刻太阳光照角(单位:度) <br>相对速度DeltaV2与R2的夹角,一般用于撞击小行星的末端分析",
+            "format": "double"
+          },
+          "MinRangeAu": {
+            "description": "转移弧(出发→到达)上相对太阳的日心径向最近距离(AU)",
+            "format": "double"
+          },
+          "MaxRangeAu": {
+            "description": "转移弧(出发→到达)上相对太阳的日心径向最远距离(AU)",
             "format": "double"
           }
         },
@@ -17094,7 +16270,6 @@
             "description": "用户自定义信息"
           },
           "Mu": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2)",
             "format": "double"
           },
@@ -17115,10 +16290,6 @@
         "properties": {
           "RV0": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "初始位置速度:x,y,z(m),Vx,Vy,Vz(m/s)",
             "default": [
               7000000,
@@ -17130,19 +16301,16 @@
             ]
           },
           "Gm": {
-            "type": "number",
             "description": "中心天体引力常数(m^3/s^2),缺省为3.986004415E14  <br>Earth: 3.986004415E14 <br>Moon: 4.9028002221408E12<br>Mars: 4.2828375641E13<br>Sun: 1.3271244004193938E20",
             "format": "double",
             "default": 398600441500000
           },
           "TimeOfFlight": {
-            "type": "number",
             "description": "飞行时间(s)",
             "format": "double",
             "default": 3600
           },
           "Step": {
-            "type": "number",
             "description": "输出步长(s),缺省60s",
             "format": "double",
             "default": 60
@@ -17162,10 +16330,6 @@
           },
           "Positions": {
             "type": "array",
-            "items": {
-              "type": "number",
-              "format": "double"
-            },
             "description": "星历序列(t,x,y,z,vx,vy,vz,...)，t为相对初始时刻的秒数，位置(m)，速度(m/s)；含起止时刻"
           }
         }
@@ -17174,22 +16338,18 @@
         "type": "object",
         "properties": {
           "Latitude": {
-            "type": "number",
             "description": "网格点纬度(deg)",
             "format": "double"
           },
           "Longitude": {
-            "type": "number",
             "description": "网格点经度(deg)",
             "format": "double"
           },
           "Altitude": {
-            "type": "number",
             "description": "网格点高度(m)",
             "format": "double"
           },
           "FOM_Value": {
-            "type": "number",
             "description": "网格点覆盖品质数值(具体数值由具体的FOM决定)",
             "format": "double"
           }
@@ -17233,13 +16393,11 @@
             "default": 1
           },
           "InterPlaneTrueAnomalyIncrement": {
-            "type": "number",
             "description": "相邻轨道面的真近点角增量(deg)(WalkerType为Custom时有效)",
             "format": "double",
             "default": 30
           },
           "RAANIncrement": {
-            "type": "number",
             "description": "相邻轨道面的升交点赤经增量(deg)(WalkerType为Custom时有效)",
             "format": "double",
             "default": 60
@@ -17298,9 +16456,6 @@
   },
   "tags": [
     {
-      "name": "Celestial"
-    },
-    {
       "name": "Access"
     },
     {
@@ -17308,6 +16463,9 @@
     },
     {
       "name": "CAT2"
+    },
+    {
+      "name": "Celestial"
     },
     {
       "name": "Coverage"
