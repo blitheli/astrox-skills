@@ -63,7 +63,7 @@ curl "http://astrox.cn:8765/city?cityName=Beijing"
 
 | 技能 | 说明 |
 | :--- | :--- |
-| [`astrogator`](skills/astrogator/SKILL.md) | 轨道机动序列 (MCS): 脉冲/有限推力、目标序列、地月平动点 Halo、DRO、霍曼转移等 |
+| [`astrogator`](skills/astrogator/SKILL.md) | 轨道机动序列 (MCS): 脉冲/有限推力、目标序列、地月转移 + 近月制动 + 环月轨道 ([专题](skills/astrogator/docs/earth-moon-transfer.md))、地月平动点 Halo、DRO、霍曼转移等 |
 | [`lambert`](skills/lambert/SKILL.md) | Lambert 问题: 始末位置与飞行时间 → 速度增量 (DV1、DV2) |
 | [`celestial-transfer`](skills/celestial-transfer/SKILL.md) | 行星/小行星间 Lambert 转移 (日心系) |
 | [`rocket-trajectory-optim`](skills/rocket-trajectory-optim/SKILL.md) | 多级火箭弹道优化 (默认 API: `http://www.astrox.cn:8764`) |

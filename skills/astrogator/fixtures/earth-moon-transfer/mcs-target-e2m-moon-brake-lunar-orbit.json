@@ -1,0 +1,399 @@
+{
+  "Text": "地月转移 + 近月制动 + 环月轨道(全流程, 脉冲机动): Target1 地月转移(DC-BPlane -> DC-倾角高度, 约束近月点高度 100 km / 月心倾角 90 deg / 到达历元); Target2 近月制动(自变量 VNC(Moon)-X 脉冲, 约束月心偏心率 0); Propagate 环月段(Moon_Hpop_default_v10 递推 1 天). 初值已接近收敛, 迭代次数少. 上游参考 raw/Astrogator/Target/E2M_MoonBrake_250616.json",
+  "CentralBody": "Earth",
+  "ComputeCzmlPositions": true,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "地月转移",
+      "Action": "RunActiveOperators",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "初始段",
+          "InitialState": {
+            "CoordSystemName": "Earth Inertial",
+            "Epoch": "2022-06-20T04:00:00Z",
+            "DryMass": 500,
+            "FuelMass": 500,
+            "Cd": 2.2,
+            "DragArea": 20,
+            "Cr": 1,
+            "SRPArea": 20,
+            "Element": {
+              "$type": "Spherical",
+              "RightAscension": 227.35558926420296,
+              "Declination": -15.986327101048163,
+              "RadiusMagnitude": 6678137,
+              "HorizFPA": 0,
+              "VelocityAzimuth": 61.5,
+              "VelocityMagnitude": 10838.587548472453
+            }
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "递推32万km",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Scalar",
+              "Name": "地心距离",
+              "Active": true,
+              "Trip": 320000000,
+              "Tolerance": 0.001,
+              "UserCalcObject": {
+                "$type": "PointElement",
+                "CoordSystemName": "Earth Inertial",
+                "ComponentName": "Magnitude"
+              }
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "近月点",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Periapsis",
+              "Name": "近月点",
+              "Active": true,
+              "Tolerance": 0.000001,
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "Scalar",
+              "Name": "高度",
+              "Active": true,
+              "Description": "月面高度 0 m(撞月保护)",
+              "Trip": 0,
+              "Tolerance": 0.001,
+              "UserCalcObject": {
+                "$type": "Cartographic",
+                "CentralBodyName": "Moon",
+                "ComponentName": "Height"
+              }
+            },
+            {
+              "$type": "Duration",
+              "Name": "持续时间",
+              "Active": true,
+              "Description": "保护性最长时长 4 天",
+              "Trip": 345600,
+              "Tolerance": 0.0864
+            }
+          ],
+          "Results": [
+            {
+              "$type": "Cartographic",
+              "Name": "高度",
+              "CentralBodyName": "Moon",
+              "ComponentName": "Height"
+            },
+            {
+              "$type": "DeltaSpherical",
+              "Name": "赤经差值",
+              "ComponentName": "Delta_Right_Asc",
+              "CentralBodyName": "Moon",
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "DeltaSpherical",
+              "Name": "赤纬差值",
+              "ComponentName": "Delta_Declination",
+              "CentralBodyName": "Moon",
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "Epoch",
+              "Name": "历元"
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "轨道倾角",
+              "ComponentName": "Inclination",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "SphericalElement",
+              "Name": "月心速度",
+              "ComponentName": "VelocityMagnitude",
+              "CoordSystemName": "Moon Inertial"
+            },
+            {
+              "$type": "BPlane",
+              "Name": "BDotR",
+              "ComponentName": "BDotR",
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "BPlane",
+              "Name": "BDotT",
+              "ComponentName": "BDotT",
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-BPlane",
+          "Active": true,
+          "UserComment": "使用 B 平面使近月点末态进入目标附近(接近要求的高度和倾角), B 平面易收敛",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Decl",
+              "ParentName": "初始段",
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Right_Asc",
+              "ParentName": "初始段",
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.VMag",
+              "ParentName": "初始段",
+              "MaxStep": 10,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "BDotR",
+              "ParentName": "近月点",
+              "DesiredValue": "5500000",
+              "Tolerance": 500
+            },
+            {
+              "Enable": true,
+              "Name": "BDotT",
+              "ParentName": "近月点",
+              "DesiredValue": "0",
+              "Tolerance": 500
+            },
+            {
+              "Enable": true,
+              "Name": "历元",
+              "ParentName": "近月点",
+              "DesiredValue": "2022-06-24T20:00:00Z",
+              "Tolerance": 1
+            }
+          ]
+        },
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-倾角高度",
+          "Active": true,
+          "UserComment": "B 平面收敛基础上微调, 精确满足近月点高度和月心轨道倾角",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Decl",
+              "ParentName": "初始段",
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Right_Asc",
+              "ParentName": "初始段",
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.VMag",
+              "ParentName": "初始段",
+              "MaxStep": 10,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "历元",
+              "ParentName": "近月点",
+              "DesiredValue": "2022-06-24T20:00:00Z",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "轨道倾角",
+              "ParentName": "近月点",
+              "DesiredValue": "90",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "高度",
+              "ParentName": "近月点",
+              "DesiredValue": "100000",
+              "Tolerance": 200
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "$type": "TargetSequence",
+      "Name": "近月制动",
+      "Action": "RunActiveOperators",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "DV1",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Moon)",
+            "CoordType": "Cartesian",
+            "X": -826.0659925270021,
+            "Y": 0,
+            "Z": 0
+          },
+          "PropulsionMethod": "EngineModel",
+          "PropulsionMethodValue": "Constant_Thrust_Isp",
+          "UpdateMass": false,
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "偏心率",
+              "ComponentName": "Eccentricity",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "半长轴",
+              "ComponentName": "SemimajorAxis",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "轨道倾角",
+              "ComponentName": "Inclination",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-Circularize",
+          "Active": true,
+          "UserComment": "反速度方向脉冲制动, 使月心轨道偏心率为 0(圆化)",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "ParentName": "DV1",
+              "MaxStep": 100,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "偏心率",
+              "ParentName": "DV1",
+              "DesiredValue": "0",
+              "Tolerance": 0.001
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "$type": "Propagate",
+      "Name": "环月段",
+      "PropagatorName": "Moon_Hpop_default_v10",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": true,
+          "Trip": 86400,
+          "Tolerance": 1e-8
+        }
+      ],
+      "Results": [
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "半长轴",
+          "ComponentName": "SemimajorAxis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "偏心率",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "轨道倾角",
+          "ComponentName": "Inclination",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "近月点高度",
+          "ComponentName": "AltitudeOfPeriapsis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "远月点高度",
+          "ComponentName": "AltitudeOfApoapsis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "周期",
+          "ComponentName": "Period",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "Cartographic",
+          "Name": "月面高度",
+          "CentralBodyName": "Moon",
+          "ComponentName": "Height"
+        }
+      ]
+    }
+  ]
+}
