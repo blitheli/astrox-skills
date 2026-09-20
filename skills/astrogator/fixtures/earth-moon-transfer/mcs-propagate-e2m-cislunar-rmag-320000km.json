@@ -1,0 +1,71 @@
+{
+  "Text": "地月转移轨道递推: 地心惯性系近地点初值, CisLunar 积分器(地球 8x8 + 月球/太阳第三体)递推至地心距 320000 km. 上游参考 raw/Astrogator/Propagate/HpopCislunar_RMag_230522.json",
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Earth Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Cartesian",
+          "X": -4348504.5285496607903,
+          "Y": -4721813.3054333820837,
+          "Z": -1835916.3669064525948,
+          "Vx": 6043.9238667905633,
+          "Vy": -7499.6612192427978,
+          "Vz": 4972.9769780850104
+        },
+        "Epoch": "2022-06-20T04:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "递推32万km",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Scalar",
+          "Name": "R Magnitude",
+          "Active": true,
+          "Description": "地心距达到 320000 km 时停止",
+          "Trip": 320000000,
+          "Tolerance": 1e-6,
+          "UserCalcObject": {
+            "$type": "PointElement",
+            "CoordSystemName": "Earth Inertial",
+            "ComponentName": "Magnitude"
+          }
+        }
+      ],
+      "Results": [
+        {
+          "$type": "PointElement",
+          "Name": "RMag",
+          "CoordSystemName": "Earth Inertial",
+          "ComponentName": "Magnitude"
+        },
+        {
+          "$type": "DeltaSpherical",
+          "Name": "Delta_Right_Asc",
+          "ComponentName": "Delta_Right_Asc",
+          "CentralBodyName": "Moon",
+          "ParentCbName": "Earth"
+        },
+        {
+          "$type": "DeltaSpherical",
+          "Name": "Delta_Declination",
+          "ComponentName": "Delta_Declination",
+          "CentralBodyName": "Moon",
+          "ParentCbName": "Earth"
+        }
+      ]
+    }
+  ]
+}

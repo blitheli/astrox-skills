@@ -1,0 +1,256 @@
+{
+  "Text": "地月转移第 2/3 步(两级微分修正, 顺序执行, 第 2 个 DC 在第 1 个收敛结果上继续): DC-B平面 约束 BDotR=5500 km, BDotT=0, 到达历元; DC-倾角高度 约束近月点高度 100 km, 月心倾角 90 deg, 到达历元. 自变量均为初始赤经/赤纬/速度大小. 初值取自粗修正结果. 上游参考 raw/Astrogator/Target/E2M_BPlane_250612.json",
+  "CentralBody": "Earth",
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Earth2Moon",
+      "Action": "RunActiveOperators",
+      "Segments": [
+        {
+          "$type": "InitialState",
+          "Name": "InitialState",
+          "InitialState": {
+            "Cd": 2.2,
+            "CoordSystemName": "Earth Inertial",
+            "Cr": 2.0,
+            "DragArea": 20,
+            "DryMass": 100,
+            "Element": {
+              "$type": "Spherical",
+              "RightAscension": 208.5,
+              "Declination": 1.7,
+              "RadiusMagnitude": 6678137.0,
+              "HorizFPA": 0.0,
+              "VelocityAzimuth": 61.5,
+              "VelocityMagnitude": 10900.0
+            },
+            "Epoch": "2022-06-20T04:00:00.000Z",
+            "FuelMass": 900,
+            "SRPArea": 20
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Prop32wkm",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Scalar",
+              "Name": "R Magnitude",
+              "Active": true,
+              "Trip": 320000000,
+              "Tolerance": 0.001,
+              "UserCalcObject": {
+                "$type": "PointElement",
+                "CoordSystemName": "Earth Inertial",
+                "ComponentName": "Magnitude"
+              }
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Prop2Moon",
+          "PropagatorName": "CisLunar",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "4day",
+              "Active": true,
+              "Description": "保护性最长时长 4 天",
+              "Trip": 345600.0
+            },
+            {
+              "$type": "Scalar",
+              "Name": "Altitude-0km",
+              "Active": true,
+              "Description": "月面高度 0 m(撞月保护)",
+              "Trip": 0,
+              "Tolerance": 0.001,
+              "UserCalcObject": {
+                "$type": "Cartographic",
+                "CentralBodyName": "Moon",
+                "ComponentName": "Height"
+              }
+            },
+            {
+              "$type": "Periapsis",
+              "Name": "Periapsis",
+              "Active": true,
+              "Tolerance": 0.000001,
+              "CentralBodyName": "Moon",
+              "Mu": 4.90280030555540e+012
+            }
+          ],
+          "Results": [
+            {
+              "$type": "DeltaSpherical",
+              "Name": "Delta_Declination",
+              "ComponentName": "Delta_Declination",
+              "CentralBodyName": "Moon",
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "DeltaSpherical",
+              "Name": "Delta_Right_Asc",
+              "ComponentName": "Delta_Right_Asc",
+              "CentralBodyName": "Moon",
+              "ParentCbName": "Earth"
+            },
+            {
+              "$type": "Cartographic",
+              "Name": "Altitude",
+              "CentralBodyName": "Moon",
+              "ComponentName": "Height"
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "Inclination",
+              "CentralBodyName": "Moon",
+              "ComponentName": "Inclination",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4.90280030555540e+012
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "TrueAnomaly",
+              "CentralBodyName": "Moon",
+              "ComponentName": "TrueAnomaly",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4.90280030555540e+012
+            },
+            {
+              "$type": "Epoch",
+              "Name": "Epoch"
+            },
+            {
+              "$type": "BPlane",
+              "Name": "BDotR",
+              "CentralBodyName": "Moon",
+              "ComponentName": "BDotR",
+              "Mu": 4.90280030555540e+012
+            },
+            {
+              "$type": "BPlane",
+              "Name": "BDotT",
+              "CentralBodyName": "Moon",
+              "ComponentName": "BDotT",
+              "Mu": 4.90280030555540e+012
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-BPlane",
+          "Active": true,
+          "UserComment": "B 平面参数对初值变化近似线性, 易收敛, 先用它把近月点拉到目标附近",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Right_Asc",
+              "MaxStep": 5.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Decl",
+              "MaxStep": 5.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.VMag",
+              "MaxStep": 10.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "BDotR",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "5500000.0",
+              "Tolerance": 100
+            },
+            {
+              "Enable": true,
+              "Name": "BDotT",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "0.0",
+              "Tolerance": 100
+            },
+            {
+              "Enable": true,
+              "Name": "Epoch",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "2022-06-24T20:00:00.000Z",
+              "Tolerance": 1
+            }
+          ]
+        },
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-IncAlt",
+          "Active": true,
+          "UserComment": "在 B 平面收敛基础上微调, 精确满足近月点高度与月心轨道倾角",
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Right_Asc",
+              "MaxStep": 1.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.Decl",
+              "MaxStep": 1.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            },
+            {
+              "Enable": true,
+              "Name": "InitialState.Spherical.VMag",
+              "MaxStep": 10.0,
+              "Perturbation": 0.1,
+              "ParentName": "InitialState"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Inclination",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "90.0",
+              "Tolerance": 0.1
+            },
+            {
+              "Enable": true,
+              "Name": "Altitude",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "100000.0",
+              "Tolerance": 1
+            },
+            {
+              "Enable": true,
+              "Name": "Epoch",
+              "ParentName": "Prop2Moon",
+              "DesiredValue": "2022-06-24T20:00:00.000Z",
+              "Tolerance": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

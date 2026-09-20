@@ -1,0 +1,158 @@
+{
+  "Text": "环月轨道(月心 Keplerian 初值, 100 km 圆极轨道): Moon_Hpop_De430 递推 1 天 -> TargetSequence 脉冲抬高远月点: 自变量 VNC(Moon)-X 脉冲, 递推至远月点(Apoapsis, Moon), 约束远月点高度 500 km. 初值参考 raw/Astrogator/Propagate/Moon_Hpop_De430_250306.cs, 机动姿态参考 raw/Astrogator/ManeuverImpulsive/ThrustVectorVNC(Moon)_230608.json",
+  "CentralBody": "Moon",
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "Cd": 2.2,
+        "CoordSystemName": "Moon Inertial",
+        "Cr": 1.0,
+        "DragArea": 20,
+        "DryMass": 500,
+        "Element": {
+          "$type": "Keplerian",
+          "GravitationalParameter": 4902800305555.4,
+          "SemiMajorAxis": 1837400,
+          "Eccentricity": 0,
+          "Inclination": 90,
+          "RAAN": 50,
+          "ArgOfPeriapsis": 0,
+          "TrueAnomaly": 0
+        },
+        "Epoch": "2018-12-01T00:00:00.000Z",
+        "FuelMass": 500,
+        "SRPArea": 20
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "环月1天",
+      "PropagatorName": "Moon_Hpop_De430",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "Duration",
+          "Active": true,
+          "Trip": 86400
+        }
+      ],
+      "Results": [
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "半长轴",
+          "ComponentName": "SemimajorAxis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "偏心率",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "近月点高度",
+          "ComponentName": "AltitudeOfPeriapsis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "Cartographic",
+          "Name": "月面高度",
+          "CentralBodyName": "Moon",
+          "ComponentName": "Height"
+        }
+      ]
+    },
+    {
+      "$type": "TargetSequence",
+      "Name": "抬高远月点",
+      "Action": "RunActiveOperators",
+      "Segments": [
+        {
+          "$type": "ManeuverImpulsive",
+          "Name": "DV1",
+          "AttitudeControl": {
+            "$type": "ThrustVector",
+            "ThrustAxesName": "VNC(Moon)",
+            "CoordType": "Cartesian",
+            "X": 50.0,
+            "Y": 0.0,
+            "Z": 0.0
+          }
+        },
+        {
+          "$type": "Propagate",
+          "Name": "递推至远月点",
+          "PropagatorName": "Moon_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Apoapsis",
+              "Name": "Apoapsis",
+              "Active": true,
+              "Tolerance": 1e-8,
+              "CentralBodyName": "Moon",
+              "Mu": 4902800305555.4
+            }
+          ],
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "远月点高度",
+              "ComponentName": "AltitudeOfApoapsis",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "近月点高度",
+              "ComponentName": "AltitudeOfPeriapsis",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            },
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "周期",
+              "ComponentName": "Period",
+              "CoordSystemName": "Moon Inertial",
+              "Mu": 4902800305555.4
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC-ApoapsisAltitude",
+          "Active": true,
+          "MaximumIterations": 50,
+          "OnlyStoreFinalResults": false,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "ImpulsiveMnvr.Cartesian.X",
+              "InitialValue": "50",
+              "MaxStep": 100.0,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001,
+              "ParentName": "DV1"
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "远月点高度",
+              "ParentName": "递推至远月点",
+              "DesiredValue": "500000.0",
+              "Tolerance": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

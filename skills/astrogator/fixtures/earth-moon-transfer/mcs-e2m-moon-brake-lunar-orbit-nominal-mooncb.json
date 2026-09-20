@@ -1,0 +1,193 @@
+{
+  "Text": "地月转移 + 近月制动 + 环月轨道(标称运行, 无 TargetSequence; 初值与制动量已收敛). 顶层 CentralBody=Moon: 所有段的 InitialState/FinalState 与 Positions 均在 Moon Inertial 下输出, 便于直接读取环月轨道根数; 初始段仍可在 Earth Inertial 下给定. 上游参考 raw/Astrogator/Target/E2M_MoonBrake_250616-2.json",
+  "CentralBody": "Moon",
+  "MainSequence": [
+    {
+      "$type": "InitialState",
+      "Name": "初始段",
+      "InitialState": {
+        "CoordSystemName": "Earth Inertial",
+        "Epoch": "2031-09-01T00:00:00Z",
+        "DryMass": 500,
+        "FuelMass": 500,
+        "Cd": 2.2,
+        "DragArea": 20,
+        "Cr": 1,
+        "SRPArea": 20,
+        "Element": {
+          "$type": "Spherical",
+          "RightAscension": 218.42704268623203,
+          "Declination": -16.010803049572104,
+          "RadiusMagnitude": 6578137,
+          "HorizFPA": 0,
+          "VelocityAzimuth": 90,
+          "VelocityMagnitude": 10917.460678896163
+        }
+      }
+    },
+    {
+      "$type": "Propagate",
+      "Name": "MoonPeri",
+      "PropagatorName": "CisLunar",
+      "StopConditions": [
+        {
+          "$type": "Periapsis",
+          "Name": "近月点",
+          "Active": true,
+          "Tolerance": 0.000001,
+          "CentralBodyName": "Moon",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "Scalar",
+          "Name": "高度",
+          "Active": true,
+          "Description": "月面高度 10 km(撞月保护)",
+          "Trip": 10000,
+          "Tolerance": 0.001,
+          "UserCalcObject": {
+            "$type": "Cartographic",
+            "CentralBodyName": "Moon",
+            "ComponentName": "Height"
+          }
+        }
+      ],
+      "Results": [
+        {
+          "$type": "BPlane",
+          "Name": "BDotR",
+          "ComponentName": "BDotR",
+          "CentralBodyName": "Moon",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "BPlane",
+          "Name": "BDotT",
+          "ComponentName": "BDotT",
+          "CentralBodyName": "Moon",
+          "Mu": 4902800305555.4
+        },
+        {
+          "$type": "Duration",
+          "Name": "飞行时长"
+        },
+        {
+          "$type": "Epoch",
+          "Name": "到达历元"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "月心轨道倾角",
+          "ComponentName": "Inclination",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "近月点高度",
+          "ComponentName": "AltitudeOfPeriapsis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "SphericalElement",
+          "Name": "速度方位角",
+          "ComponentName": "VelocityAzimuth",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4
+        }
+      ]
+    },
+    {
+      "$type": "ManeuverImpulsive",
+      "Name": "近月制动",
+      "AttitudeControl": {
+        "$type": "ThrustVector",
+        "ThrustAxesName": "VNC(Moon)",
+        "CoordType": "Cartesian",
+        "X": -814.4667790483871,
+        "Y": 0,
+        "Z": 0
+      },
+      "PropulsionMethod": "EngineModel",
+      "PropulsionMethodValue": "Constant_Thrust_Isp",
+      "UpdateMass": false,
+      "Results": [
+        {
+          "$type": "KeplerianElement",
+          "Name": "偏心率",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "半长轴",
+          "ComponentName": "SemimajorAxis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        }
+      ]
+    },
+    {
+      "$type": "Propagate",
+      "Name": "环月段",
+      "PropagatorName": "Moon_Hpop_default_v10",
+      "StopConditions": [
+        {
+          "$type": "Duration",
+          "Name": "持续时间",
+          "Active": true,
+          "Trip": 86400,
+          "Tolerance": 1e-8
+        }
+      ],
+      "Results": [
+        {
+          "$type": "KeplerianElement",
+          "Name": "半长轴",
+          "ComponentName": "SemimajorAxis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "偏心率",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "轨道倾角",
+          "ComponentName": "Inclination",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "近月点高度",
+          "ComponentName": "AltitudeOfPeriapsis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        },
+        {
+          "$type": "KeplerianElement",
+          "Name": "远月点高度",
+          "ComponentName": "AltitudeOfApoapsis",
+          "CoordSystemName": "Moon Inertial",
+          "Mu": 4902800305555.4,
+          "ElementType": "Osculating"
+        }
+      ]
+    }
+  ]
+}
