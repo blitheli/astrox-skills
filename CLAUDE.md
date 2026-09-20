@@ -65,7 +65,7 @@ skills/
 - `celestial-cbaxes-rotation`(目录 `skills/celestial-cbaxes-rotation/`)
 - `kepler2rv`(目录 `skills/kepler2rv/`)
 - `rv2kepler`(目录 `skills/rv2kepler/`)
-- `astrogator`(目录 `skills/astrogator/`;地月平动点专题见 `skills/astrogator/docs/earth-moon-libration.md`)
+- `astrogator`(目录 `skills/astrogator/`;地月转移/近月制动/环月轨道专题见 `skills/astrogator/docs/earth-moon-transfer.md`,fixtures 在 `fixtures/earth-moon-transfer/`;地月平动点专题见 `skills/astrogator/docs/earth-moon-libration.md`)
 - `libration`(目录 `skills/libration/`;CRTBP 平动点、Halo/NRHO/DRO、无量纲轨迹积分与固定 X 周期轨道微分修正)
 - `rocket-trajectory-optim`(目录 `skills/rocket-trajectory-optim/`;火箭方案弹道优化,契约见仓库根目录 `rocket-web-api.json`,默认服务 `http://astrox.cn:8764`)
 - `terrain-mask`(目录 `skills/terrain-mask/`;方位–仰角地形遮罩 `/Terrain/AzElMask` 与 `/Terrain/AzElMaskSimple`)
