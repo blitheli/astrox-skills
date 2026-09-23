@@ -133,6 +133,11 @@
       "name": "terrain-mask",
       "skillFile": "skills/terrain-mask/SKILL.md",
       "fixturesDir": "skills/terrain-mask/fixtures"
+    },
+    {
+      "name": "cesium-astrox",
+      "skillFile": "skills/cesium-astrox/SKILL.md",
+      "fixturesDir": "skills/cesium-astrox/examples"
     }
   ]
 }

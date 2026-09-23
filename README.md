@@ -110,6 +110,12 @@ curl "http://astrox.cn:8765/city?cityName=Beijing"
 | [`query-facility`](skills/query-facility/SKILL.md) | 地面站/测控设施 |
 | [`query-tle`](skills/query-tle/SKILL.md) | 卫星 TLE 查询 |
 
+### Cesium / 可视化
+
+| 技能 | 说明 |
+| :--- | :--- |
+| [`cesium-astrox`](skills/cesium-astrox/SKILL.md) | ASTROX 扩展版 Cesium.js (Cesium-Astrox) 可视化用法脚手架;示例待补充 |
+
 ## 目录结构 (简要)
 
 ```text
