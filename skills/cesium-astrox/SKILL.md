@@ -1,6 +1,6 @@
 ---
 name: cesium-astrox
-description: ASTROX 扩展版 Cesium.js (Cesium-Astrox) 的场景与图层用法。用户需要多天体 SolarSystem 场景、中央天体、addViewer、行星实体、CzmlDataSource/VGT、分辨率、回退 Viewer,或为地球/月球创建影像与地形图层时使用;也用于询问 ASTROX 定制 Cesium 与原版差异。场景初始化时 AstroxWasm.setDotnetUrl 为必选,失败则中止;VGT 与 Planetary 仍为可选。不适用于仅讨论原版 Cesium 的一般问题。
+description: ASTROX 扩展版 Cesium.js (Cesium-Astrox) 的场景与图层用法。用户需要多天体 SolarSystem 场景、中央天体、addViewer、行星实体、CzmlDataSource/VGT、分辨率、回退 Viewer,为地球/月球创建影像与地形图层,用 CZML position 创建带 centralBody 的轨迹 Entity,在 path.groundTracks 上显示地面轨迹,或用 entity.orbits 显示多条相关轨迹时使用;也用于询问 ASTROX 定制 Cesium 与原版差异。场景初始化时 AstroxWasm.setDotnetUrl 为必选,失败则中止;VGT 与 Planetary 仍为可选。不适用于仅讨论原版 Cesium 的一般问题。
 ---
 
 # ASTROX 扩展 Cesium (Cesium-Astrox)
@@ -13,7 +13,7 @@ description: ASTROX 扩展版 Cesium.js (Cesium-Astrox) 的场景与图层用法
 
 1. **优先本技能**:编写或修改 Cesium-Astrox 场景时,按下面的调用顺序使用已记录的 API 与参数。不要改成原版 `Cesium.Viewer` 单地球写法,除非 SolarSystem 初始化失败、需要走回退 Viewer。
 2. **区分扩展与原版**:仅当用户明确只讨论原版 Cesium、且与 ASTROX 扩展无关时,才可参考通用 Cesium 文档。
-3. **场景与图层已入库**:多天体场景创建、分辨率、必选 AstroxWasm、可选 VGT/Planetary、回退 Viewer,以及地球/月球影像与地形,按本文章节实现。其他专题仍只使用 `examples/`、`notes/` 里已经出现的写法。
+3. **场景与图层已入库**:多天体场景创建、分辨率、必选 AstroxWasm、可选 VGT/Planetary、回退 Viewer、地球/月球影像与地形、用 CZML position 创建轨迹 Entity、path.groundTracks 地面轨迹,以及 entity.orbits 多条相关轨迹,按本文章节实现。其他专题仍只使用 `examples/`、`notes/` 里已经出现的写法。
 
 ## 目录结构 (可扩展)
 
@@ -144,6 +144,245 @@ solarSystem.addDataSource(czmlDataSource);
 
 顺序固定:`new Cesium.CzmlDataSource` → `addVGTChange()` → `referenceFrame = Cesium.ReferenceFrame.INERTIAL` → `solarSystem.addDataSource`。
 
+## 用 CZML position 创建轨迹 Entity
+
+行星体走上一节的 `addPlanetary` 与 `solarSystem.addEntity`。轨道、航天器等其它实体不要放进 `viewer.entities`,也不要 `solarSystem.addEntity`。最基础的输入是 `Cesium.CzmlPosition`(或字段相同的普通对象 / 对象数组)。积分器和 Web API 只负责产出这个包,创建 Entity 都走 `createEntityFromCzmlPosition`,再 `czmlDataSource.entities.add`。
+
+`entityOptions` 里不要传 `position`。写入 Entity 前会丢掉它。外观(id、name、path、point、label)和 `centralBody` 放在选项里,位置单独传入。
+
+`centralBody` 是该轨迹的中心天体名。月球轨道用 `"Moon"`,日心小行星用 `"Sun"`。漏掉它时轨迹不会挂到对应天体上。
+
+```javascript
+function createEntityFromCzmlPosition(czmlPositionData, entityOptions = {}) {
+    const { position: _ignored, ...rest } = entityOptions;
+    const entity = new Cesium.Entity(rest);
+
+    // 多段 position 走 packet 数组,单段走一个 position 包
+    if (Array.isArray(czmlPositionData)) {
+        Cesium.CzmlDataSource.processPositionPacketData(entity, "position", czmlPositionData);
+    } else {
+        Cesium.CzmlDataSource.processPositionProperty(entity, "position", czmlPositionData);
+    }
+
+    if (!entity.position) {
+        throw new Error("CZML position 解析失败,未得到 PositionProperty");
+    }
+    return entity;
+}
+```
+
+同一 `id` 再次加入前,先从 `czmlDataSource.entities` 按 id 移除,避免 “entity already exists”。
+
+### 直接用 CzmlPosition
+
+`new Cesium.CzmlPosition(options)` 与 API / JSON 里的 position 包是同一套字段。`processPositionProperty` 只读字段,两种都可以传入。省略 `referenceFrame` 时构造函数默认 `"FIXED"`。惯性轨道必须写成 `"INERTIAL"`。`epoch` 用 ISO8601,不要依赖构造函数里的默认历元。
+
+三个采样数组只设一个:
+
+| 字段 | 步长 | 每个采样 |
+| :--- | :--- | :--- |
+| `cartesian` | 4 | 相对 epoch 的秒, `x`, `y`, `z`(米) |
+| `cartesianVelocity` | 7 | 秒, `x`, `y`, `z`, `vx`, `vy`, `vz` |
+| `cartographicDegrees` | 4 | 秒, 经度(度), 纬度(度), 高(米) |
+
+可选 `interval`(`"start/stop"`)、`interpolationAlgorithm`(`"LAGRANGE"` 或 `"HERMITE"`)、`interpolationDegree`。未传时算法默认 `LAGRANGE`,阶数默认 `5`。包里已有这些字段时原样传入,不要改成默认值。
+
+```javascript
+const czmlPosition = new Cesium.CzmlPosition({
+    epoch: "2020-11-23T21:06:35.761Z",
+    referenceFrame: "INERTIAL",
+    interpolationAlgorithm: "LAGRANGE",
+    interpolationDegree: 5,
+    cartesian: [
+        0, -1808774.52236705, -6210104.58567043, -2393122.32753525,
+        600, 3889226.541885434, -7756350.41535623, -3083645.5469023483
+    ]
+});
+
+const visual = {
+    id: "czml-orbit",
+    name: "CZML 轨道",
+    centralBody: "Earth",
+    path: {
+        show: true,
+        width: 2,
+        resolution: 60,
+        leadTime: 1e10,
+        trailTime: 1e10,
+        material: Cesium.Color.CYAN
+    },
+    point: {
+        pixelSize: 8,
+        color: Cesium.Color.CYAN,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 1
+    },
+    label: {
+        text: "CZML 轨道",
+        font: "16px Microsoft YaHei",
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        pixelOffset: new Cesium.Cartesian2(0, -22)
+    }
+};
+
+const existing = czmlDataSource.entities.getById(visual.id);
+if (existing) {
+    czmlDataSource.entities.remove(existing);
+}
+czmlDataSource.entities.add(createEntityFromCzmlPosition(czmlPosition, visual));
+```
+
+多段轨迹传入 `CzmlPosition` 数组(例如接口里的 `Positions.CzmlPositions`)。每一段自己带 `interval`。函数看到数组会走 `processPositionPacketData`。不要把数组再包进一个新的 `CzmlPosition`。已有普通对象、字段与上表一致时,直接传入,不必再 `new Cesium.CzmlPosition`。
+
+### 地月转移:地面轨迹与 orbits
+
+主轨迹仍用上一节的 `createEntityFromCzmlPosition`。地月转移的 `centralBody` 是 `"Earth"`。投影到另一天体表面的地面轨迹写在 `path.groundTracks`,不要为此再创建一个 Entity。每一项只有 `centralBody` 和 `show`。要画在月球表面上时用 `"Moon"`。
+
+多条相关轨迹(例如一组方位角)不要各自 `entities.add`,也不要写进主 Entity 的 `path`。在加入数据源之前赋给 `entity.orbits`。
+
+```javascript
+const packets = data.Positions.CzmlPositions;
+const visual = {
+    id: "earth2moon-demo",
+    name: "地月转移",
+    centralBody: "Earth",
+    path: {
+        show: true,
+        width: 2,
+        resolution: 120,
+        leadTime: 1e10,
+        trailTime: 1e10,
+        material: Cesium.Color.CYAN,
+        groundTracks: [
+            {
+                centralBody: "Moon",
+                show: true
+            }
+        ]
+    },
+    point: {
+        pixelSize: 8,
+        color: Cesium.Color.CYAN,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 1
+    },
+    label: {
+        text: "地月转移",
+        font: "16px Microsoft YaHei",
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        pixelOffset: new Cesium.Cartesian2(0, -22)
+    }
+};
+
+const existing = czmlDataSource.entities.getById(visual.id);
+if (existing) {
+    czmlDataSource.entities.remove(existing);
+}
+const entity = createEntityFromCzmlPosition(packets, visual);
+
+function orbitFromPacket(name, packet) {
+    const interval = packet.interval || packet.Interval || "";
+    const [start, stop] = String(interval).split("/");
+    const startIso = start || packet.epoch || packet.Epoch || "";
+    return {
+        enabled: true,
+        name,
+        startTime: startIso ? Cesium.JulianDate.fromIso8601(startIso) : undefined,
+        stopTime: stop ? Cesium.JulianDate.fromIso8601(stop) : undefined,
+        position: new Cesium.CzmlPositionHelper(packet).getPositionProperty(),
+        size: 6,
+        outlineColor: new Cesium.ConstantProperty(Cesium.Color.WHITE),
+        outlineWidth: 2,
+        positionType: "CzmlPosition",
+        width: 2,
+        resolution: 120,
+        system: "Inertial"
+    };
+}
+
+entity.orbits = new Cesium.OrbitsGraphics({
+    show: true,
+    showLabels: true,
+    showPoints: true,
+    data: relatedPackets.map((packet, index) => orbitFromPacket(`Az${index}`, packet))
+});
+czmlDataSource.entities.add(entity);
+```
+
+`relatedPackets` 里每一项是一条相关轨迹的单个 `CzmlPositions[0]`。`system` 固定 `"Inertial"`。写成 `"Earth"` 或 `"Moon"` 后,切换中心天体时这些轨迹不会跟着变。`positionType` 固定 `"CzmlPosition"`。`position` 必须是 `CzmlPositionHelper.getPositionProperty()` 的返回值,不要把原始包直接塞进 `data`。
+
+`OrbitsGraphics` 的 `show`、`showLabels`、`showPoints` 分别控制整组轨迹、标签和点。赋值发生在 `entities.add` 之前。
+
+主轨迹的时钟用第一段的 `interval`(`"start/stop"`)对齐 `viewer.clock`。没有 `interval` 时,起点回退到该段 `epoch`。
+
+### 月球二体轨道
+
+近月圆轨道用 `Cesium.TwoBodyPropagator` 采样,再交给上面的函数。`toCzmlPosition(start, stop, step)` 返回 `CzmlPositionHelper`,必须再调 `getCzmlPostions()`(方法名就是这个拼写)。无分段时返回单个 position 包,存在 `boundaryTimes` 时返回数组。
+
+`toCzmlPosition` 已把 `referenceFrame` 写成 `"INERTIAL"`。单个包可以再赋一次 `"INERTIAL"`。返回值是数组时不要对数组本身写 `referenceFrame`,直接交给 `createEntityFromCzmlPosition`。
+
+```javascript
+const MU_MOON = 4.9028003055554e12;
+const radius = 1737400 + 100000;
+const speed = Math.sqrt(MU_MOON / radius);
+const epoch = Cesium.JulianDate.fromIso8601("2022-06-24T20:00:00Z");
+const stop = Cesium.JulianDate.addSeconds(epoch, 12 * 3600, new Cesium.JulianDate());
+
+const propagator = new Cesium.TwoBodyPropagator(
+    epoch,
+    new Cesium.Cartesian3(radius, 0, 0),
+    new Cesium.Cartesian3(0, 0, speed),
+    MU_MOON
+);
+const packet = propagator.toCzmlPosition(epoch, stop, 60).getCzmlPostions();
+if (!Array.isArray(packet)) {
+    packet.referenceFrame = "INERTIAL";
+}
+
+const visual = {
+    id: "moon-twobody-orbit",
+    name: "月球二体轨道",
+    centralBody: "Moon",
+    path: {
+        show: true,
+        width: 2,
+        resolution: 60,
+        leadTime: 1e10,
+        trailTime: 1e10,
+        material: Cesium.Color.YELLOW
+    },
+    point: {
+        pixelSize: 8,
+        color: Cesium.Color.YELLOW,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 1
+    },
+    label: {
+        text: "月球二体轨道",
+        font: "16px Microsoft YaHei",
+        fillColor: Cesium.Color.WHITE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        pixelOffset: new Cesium.Cartesian2(0, -22)
+    }
+};
+
+const existing = czmlDataSource.entities.getById(visual.id);
+if (existing) {
+    czmlDataSource.entities.remove(existing);
+}
+czmlDataSource.entities.add(createEntityFromCzmlPosition(packet, visual));
+```
+
+加入后把 `viewer.clock` 的 `startTime`、`stopTime`、`currentTime` 对齐到这段历元,`clockRange` 用 `Cesium.ClockRange.LOOP_STOP`。有 timeline 时再 `zoomTo(start, stop)`。
+
 ### 分辨率
 
 Cesium 的像素比是:`useBrowserRecommendedResolution` 为 true 时取 1,否则取 `devicePixelRatio`,再乘 `resolutionScale`。因此:
@@ -256,14 +495,16 @@ if (layers?.indexOf(osmLayer) === -1) {
 
 - AstroxWasm 初始化失败则中止,不创建 SolarSystem,也不回退 Viewer。VGT、Planetary 初始化失败不阻断场景。SolarSystem 构造失败才走回退 Viewer。
 - 分辨率要在 `SolarSystem` 和 `Viewer` 两侧一起关 `useBrowserRecommendedResolution`, `resolutionScale` 保持 1,并在下一帧再写一次。
-- 行星走 `Planetary.getPlanetary` + `solarSystem.addEntity`。VGT 与其他新建实体走 `CzmlDataSource`。
+- 行星走 `Planetary.getPlanetary` + `solarSystem.addEntity`。轨迹先备好 `Cesium.CzmlPosition`(或同样字段的包 / 包数组),再 `createEntityFromCzmlPosition`,最后 `czmlDataSource.entities.add`。Entity 选项带 `centralBody`,不要在构造参数里写 `position`。
+- 地面轨迹写在主 Entity 的 `path.groundTracks`,项为 `{ centralBody, show }`。月球表面用 `"Moon"`。多条相关轨迹赋给 `entity.orbits = new Cesium.OrbitsGraphics(...)`,`system` 用 `"Inertial"`,`positionType` 用 `"CzmlPosition"`。
 - 影像、地形挂到天体名 `"Earth"` 或 `"Moon"`,极区必须带 `pole`,椭球与天体一致。
 - 月球南极示例的影像服务是 `astrox.cn:8767`,地形服务是 `astrox.cn:8766`。换数据集时只替换 `url`、`maximumLevel` 与 `pole`,不要改调用顺序。
 - 本文未出现的 ASTROX Cesium API 先查 `examples/` 与 `notes/`,没有则向用户确认,不要按原版 Cesium 猜测扩展参数。
 
 ## 标准执行流程
 
-1. 确认问题是否涉及 ASTROX 扩展 Cesium。多天体场景、行星实体、VGT、地球或月球影像/地形属于本技能。
+1. 确认问题是否涉及 ASTROX 扩展 Cesium。多天体场景、行星实体、轨迹 Entity、地面轨迹、orbits、VGT、地球或月球影像/地形属于本技能。
 2. 场景创建按「初始化顺序」和「场景内推荐调用顺序」写,参数用本文表格与代码中的值。先完成必选 AstroxWasm,再装可选的 VGT 与 Planetary。
 3. 图层按「影像图层与地形图层」选择天体。月球南极用已给出的 URL、`Ellipsoid.MOON` 和 `pole: "South"`。地球 OSM 按需添加并同步 `cloneObjects`。
-4. 本文没有的 API 或地形地址,说明资料尚未入库,不要编造。
+4. 轨迹 Entity 按「用 CZML position 创建轨迹 Entity」写。已有 `CzmlPosition` 或同样字段的包时直接 `createEntityFromCzmlPosition`。地面轨迹与多条相关轨迹按「地月转移:地面轨迹与 orbits」写。月球二体先 `TwoBodyPropagator.toCzmlPosition(...).getCzmlPostions()`,`centralBody` 为 `"Moon"`,再加入 `czmlDataSource.entities`。
+5. 本文没有的 API 或地形地址,说明资料尚未入库,不要编造。
