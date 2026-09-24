@@ -1,6 +1,6 @@
 ---
 name: cesium-astrox
-description: ASTROX 扩展版 Cesium.js (Cesium-Astrox) 的场景与图层用法。用户需要多天体 SolarSystem 场景、中央天体、addViewer、行星实体、CzmlDataSource/VGT、分辨率、回退 Viewer,为地球/月球创建影像与地形图层,用 CZML position 创建带 centralBody 的轨迹 Entity,在 path.groundTracks 上显示地面轨迹,或用 entity.orbits 显示多条相关轨迹时使用;也用于询问 ASTROX 定制 Cesium 与原版差异。场景初始化时 AstroxWasm.setDotnetUrl 为必选,失败则中止;VGT 与 Planetary 仍为可选。不适用于仅讨论原版 Cesium 的一般问题。
+description: ASTROX 扩展版 Cesium.js (Cesium-Astrox) 的场景与图层用法。用户需要多天体 SolarSystem 场景、中央天体、addViewer、行星实体、CzmlDataSource/VGT、分辨率、回退 Viewer,为地球/月球创建影像与地形图层,用 CZML position 创建带 centralBody 的轨迹 Entity,在 path.groundTracks 上显示地面轨迹,用 entity.orbits 显示多条相关轨迹,或按时间段为 entity.path 分段上色(TimeIntervalCollectionProperty / ColorMaterialProperty)时使用;也用于询问 ASTROX 定制 Cesium 与原版差异。场景初始化时 AstroxWasm.setDotnetUrl 为必选,失败则中止;VGT 与 Planetary 仍为可选。不适用于仅讨论原版 Cesium 的一般问题。
 ---
 
 # ASTROX 扩展 Cesium (Cesium-Astrox)
@@ -13,7 +13,7 @@ description: ASTROX 扩展版 Cesium.js (Cesium-Astrox) 的场景与图层用法
 
 1. **优先本技能**:编写或修改 Cesium-Astrox 场景时,按下面的调用顺序使用已记录的 API 与参数。不要改成原版 `Cesium.Viewer` 单地球写法,除非 SolarSystem 初始化失败、需要走回退 Viewer。
 2. **区分扩展与原版**:仅当用户明确只讨论原版 Cesium、且与 ASTROX 扩展无关时,才可参考通用 Cesium 文档。
-3. **场景与图层已入库**:多天体场景创建、分辨率、必选 AstroxWasm、可选 VGT/Planetary、回退 Viewer、地球/月球影像与地形、用 CZML position 创建轨迹 Entity、path.groundTracks 地面轨迹,以及 entity.orbits 多条相关轨迹,按本文章节实现。其他专题仍只使用 `examples/`、`notes/` 里已经出现的写法。
+3. **场景与图层已入库**:多天体场景创建、分辨率、必选 AstroxWasm、可选 VGT/Planetary、回退 Viewer、地球/月球影像与地形、用 CZML position 创建轨迹 Entity、path.groundTracks 地面轨迹、entity.orbits 多条相关轨迹,以及多段 CzmlPositions 的 `entity.path` 按时间分段上色,按本文章节实现。其他专题仍只使用 `examples/`、`notes/` 里已经出现的写法。
 
 ## 目录结构 (可扩展)
 
@@ -321,6 +321,25 @@ czmlDataSource.entities.add(entity);
 
 主轨迹的时钟用第一段的 `interval`(`"start/stop"`)对齐 `viewer.clock`。没有 `interval` 时,起点回退到该段 `epoch`。
 
+### 多段 path 按时间上色
+
+多段 `CzmlPositions`(包数组,每段自带 `interval` / `Interval`)时,可用原版 Cesium 的 `TimeIntervalCollectionProperty` + `ColorMaterialProperty` 给主 Entity 的 `path` 按时间换色。只改 `entity.path.material`,不影响 `entity.orbits` / `OrbitsGraphics`。
+
+在 `createEntityFromCzmlPosition(packets, visual)` 之后调用。可复用写法见 `examples/path-segment-colors.js`。
+
+要点:
+
+- 若尚无 `entity.path`,先建 `new Cesium.PathGraphics({ show: true, width: 2 })`。
+- 从 `packets` 或等价 interval 列表收集每段 `start`/`stop`(支持 `"start/stop"` 字符串、包上的 `interval`/`Interval`、或 `Cesium.TimeIntervalCollection`)。
+- 每段 `JulianDate.fromIso8601` 后写入 `TimeIntervalCollectionProperty.intervals`;末段 `isStopIncluded: true`,其余段 `isStopIncluded: false`。颜色按段索引取自调色板(示例为 CYAN / ORANGE / LIME 循环)。
+- `colorProperty.intervals` 非空时:`entity.path.material = new Cesium.ColorMaterialProperty(colorProperty)`。
+- 起始不早于终止的段跳过;无有效段则不改 material。
+
+```javascript
+const entity = createEntityFromCzmlPosition(packets, visual);
+getMultipleSegmentColors(entity, packets);
+```
+
 ### 月球二体轨道
 
 近月圆轨道用 `Cesium.TwoBodyPropagator` 采样,再交给上面的函数。`toCzmlPosition(start, stop, step)` 返回 `CzmlPositionHelper`,必须再调 `getCzmlPostions()`(方法名就是这个拼写)。无分段时返回单个 position 包,存在 `boundaryTimes` 时返回数组。
@@ -497,14 +516,15 @@ if (layers?.indexOf(osmLayer) === -1) {
 - 分辨率要在 `SolarSystem` 和 `Viewer` 两侧一起关 `useBrowserRecommendedResolution`, `resolutionScale` 保持 1,并在下一帧再写一次。
 - 行星走 `Planetary.getPlanetary` + `solarSystem.addEntity`。轨迹先备好 `Cesium.CzmlPosition`(或同样字段的包 / 包数组),再 `createEntityFromCzmlPosition`,最后 `czmlDataSource.entities.add`。Entity 选项带 `centralBody`,不要在构造参数里写 `position`。
 - 地面轨迹写在主 Entity 的 `path.groundTracks`,项为 `{ centralBody, show }`。月球表面用 `"Moon"`。多条相关轨迹赋给 `entity.orbits = new Cesium.OrbitsGraphics(...)`,`system` 用 `"Inertial"`,`positionType` 用 `"CzmlPosition"`。
+- 多段轨迹要按时间换 path 颜色时,在 `createEntityFromCzmlPosition` 之后调用 `getMultipleSegmentColors`(见「多段 path 按时间上色」与 `examples/path-segment-colors.js`)。只作用于 `entity.path`,不要指望它改变 `OrbitsGraphics`。
 - 影像、地形挂到天体名 `"Earth"` 或 `"Moon"`,极区必须带 `pole`,椭球与天体一致。
 - 月球南极示例的影像服务是 `astrox.cn:8767`,地形服务是 `astrox.cn:8766`。换数据集时只替换 `url`、`maximumLevel` 与 `pole`,不要改调用顺序。
 - 本文未出现的 ASTROX Cesium API 先查 `examples/` 与 `notes/`,没有则向用户确认,不要按原版 Cesium 猜测扩展参数。
 
 ## 标准执行流程
 
-1. 确认问题是否涉及 ASTROX 扩展 Cesium。多天体场景、行星实体、轨迹 Entity、地面轨迹、orbits、VGT、地球或月球影像/地形属于本技能。
+1. 确认问题是否涉及 ASTROX 扩展 Cesium。多天体场景、行星实体、轨迹 Entity、地面轨迹、orbits、path 分段上色、VGT、地球或月球影像/地形属于本技能。
 2. 场景创建按「初始化顺序」和「场景内推荐调用顺序」写,参数用本文表格与代码中的值。先完成必选 AstroxWasm,再装可选的 VGT 与 Planetary。
 3. 图层按「影像图层与地形图层」选择天体。月球南极用已给出的 URL、`Ellipsoid.MOON` 和 `pole: "South"`。地球 OSM 按需添加并同步 `cloneObjects`。
-4. 轨迹 Entity 按「用 CZML position 创建轨迹 Entity」写。已有 `CzmlPosition` 或同样字段的包时直接 `createEntityFromCzmlPosition`。地面轨迹与多条相关轨迹按「地月转移:地面轨迹与 orbits」写。月球二体先 `TwoBodyPropagator.toCzmlPosition(...).getCzmlPostions()`,`centralBody` 为 `"Moon"`,再加入 `czmlDataSource.entities`。
+4. 轨迹 Entity 按「用 CZML position 创建轨迹 Entity」写。已有 `CzmlPosition` 或同样字段的包时直接 `createEntityFromCzmlPosition`。地面轨迹与多条相关轨迹按「地月转移:地面轨迹与 orbits」写。多段 CzmlPositions 要按时间换 path 颜色时,按「多段 path 按时间上色」在创建 Entity 后设置 `path.material`。月球二体先 `TwoBodyPropagator.toCzmlPosition(...).getCzmlPostions()`,`centralBody` 为 `"Moon"`,再加入 `czmlDataSource.entities`。
 5. 本文没有的 API 或地形地址,说明资料尚未入库,不要编造。
