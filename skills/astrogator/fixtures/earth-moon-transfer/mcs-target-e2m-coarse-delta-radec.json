@@ -140,14 +140,14 @@
             {
               "Enable": true,
               "Name": "InitialState.Spherical.Right_Asc",
-              "MaxStep": 30.0,
+              "MaxStep": 50.0,
               "Perturbation": 0.1,
               "ParentName": "InitialState"
             },
             {
               "Enable": true,
               "Name": "InitialState.Spherical.Decl",
-              "MaxStep": 30.0,
+              "MaxStep": 50.0,
               "Perturbation": 0.1,
               "ParentName": "InitialState"
             }
@@ -158,14 +158,14 @@
               "Name": "Delta_Declination",
               "ParentName": "Prop2Moon",
               "DesiredValue": "0.0",
-              "Tolerance": 0.1
+              "Tolerance": 1.0
             },
             {
               "Enable": true,
               "Name": "Delta_Right_Asc",
               "ParentName": "Prop2Moon",
               "DesiredValue": "0.0",
-              "Tolerance": 0.1
+              "Tolerance": 1.0
             }
           ]
         }
