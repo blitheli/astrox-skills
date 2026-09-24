@@ -106,7 +106,7 @@ B 平面参数对出发赤经/赤纬/速度近似线性,而近月点高度/倾�
 
 | 步骤 | 自变量(`ParentName` = 初始段) | 约束(`ParentName` = 近月段) | `MaxStep` | 迭代(实测) | fixture |
 | --- | --- | --- | --- | --- | --- |
-| 1 粗修正 | `Right_Asc`, `Decl` | `Delta_Declination = 0`, `Delta_Right_Asc = 0`(Tol 0.1 deg) | 30 deg | 9 | `mcs-target-e2m-coarse-delta-radec.json` |
+| 1 粗修正 | `Right_Asc`, `Decl` | `Delta_Declination = 0`, `Delta_Right_Asc = 0`(Tol 1 deg) | 50 deg | 9 | `mcs-target-e2m-coarse-delta-radec.json` |
 | 2 B 平面 | `Right_Asc`, `Decl`, `VMag` | `BDotR = 5500 km`, `BDotT = 0`(Tol 100 m), `Epoch = 到达时刻`(Tol 1 s) | 5 deg / 10 m/s | 12 | `mcs-target-e2m-bplane-inc-alt.json` |
 | 3 精修正 | 同上 | `Inclination = 90 deg`(Tol 0.1), `Altitude = 100 km`(Tol 1 m), `Epoch`(Tol 1 s) | 1 deg / 10 m/s | 5 | 同上(第 2 个 Profile) |
 | 4 制动圆化 | `ImpulsiveMnvr.Cartesian.X`(VNC(Moon)) | 月心 `Eccentricity = 0`(Tol 0.001) | 100 m/s | 1~3 | `mcs-target-e2m-moon-brake-lunar-orbit.json` |
