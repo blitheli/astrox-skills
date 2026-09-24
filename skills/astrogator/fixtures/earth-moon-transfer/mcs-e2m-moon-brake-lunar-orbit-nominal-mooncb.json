@@ -80,6 +80,7 @@
           "Name": "月心轨道倾角",
           "ComponentName": "Inclination",
           "CoordSystemName": "Moon Inertial",
+          "Dimension": "Angle",
           "Mu": 4902800305555.4,
           "ElementType": "Osculating"
         },
@@ -96,6 +97,7 @@
           "Name": "速度方位角",
           "ComponentName": "VelocityAzimuth",
           "CoordSystemName": "Moon Inertial",
+          "Dimension": "Angle",
           "Mu": 4902800305555.4
         }
       ]
@@ -168,6 +170,7 @@
           "Name": "轨道倾角",
           "ComponentName": "Inclination",
           "CoordSystemName": "Moon Inertial",
+          "Dimension": "Angle",
           "Mu": 4902800305555.4,
           "ElementType": "Osculating"
         },
