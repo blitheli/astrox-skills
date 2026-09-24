@@ -55,6 +55,7 @@
           "$type": "DeltaSpherical",
           "Name": "Delta_Right_Asc",
           "ComponentName": "Delta_Right_Asc",
+          "Dimension": "Angle",
           "CentralBodyName": "Moon",
           "ParentCbName": "Earth"
         },
@@ -62,6 +63,7 @@
           "$type": "DeltaSpherical",
           "Name": "Delta_Declination",
           "ComponentName": "Delta_Declination",
+          "Dimension": "Angle",
           "CentralBodyName": "Moon",
           "ParentCbName": "Earth"
         }

@@ -135,6 +135,7 @@
           "CentralBodyName": "Moon",
           "ComponentName": "Inclination",
           "CoordSystemName": "Moon Inertial",
+          "Dimension": "Angle",
           "Mu": 4.90280030555540e+012
         },
         {

@@ -98,7 +98,7 @@ flowchart LR
 | `Epoch` | — | 仅 `Name` | UTC 字符串 | 到达时刻约束(`DesiredValue` 为 ISO8601 字符串,`Tolerance` 单位 s) |
 | `Duration` | — | 仅 `Name` | s | 读取段飞行时长 |
 
-`Results` 中每个对象的 `Name` 即输出字典 `Results` 的键,也是微分修正 `Results[].Name` 引用的名称;支持中文键名。角度类标量作为**终止条件**时建议显式 `"Dimension": "Angle"`。
+`Results` 中每个对象的 `Name` 即输出字典 `Results` 的键,也是微分修正 `Results[].Name` 引用的名称;支持中文键名。角度类标量(如 `Inclination`/`TrueAnomaly`/`VelocityAzimuth`/`Delta_Right_Asc`/`Delta_Declination` 及其中文别名)在**段 `Results` 物理量定义**与 **Scalar 终止条件的 `UserCalcObject`** 上均应显式 `"Dimension": "Angle"`(与 `ComponentName`/`CoordSystemName` 同级);微分修正 Profile 里仅含 `Name`/`DesiredValue`/`Tolerance` 的引用项不要加 `Dimension`。
 
 ## 3. 微分修正策略(三级修正 + 制动圆化)
 
