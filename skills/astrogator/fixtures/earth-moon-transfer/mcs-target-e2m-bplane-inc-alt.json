@@ -208,21 +208,21 @@
               "Enable": true,
               "Name": "InitialState.Spherical.Right_Asc",
               "MaxStep": 1.0,
-              "Perturbation": 0.1,
+              "Perturbation": 0.01,
               "ParentName": "InitialState"
             },
             {
               "Enable": true,
               "Name": "InitialState.Spherical.Decl",
               "MaxStep": 1.0,
-              "Perturbation": 0.1,
+              "Perturbation": 0.01,
               "ParentName": "InitialState"
             },
             {
               "Enable": true,
               "Name": "InitialState.Spherical.VMag",
               "MaxStep": 10.0,
-              "Perturbation": 0.1,
+              "Perturbation": 0.01,
               "ParentName": "InitialState"
             }
           ],
