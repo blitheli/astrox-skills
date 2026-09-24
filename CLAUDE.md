@@ -69,5 +69,5 @@ skills/
 - `libration`(目录 `skills/libration/`;CRTBP 平动点、Halo/NRHO/DRO、无量纲轨迹积分与固定 X 周期轨道微分修正)
 - `rocket-trajectory-optim`(目录 `skills/rocket-trajectory-optim/`;火箭方案弹道优化,契约见仓库根目录 `rocket-web-api.json`,默认服务 `http://astrox.cn:8764`)
 - `terrain-mask`(目录 `skills/terrain-mask/`;方位–仰角地形遮罩 `/Terrain/AzElMask` 与 `/Terrain/AzElMaskSimple`)
-- `cesium-astrox`(目录 `skills/cesium-astrox/`;ASTROX 扩展 Cesium.js。多天体 SolarSystem 场景、分辨率与回退 Viewer、地球/月球影像和地形图层、CZML position 轨迹 Entity、地面轨迹与 orbits 见 `SKILL.md`)
+- `cesium-astrox`(目录 `skills/cesium-astrox/`;ASTROX 扩展 Cesium.js。多天体 SolarSystem 场景、分辨率与回退 Viewer、地球/月球影像和地形图层、CZML position 轨迹 Entity、地面轨迹与 orbits、多段 path 按时间上色见 `SKILL.md` 与 `examples/path-segment-colors.js`)
 

@@ -114,7 +114,7 @@ curl "http://astrox.cn:8765/city?cityName=Beijing"
 
 | 技能 | 说明 |
 | :--- | :--- |
-| [`cesium-astrox`](skills/cesium-astrox/SKILL.md) | ASTROX 扩展版 Cesium.js (Cesium-Astrox) 可视化用法脚手架;示例待补充 |
+| [`cesium-astrox`](skills/cesium-astrox/SKILL.md) | ASTROX 扩展版 Cesium.js (Cesium-Astrox):多天体场景、影像/地形、CZML 轨迹 Entity、地面轨迹与 orbits、多段 path 按时间上色 |
 
 ## 目录结构 (简要)
 
