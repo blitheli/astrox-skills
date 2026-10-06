@@ -1,0 +1,61 @@
+{
+  "CentralBody": "Earth",
+  "ComputeCzmlPositions": false,
+  "MainSequence": [
+    {
+      "$type": "Launch",
+      "Name": "Launch",
+      "Epoch": "2026-01-01T12:00:00.000Z",
+      "TimeOfFlight": 600,
+      "AscentType": "EllipseCubic",
+      "StepSize": 60,
+      "LaunchLocation": {
+        "CoordinateType": "Geodetic",
+        "Latitude": 28.6,
+        "Longitude": -80.6,
+        "Altitude": 0
+      },
+      "Burnout": {
+        "BurnoutType": "Geodetic",
+        "Latitude": 25.1,
+        "Longitude": -51.3,
+        "Altitude": 300000
+      },
+      "BurnoutVelocity": {
+        "BurnoutOption": "InertialVelocity",
+        "InertialVelocity": 7728.443699541511,
+        "InertialVelocityAzimuth": 103.4364322195226,
+        "InertialHorizontalFPA": 0
+      },
+      "Results": [
+        {
+          "$type": "Cartographic",
+          "Name": "Burnout_Height",
+          "ComponentName": "Height",
+          "CentralBodyName": "Earth"
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "Burnout_Sma",
+          "ComponentName": "SemimajorAxis",
+          "CoordSystemName": "Earth Inertial",
+          "Mu": 3.986004415E14
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "Burnout_Ecc",
+          "ComponentName": "Eccentricity",
+          "CoordSystemName": "Earth Inertial",
+          "Mu": 3.986004415E14
+        },
+        {
+          "$type": "ModifiedKeplerianElement",
+          "Name": "Burnout_Inc",
+          "ComponentName": "Inclination",
+          "CoordSystemName": "Earth Inertial",
+          "Mu": 3.986004415E14
+        }
+      ]
+    }
+  ]
+}

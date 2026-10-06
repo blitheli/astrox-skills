@@ -1,0 +1,93 @@
+{
+  "CentralBody": "Earth",
+  "ComputeCzmlPositions": false,
+  "MainSequence": [
+    {
+      "$type": "TargetSequence",
+      "Name": "Target_Launch",
+      "Segments": [
+        {
+          "$type": "Launch",
+          "Name": "Launch",
+          "Epoch": "2026-01-01T12:00:00.000Z",
+          "TimeOfFlight": 600,
+          "AscentType": "EllipseCubic",
+          "StepSize": 60,
+          "LaunchLocation": {
+            "CoordinateType": "Geodetic",
+            "Latitude": 28.6,
+            "Longitude": -80.6,
+            "Altitude": 0
+          },
+          "Burnout": {
+            "BurnoutType": "LaunchAzAlt",
+            "Azimuth": 70,
+            "DownRangeDist": 2932263.7163507,
+            "Altitude": 300000
+          },
+          "BurnoutVelocity": {
+            "BurnoutOption": "FixedVelocity",
+            "FixedVelocity": 7299.76
+          },
+          "Results": [
+            {
+              "$type": "Cartographic",
+              "Name": "Burnout_Height",
+              "ComponentName": "Height",
+              "CentralBodyName": "Earth"
+            }
+          ]
+        },
+        {
+          "$type": "Propagate",
+          "Name": "Coast",
+          "PropagatorName": "Earth_Point_Mass",
+          "StopConditions": [
+            {
+              "$type": "Duration",
+              "Name": "Duration",
+              "Active": true,
+              "Trip": 60
+            }
+          ],
+          "Results": [
+            {
+              "$type": "ModifiedKeplerianElement",
+              "Name": "Inc",
+              "ComponentName": "Inclination",
+              "CoordSystemName": "Earth Inertial",
+              "Mu": 3.986004415E14
+            }
+          ]
+        }
+      ],
+      "Profiles": [
+        {
+          "$type": "DifferentialCorrector",
+          "Name": "DC_Az_Inc",
+          "Active": true,
+          "MaximumIterations": 30,
+          "ControlParameters": [
+            {
+              "Enable": true,
+              "Name": "Burnout.Azimuth",
+              "ParentName": "Launch",
+              "MaxStep": 5,
+              "Perturbation": 0.1,
+              "Tolerance": 0.0001
+            }
+          ],
+          "Results": [
+            {
+              "Enable": true,
+              "Name": "Inc",
+              "ParentName": "Coast",
+              "DesiredValue": "45",
+              "Tolerance": 0.001
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

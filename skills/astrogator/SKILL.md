@@ -1,6 +1,6 @@
 ---
 name: astrogator
-description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致。支持初始状态、轨道递推、脉冲/有限推力机动、目标序列(微分修正)、跟随段等。含地月转移轨道设计(粗修正/B 平面/近月点高度倾角三级微分修正)、近月制动(LOI)与环月轨道递推/抬轨、地月平动点 L1/L2 Halo 轨道设计、DRO、霍曼转移。用户需要轨道设计、机动序列仿真、地月转移/环月轨道设计时使用。
+description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致。支持发射段(Launch)、初始状态、轨道递推、脉冲/有限推力机动、目标序列(微分修正)、跟随段等。含地月转移轨道设计(粗修正/B 平面/近月点高度倾角三级微分修正)、近月制动(LOI)与环月轨道递推/抬轨、地月平动点 L1/L2 Halo 轨道设计、DRO、霍曼转移。用户需要轨道设计、机动序列仿真、发射入轨、地月转移/环月轨道设计时使用。
 ---
 
 # Astrogator 轨道机动序列技能 (Astrogator MCS)
@@ -10,8 +10,8 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 ## 核心指令 (Core Instructions)
 
 1. **输入解析**:识别中心天体 `CentralBody`、主序列 `MainSequence`,以及可选的 `Entities`、`Propagators`、`EngineModels`。
-2. **段类型判定**:根据任务选择段类型——`InitialState`(初始状态)、`Propagate`(递推)、`ManeuverImpulsive`(脉冲机动)、`ManeuverFinite`(有限推力机动)、`TargetSequence`(目标序列/微分修正)、`Sequence`(子序列)、`Follow`(跟随其它实体)、`Stop`(终止)。
-3. **初始状态**:首段通常为 `InitialState`,`InitialState.Element` 支持 `$type` 为 `Keplerian`、`Cartesian` 或 `Spherical`。
+2. **段类型判定**:根据任务选择段类型——`Launch`(发射上升)、`InitialState`(初始状态)、`Propagate`(递推)、`ManeuverImpulsive`(脉冲机动)、`ManeuverFinite`(有限推力机动)、`TargetSequence`(目标序列/微分修正)、`Sequence`(子序列)、`Follow`(跟随其它实体)、`Stop`(终止)。
+3. **首段**:入轨任务用 `Launch`(由发射点与关机点生成上升段,替代 `InitialState`);已在轨任务用 `InitialState`。`InitialState.Element` 的 `$type` 支持 `Keplerian`、`Cartesian`、`Spherical`。
 4. **积分器**:`PropagatorName` 引用内置缺省积分器(如 `Earth_Point_Mass`、`Earth_Hpop_default_v10`)或输入中的 `Propagators` 自定义积分器。
 5. **终止条件**:`StopConditions` 常用 `$type` 包括 `Duration`(固定时长,s)、`Epoch`(历元)、`Periapsis`/`Apoapsis`(需 `CentralBodyName` 与 `Mu`,可指定 Moon)、`Scalar`(标量条件,`UserCalcObject` 为 CalcScalar,如高度、地心距、真近点角等)。同一段可并列多个终止条件,任一触发即停止。
 6. **目标求解**:在 `TargetSequence.Profiles` 中配置 `$type: "DifferentialCorrector"`,通过 `ControlParameters`(自变量)与 `Results`(约束)迭代求解;约束名引用被约束段 `Results[]` 中声明的标量。
@@ -44,6 +44,7 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 
 | $type               | 用途           | 关键字段                                                  |
 | ------------------- | ------------ | ----------------------------------------------------- |
+| `Launch`            | 发射点到关机点的椭圆上升,可作首段替代 InitialState | `Epoch`, `TimeOfFlight`, `LaunchLocation`, `Burnout`, `BurnoutVelocity` |
 | `InitialState`      | 设置飞行器初始轨道与质量 | `InitialState`(AgVAState), `Results`                  |
 | `Propagate`         | 轨道递推至终止条件    | `PropagatorName`, `StopConditions`, `Results`         |
 | `ManeuverImpulsive` | 瞬时速度增量机动     | `AttitudeControl`, `UpdateMass`                       |
@@ -53,6 +54,75 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 | `Follow`            | 跟随 Leader 实体 | `LeaderName`                                          |
 | `Stop`              | 终止 MCS       | —                                                     |
 
+
+### Launch 发射段
+
+`$type: "Launch"` 对应 STK Astrogator 的 Launch 段:在中心天体 Fixed 系下,用椭圆样条连接发射点与关机点(Burnout),生成上升轨迹。必填 `Name`、`Epoch`、`LaunchLocation`、`Burnout`。通常作为 MCS 第 1 段,并在段上给出质量与气动面积,供后续递推使用。`UsePreviousSegmentState` 暂不支持,只能为 `false`。
+
+| 参数名 | 类型 | 单位 | 缺省 | 说明 |
+| --- | --- | --- | --- | --- |
+| `Epoch` | string | UTC | `2026-01-01T12:00:00.000Z` | 发射时刻 |
+| `TimeOfFlight` | number | s | 600 | 发射到关机的飞行时间 |
+| `PreLaunchTime` | number | s | 0 | 发射前停留。大于 0 时段起始时刻为 `Epoch - PreLaunchTime`,`DurationSec = TimeOfFlight + PreLaunchTime` |
+| `AscentType` | string | — | `EllipseCubic` | `EllipseCubic`:由首末位置速度确定;`EllipseQuartic`:再加 `InitialAcceleration` |
+| `InitialAcceleration` | number | m/s^2 | 19.6 | 仅 `EllipseQuartic` 有效 |
+| `StepSize` | number | s | 5 | 上升段星历输出步长 |
+| `CentralBody` | string | — | 空 | 空则使用顶层 `CentralBody` |
+| `LaunchLocation` | object | — | — | 发射点,见下表 |
+| `Burnout` | object | — | — | 关机点位置,见下表 |
+| `BurnoutVelocity` | object | — | FixedVelocity 7299.76 m/s | `Burnout.BurnoutType=CBFCartesian` 时无效 |
+| `DryMass` / `FuelMass` | number | kg | 500 / 500 | 结构质量 / 燃料质量 |
+| `Cd` / `DragArea` | number | —, m^2 | 2.2 / 20 | 阻力系数 / 阻力面积 |
+| `Cr` / `SRPArea` | number | —, m^2 | 1.0 / 20 | 光压系数 / 光压面积 |
+| `Results` | array | — | — | 关机点标量,写法与其它段相同 |
+
+`LaunchLocation`(`CoordinateType`):
+
+| CoordinateType | 有效字段 | 单位 |
+| --- | --- | --- |
+| `Geodetic`(缺省) | `Latitude`, `Longitude`, `Altitude` | deg, deg, m |
+| `Geocentric` | `Latitude`, `Longitude`, `Radius` | deg, deg, m |
+
+`Burnout.BurnoutType` 决定哪些字段生效:
+
+| BurnoutType | 有效字段 | 说明 |
+| --- | --- | --- |
+| `LaunchAzAlt`(缺省) | `Azimuth`, `DownRangeDist`, `Altitude` | 发射方位角(deg,当地水平面由北向东)、射程(m,至关机点星下点的大圆弧长)、椭球高(m) |
+| `LaunchAzRadius` | `Azimuth`, `DownRangeDist`, `Radius` | 同上,高度改为地心距(m) |
+| `Geodetic` | `Latitude`, `Longitude`, `Altitude` | 关机点大地坐标 |
+| `Geocentric` | `Latitude`, `Longitude`, `Radius` | 关机点地心纬度/经度/地心距 |
+| `CBFCartesian` | `X,Y,Z,Vx,Vy,Vz` | Fixed 系位置(m)与速度(m/s);`BurnoutVelocity` 无效 |
+
+`BurnoutVelocity.BurnoutOption`:
+
+| BurnoutOption | 有效字段 | 单位 |
+| --- | --- | --- |
+| `FixedVelocity`(缺省) | `FixedVelocity` | m/s,Fixed 系速度大小 |
+| `InertialVelocity` | `InertialVelocity`, `InertialVelocityAzimuth`, `InertialHorizontalFPA` | m/s; deg,当地水平面由北向东; deg,水平面到惯性速度,向径为正 |
+
+结果 `$type` 为 `LaunchResult`。三个警告均为 false 时,上升椭圆满足给定的关机航迹角、初始加速度和关机速度:
+
+| 字段 | 含义 |
+| --- | --- |
+| `FinalFlightPathAngleMismatch` | 关机点实际水平航迹角与要求不一致 |
+| `UnableToMeetConditionsWithSetInitialAcceleration` | `EllipseQuartic` 在给定初始加速度下无法满足上升条件 |
+| `VelocityDiscontinuityAtBurnout` | 上升段末速度与要求的关机速度不一致 |
+
+微分修正自变量 `Name` 使用下列固定字符串,`ParentName` 为 Launch 段名。`PreLaunchTime>0` 时不能使用 `Epoch` 与 `LaunchLocation.*`;`CBFCartesian` 时不能使用关机点位置类自变量。
+
+| 自变量 Name | 单位 |
+| --- | --- |
+| `Epoch` | UTC,`Dimension` 用 `DateFormat` |
+| `TimeOfFlight` | s |
+| `InitialAcceleration` | m/s^2 |
+| `LaunchLocation.Latitude` / `LaunchLocation.Longitude` | deg |
+| `LaunchLocation.Altitude` / `LaunchLocation.Radius` | m |
+| `Burnout.Latitude` / `Burnout.Longitude` / `Burnout.Azimuth` | deg |
+| `Burnout.Altitude` / `Burnout.Radius` / `Burnout.DownRangeDist` | m |
+| `BurnoutVelocity.FixedVelocity` / `BurnoutVelocity.InertialVelocity` | m/s |
+| `BurnoutVelocity.InertialVelocityAzimuth` / `BurnoutVelocity.InertialHorizontalFPA` | deg |
+
+约束不要挂在 Launch 段上。把 `Results` 约束的 `ParentName` 指到 Launch **之后**的 `Propagate`(或其它段);Launch 段自己的 `Results` 仍可用来读关机标量。约束直接引用 Launch 段时,接口返回 `IsSuccess=false`,`Message` 含 `OrbitalPoint`。
 
 ### InitialState / AgVAState 主要字段
 
@@ -163,6 +233,7 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 
 | `$type` / `TypeName`                    | 关键字段                                                                                                                     |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `LaunchResult`                          | `DurationSec`(含 `PreLaunchTime`), `InitialState`/`FinalState`, `Results{}`, 警告 `FinalFlightPathAngleMismatch` / `UnableToMeetConditionsWithSetInitialAcceleration` / `VelocityDiscontinuityAtBurnout` |
 | (无 `$type`) `TypeName: "InitialState"`  | `InitialState`, `FinalState`(同一状态)                                                                                        |
 | `PropagateResult`                       | `StoppingConditionName`(实际触发的终止条件名), `StoppedOnMaximumDuration`, `DurationSec`, `Results{}`, `InitialState`, `FinalState` |
 | `ManeuverImpulsiveResult`               | `ManeuverInformation{DeltaV_Mag, DeltaV_VNC[6], DeltaV_Inertial[6], EstimatedFuelUsed, FuelUsed, UpdateMass}`, `Results{}`, `FinalState` |
@@ -177,7 +248,8 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 
 - 距离单位均为 **米(m)**,速度为 **m/s**,角度为 **deg**,时长为 **s**,质量为 **kg**。
 - 每段必须设置唯一 `Name`;微分修正的 `ParentName` 须与段名一致。
-- `MainSequence` 第一段通常为 `InitialState`;`Follow` 段可省略 InitialState,直接跟随 `Entities` 中的 Leader。
+- `MainSequence` 第一段通常为 `InitialState` 或 `Launch`;`Follow` 段可省略二者,直接跟随 `Entities` 中的 Leader。
+- Launch 段:`UsePreviousSegmentState` 只能为 `false`。`PreLaunchTime>0` 时段起始历元提前,且微分修正不能选 `Epoch`、`LaunchLocation.*`。`CBFCartesian` 可能使 `FinalFlightPathAngleMismatch=true`(上升椭圆满足不了该 Fixed 速度对应的航迹角)。微分修正约束的 `ParentName` 指后续段,不要指 Launch 段。
 - 使用缺省积分器时无需传 `Propagators`;地月/日心等多体任务可能需自定义 `Propagators` 与 `Entities`。
 - 仅关心段标量结果、不需轨迹点时,设 `ComputeCzmlPositions: false` 可减小响应体积。
 - 顶层 `CentralBody` 决定所有段状态与 `Positions` 的输出坐标系;跨天体任务(地月转移)按需选择 `Earth` 或 `Moon`,并用段 `Results` 补充另一天体系下的标量。
@@ -187,7 +259,7 @@ description: 运行轨道机动序列(MCS),功能与 STK Astrogator 基本一致
 ## 标准执行流程
 
 1. 参数预检
-  - 检查 `MainSequence` 非空且首段合理(InitialState 或 Follow)
+  - 检查 `MainSequence` 非空且首段合理(Launch、InitialState 或 Follow)
   - 各段 `$type`、`Name` 完整
   - Propagate/ManeuverFinite 段含 `StopConditions`
   - TargetSequence 的 ControlParameters 与 Results 的 ParentName 可对应到段名
@@ -225,6 +297,36 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
   --request POST \
   --header 'Content-Type: application/json' \
   --data-binary "@astrogator/fixtures/mcs-maneuver-impulsive-along-velocity-min.json"
+```
+
+## 发射段 (Launch)
+
+**场景**:大地坐标发射点(纬度 28.6 deg、经度 -80.6 deg、高度 0)出发,`LaunchAzAlt` 关机(方位角 90.7047067848 deg、射程 2932263.7163507 m、高度 300000 m),Fixed 系关机速度 7299.76 m/s,飞行 600 s,再质点递推 1 h。三个警告均为 false。关机点大地坐标约为纬度 25.100 deg、经度 -51.300 deg、高度 300000 m;惯性系半长轴 6675129.42 m、偏心率 1.221e-4、倾角 28.220 deg。
+
+```bash
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/mcs-launch-azalt-min.json"
+```
+
+同一发射点改用关机点大地坐标(`Geodetic`:纬度 25.1 deg、经度 -51.3 deg、高度 300000 m)加惯性速度(`InertialVelocity` 7728.443699541511 m/s、方位角 103.4364322195226 deg、水平航迹角 0),关机根数与上例一致到米级以内:
+
+```bash
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/mcs-launch-geodetic-inertial.json"
+```
+
+**微分修正**:自变量 `Burnout.Azimuth`(初值 70 deg),约束放在随后 60 s 递推段的倾角 `Inc = 45 deg`。实测 1 次迭代收敛,方位角终值 53.102289948953455 deg,倾角 44.99999362144038 deg。
+
+```bash
+curl "${BASE_URL}/Astrogator/RunMCS" \
+  --request POST \
+  --header 'Content-Type: application/json' \
+  --data-binary "@astrogator/fixtures/mcs-target-launch-azimuth-inclination.json" \
+  | jq '{ok:.IsSuccess, op:.MainSequenceResults[0].OperatorResults[0] | {Converged, TotalIterations, az:(.ControlParameters[0].FinalValue), inc:(.Results[0].CurrentValue)}}'
 ```
 
 ## 霍曼转移(微分修正)
@@ -357,6 +459,16 @@ curl "${BASE_URL}/Astrogator/RunMCS" \
 ```
 
 ## 更多示例与测试数据 (fixtures)
+
+### Launch(发射段)
+
+
+| 文件 | 用途简述 |
+| --- | --- |
+| `mcs-launch-azalt-min.json` | `LaunchAzAlt` + `FixedVelocity`,关机后质点递推 1 h |
+| `mcs-launch-geodetic-inertial.json` | 同一上升任务的 `Geodetic` 关机点 + `InertialVelocity` |
+| `mcs-target-launch-azimuth-inclination.json` | 微分修正 `Burnout.Azimuth`,约束后续递推段倾角 45 deg |
+
 
 ### Propagate(轨道递推)
 
