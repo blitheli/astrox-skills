@@ -1,7 +1,7 @@
 ---
-
-## name: lighting-solar-aer
+name: lighting-solar-aer
 description: 计算地面站或飞行器相对视太阳的 AER(方位角、高度角、距离),基于 DE430 星历。当用户需要太阳方位角/高度角/距离、Solar AER、视太阳角度序列时使用。
+---
 
 # 视太阳 AER 计算技能 (Solar AER)
 

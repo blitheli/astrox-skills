@@ -110,7 +110,7 @@
       "fixturesDir": "skills/astrogator/fixtures"
     },
     {
-      "name": "convert-czmlPosition",
+      "name": "convert-czml-position",
       "skillFile": "skills/convert-czml-position/SKILL.md",
       "fixturesDir": "skills/convert-czml-position/fixtures"
     },

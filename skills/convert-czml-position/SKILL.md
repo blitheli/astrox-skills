@@ -1,5 +1,5 @@
 ---
-name: convert-czmlPosition
+name: convert-czml-position
 description: 将 CZML 格式位置序列转换到目标天体坐标系(Inertial/Fixed/J2000/ICRF 等)。采用 JPL DE430 历表;用户需要地月转移、行星系间坐标变换或 CzmlPosition 参考系转换时使用。
 ---
 
