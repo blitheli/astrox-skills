@@ -18,6 +18,16 @@ python3 skills/markdown-word/md_to_docx_with_template.py <report.md> skills/mark
 
 交付优先使用输出目录里的 `final-word.docx`(LibreOffice roundtrip)。没有 `soffice` 时至少有 `final.docx`。Word 打不开时,先查公式里的空 `m:sepChr`。`<outdir>` 不要用本目录,也不要把其中的中间产物提交进仓。
 
+## 已锁定排版
+
+与脚本后处理一致,roundtrip 前后都要保持。细节见 [SKILL.md](SKILL.md)。
+
+1. 一级标题顶格,数字后恰好两个 ASCII 空格,例如 `1  摘要`。
+2. 正文首行两个汉字:`firstLineChars=200`,`firstLine=480`,`left=0`。
+3. 编号不用 Word `numPr`。编号行按正文首行缩进,续行顶格(`left=0`)。
+4. 表格表头居中并铺 `D9D9D9` 底纹,表体左对齐,单元格 `vAlign=center`。
+5. 交给用户的文件优先是 `final-word.docx`。
+
 ## 依赖
 
 - `pandoc`(不要传 `--toc=false`;pandoc 3.1 会因此在转换一开始失败)
@@ -31,8 +41,8 @@ python3 skills/markdown-word/md_to_docx_with_template.py <report.md> skills/mark
 | :--- | :--- |
 | `reference.docx` | 由本次模板生成的 pandoc reference-doc |
 | `out.docx` | pandoc 原始输出 |
-| `final.docx` | 样式映射、页眉页脚、OMML 修复、表格后处理 |
-| `final-word.docx` | LibreOffice DOCX→ODT→DOCX。给 Word 用户时优先交这个 |
-| `final.pdf` | 由 roundtrip 后再套一次表格样式导出的 PDF(有 LibreOffice 时) |
+| `final.docx` | 样式映射、页眉页脚、OMML 修复,以及表格、编号、正文缩进、一级标题后处理 |
+| `final-word.docx` | LibreOffice DOCX→ODT→DOCX,并再次套用锁定排版。给 Word 用户时优先交这个 |
+| `final.pdf` | roundtrip 并再次套用锁定排版后导出的 PDF(有 LibreOffice 时) |
 
-表格约定:表头第一行底纹 `D9D9D9`,表宽 `tblW` 为 `pct` / `5000`,单元格段落左对齐,列宽按版心等分。
+表格约定:表头第一行底纹 `D9D9D9` 且段落居中,表体段落左对齐,全部单元格 `vAlign=center`,表宽 `tblW` 为 `pct` / `5000`,列宽按版心等分。单元格上的首行缩进会被清掉。
