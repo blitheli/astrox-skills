@@ -8,7 +8,7 @@
 - **Fixtures**: 各技能 `fixtures/` 下的最小 JSON 示例,可用于快速验证 API 或作为请求模板。
 - **公共文档**: `skills/shared-docs/` 中的跨技能协议说明 (如 CZML 输出格式、公共 schema)。
 
-本仓库为纯文档项目,不包含可执行应用代码。实际计算由远程 [ASTROX Web API](http://astrox.cn:8765) 完成。
+本仓库以技能文档为主。轨道计算由远程 [ASTROX Web API](http://astrox.cn:8765) 完成。`markdown-word` 是例外:它是本地 Markdown→docx 转换技能,不调用该 API,也没有 fixtures。
 
 ## 如何使用
 
@@ -116,6 +116,12 @@ curl "http://astrox.cn:8765/city?cityName=Beijing"
 | :--- | :--- |
 | [`cesium-astrox`](skills/cesium-astrox/SKILL.md) | ASTROX 扩展版 Cesium.js (Cesium-Astrox):多天体场景、影像/地形、CZML 轨迹 Entity、地面轨迹与 orbits、多段 path 按时间上色 |
 
+### 文档转换
+
+| 技能 | 说明 |
+| :--- | :--- |
+| [`markdown-word`](skills/markdown-word/SKILL.md) | 按用户 Word 模板把 Markdown 报告转成 docx(中文样式 A正文 / 一级标题 / A表 / A图片)。本地脚本,依赖 pandoc、python3、lxml、LibreOffice |
+
 ## 目录结构 (简要)
 
 ```text
@@ -123,7 +129,8 @@ skills/
   shared-docs/           # 公共 schema 与协议说明
   <skill-name>/
     SKILL.md             # 技能主文档
-    fixtures/            # 最小可运行 JSON 示例
+    fixtures/            # 最小可运行 JSON 示例 (API 技能)
+  markdown-word/         # 本地 Markdown→docx,无 fixtures
 claude.json              # 技能注册与默认 API 地址
 astrox-web-api.json      # OpenAPI 规范 (维护技能时参考)
 ```

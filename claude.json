@@ -138,6 +138,10 @@
       "name": "cesium-astrox",
       "skillFile": "skills/cesium-astrox/SKILL.md",
       "fixturesDir": "skills/cesium-astrox/examples"
+    },
+    {
+      "name": "markdown-word",
+      "skillFile": "skills/markdown-word/SKILL.md"
     }
   ]
 }

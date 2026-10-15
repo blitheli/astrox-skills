@@ -29,6 +29,7 @@
 - `raw/` 目录下的 C# 文件是上游参考代码,不需要在本地编译。
 - 使用技能时不必展开查询 `astrox-web-api.json`;该文件主要用于创建或维护技能、核对字段与 OpenAPI 契约。
 - 火箭相关技能以仓库根目录 `rocket-web-api.json` 为准,默认服务为 `http://astrox.cn:8764`。
+- `markdown-word`(目录 `skills/markdown-word/`)是本地 Markdown→docx 转换技能,不是 Web API,也没有 fixtures。验证时运行 `python3 skills/markdown-word/md_to_docx_with_template.py`,依赖 pandoc、python3、lxml、LibreOffice(`soffice`)。
 
 ---
 
