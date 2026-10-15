@@ -7,9 +7,11 @@ Usage:
 Produces in outdir (do not use the skill directory itself as outdir):
   reference.docx   – template with pandoc styles + heading numPr stripped
   out.docx         – pandoc output (intermediate)
-  final.docx       – styles remapped, OMML fixed, tables styled
+  final.docx       – styles remapped, OMML fixed, tables, body indent, H1 spacing
   final-word.docx  – LibreOffice roundtrip; preferred delivery when soffice exists
   final.pdf        – PDF exported after the roundtrip when LibreOffice exists
+
+Does not pass --toc. Pandoc 3.1 rejects --toc=false and aborts before conversion.
 """
 from __future__ import annotations
 
@@ -645,17 +647,37 @@ def _reorder_tblPr(tblPr: etree._Element) -> None:
             tblPr.append(c)
 
 
-def style_tables_for_report(docx_path: Path) -> dict:
-    """Post-process every table: full-width, header gray D9D9D9, cell text left-aligned.
 
-    Matches the sample table in the Chinese Word template (header fill D9D9D9 with
-    optional themeFill background1 / themeFillShade D9). Runs in-place on the docx.
+# ---------------------------------------------------------------------------
+# CHECKLIST — locked formatting (do not regress in future edits)
+# ---------------------------------------------------------------------------
+# H1: flush left (para + style ind all 0); numbered titles "N  title" (exactly
+#     2 ASCII spaces). Pandoc collapses MD spaces; LO may re-indent Heading1 —
+#     fix_heading1_number_spacing MUST run AFTER LibreOffice roundtrip.
+# Body + plain lists: firstLineChars=200, firstLine=480, left=0; list wraps at 0
+#     (plain "N. text", no numPr). ensure_body_first_line_indent + demote after LO.
+# Tables: header jc=center + shade D9D9D9; body jc=left; all vAlign=center;
+#     strip cell edge spaces/NBSP; no "圈" in table2 body period/rev cells;
+#     re-apply style_tables_for_report after LO.
+# Fig captions: "图 1" / "图 2" (A0/A3), centered, no indent.
+# ---------------------------------------------------------------------------
+
+
+def style_tables_for_report(docx_path: Path) -> dict:
+    """Post-process every table: full-width, header gray D9D9D9 and centered.
+
+    Header paragraphs are jc=center. Body paragraphs are jc=left. Every cell gets
+    w:vAlign=center. Header fill is D9D9D9 with optional themeFill background1 /
+    themeFillShade D9. Re-run after LibreOffice roundtrip so shade / jc / vAlign /
+    widths survive.
     """
     work = Path(tempfile.mkdtemp(prefix="tblstyle-"))
     stats = {
         "tables": 0,
         "header_cells_shaded": 0,
+        "jc_forced_center": 0,
         "jc_forced_left": 0,
+        "vAlign_center": 0,
         "widths_set": 0,
         "content_width_dxa": None,
     }
@@ -758,19 +780,47 @@ def style_tables_for_report(docx_path: Path) -> dict:
                                 shd.set(k, v)
                         stats["header_cells_shaded"] += 1
 
-                    # Force left alignment on every paragraph in the cell
+                    # Vertical center for header and body cells
+                    vAlign = tcPr.find(_qn("vAlign"))
+                    if vAlign is None:
+                        etree.SubElement(tcPr, _qn("vAlign"), {f"{W}val": "center"})
+                        stats["vAlign_center"] += 1
+                    elif vAlign.get(f"{W}val") != "center":
+                        vAlign.set(f"{W}val", "center")
+                        stats["vAlign_center"] += 1
+                    else:
+                        stats["vAlign_center"] += 1
+
+                    # Header row centered; body left. Clear A5 first-line indent in cells.
+                    align = "center" if ri == 0 else "left"
+                    stat_key = "jc_forced_center" if align == "center" else "jc_forced_left"
                     for p in tc.findall(".//" + _qn("p")):
                         pPr = p.find(_qn("pPr"))
                         if pPr is None:
                             pPr = etree.Element(_qn("pPr"))
                             p.insert(0, pPr)
+                        ind = pPr.find(_qn("ind"))
+                        clear_attrs = {
+                            f"{W}firstLineChars": "0",
+                            f"{W}firstLine": "0",
+                            f"{W}left": "0",
+                            f"{W}leftChars": "0",
+                        }
+                        if ind is None:
+                            ind = etree.SubElement(pPr, _qn("ind"), clear_attrs)
+                        else:
+                            for k, v in clear_attrs.items():
+                                ind.set(k, v)
+                            for hang in (f"{W}hanging", f"{W}hangingChars"):
+                                if hang in ind.attrib:
+                                    del ind.attrib[hang]
                         jc = pPr.find(_qn("jc"))
                         if jc is None:
-                            etree.SubElement(pPr, _qn("jc"), {f"{W}val": "left"})
-                            stats["jc_forced_left"] += 1
-                        elif jc.get(f"{W}val") != "left":
-                            jc.set(f"{W}val", "left")
-                            stats["jc_forced_left"] += 1
+                            etree.SubElement(pPr, _qn("jc"), {f"{W}val": align})
+                            stats[stat_key] += 1
+                        elif jc.get(f"{W}val") != align:
+                            jc.set(f"{W}val", align)
+                            stats[stat_key] += 1
 
         tree.write(
             str(doc_path), xml_declaration=True, encoding="UTF-8", standalone=True
@@ -784,6 +834,461 @@ def style_tables_for_report(docx_path: Path) -> dict:
         return stats
     finally:
         shutil.rmtree(work, ignore_errors=True)
+
+
+
+
+# Two Chinese characters: firstLineChars=200 (hundredths of a char);
+# firstLine twips fallback ≈ 2 × 12pt × 20 = 480 (LO often drops firstLineChars).
+BODY_FIRST_LINE_CHARS = "200"
+BODY_FIRST_LINE_TWIPS = "480"
+BODY_STYLE_IDS = frozenset({"A5", "BodyText", "FirstParagraph", "Compact", "BlockText"})
+
+
+def _set_ind_two_chars(ind: etree._Element) -> None:
+    """Body + plain list paras: left=0, firstLine=480 (~2 Chinese chars), wrap at 0."""
+    ind.set(f"{W}left", "0")
+    ind.set(f"{W}leftChars", "0")
+    ind.set(f"{W}firstLineChars", BODY_FIRST_LINE_CHARS)
+    ind.set(f"{W}firstLine", BODY_FIRST_LINE_TWIPS)
+    if f"{W}hanging" in ind.attrib:
+        del ind.attrib[f"{W}hanging"]
+    if f"{W}hangingChars" in ind.attrib:
+        del ind.attrib[f"{W}hangingChars"]
+
+
+def ensure_body_first_line_indent(docx_path: Path) -> dict:
+    """Ensure body (A5 / Normal) first-line indent is two Chinese characters.
+
+    Template Normal uses firstLineChars=200 but firstLine=200 twips (~1 char).
+    LibreOffice roundtrip drops firstLineChars and leaves firstLine=200, so body
+    looks ~1-char indented. Re-apply firstLineChars=200 and firstLine=480 on
+    Normal/A5 styles and on all A5 body paragraphs (including plain "N. " list
+    paras demoted from numPr — they also need firstLine=480 left=0).
+
+    Direct body children only (skips table cells). Paras that still carry numPr
+    are left alone so numbering.xml hanging is not compounded; demote_numbered_lists
+    must run first so lists are plain body with manual "N. " text.
+    """
+    work = Path(tempfile.mkdtemp(prefix="bodyind-"))
+    stats = {"styles_patched": 0, "paras_patched": 0, "list_paras_patched": 0}
+    try:
+        with zipfile.ZipFile(docx_path, "r") as zf:
+            zf.extractall(work)
+        styles_path = work / "word" / "styles.xml"
+        doc_path = work / "word" / "document.xml"
+        styles_tree = etree.parse(str(styles_path))
+        styles_root = styles_tree.getroot()
+        doc_tree = etree.parse(str(doc_path))
+        doc_root = doc_tree.getroot()
+
+        for s in styles_root.findall(_qn("style")):
+            sid = s.get(f"{W}styleId") or ""
+            name_el = s.find(_qn("name"))
+            name = name_el.get(f"{W}val") if name_el is not None else ""
+            if sid not in ("a4", "A5", "Normal") and name not in (
+                "Normal",
+                "A正文",
+                "正文",
+            ):
+                continue
+            if s.get(f"{W}type") not in (None, "paragraph"):
+                continue
+            pPr = s.find(_qn("pPr"))
+            if pPr is None:
+                pPr = etree.SubElement(s, _qn("pPr"))
+            ind = pPr.find(_qn("ind"))
+            if ind is None:
+                ind = etree.SubElement(pPr, _qn("ind"))
+            _set_ind_two_chars(ind)
+            stats["styles_patched"] += 1
+
+        import re as _re
+
+        body = doc_root.find(_qn("body"))
+        if body is not None:
+            # Only direct body children — skips paragraphs inside tables
+            for p in body.findall(_qn("p")):
+                pPr = p.find(_qn("pPr"))
+                if pPr is None:
+                    continue
+                # Still-numbered: do not compound with numPr hanging
+                if pPr.find(_qn("numPr")) is not None:
+                    continue
+                ps = pPr.find(_qn("pStyle"))
+                style = ps.get(f"{W}val") if ps is not None else None
+                if style not in BODY_STYLE_IDS:
+                    continue
+                texts = "".join(t.text or "" for t in p.findall(".//" + _qn("t")))
+                if not texts.strip():
+                    continue
+                ind = pPr.find(_qn("ind"))
+                if ind is None:
+                    ind = etree.SubElement(pPr, _qn("ind"))
+                _set_ind_two_chars(ind)
+                stats["paras_patched"] += 1
+                if _re.match(r"^\d+\.\s", texts):
+                    stats["list_paras_patched"] += 1
+
+        styles_tree.write(
+            str(styles_path), xml_declaration=True, encoding="UTF-8", standalone=True
+        )
+        doc_tree.write(
+            str(doc_path), xml_declaration=True, encoding="UTF-8", standalone=True
+        )
+        tmp = docx_path.with_suffix(".bodyind.docx")
+        with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for f in sorted(work.rglob("*")):
+                if f.is_file():
+                    zf.write(f, f.relative_to(work).as_posix())
+        tmp.replace(docx_path)
+        return stats
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+
+
+
+def _set_ind_zero(ind: etree._Element) -> None:
+    """Flush-left: no first-line / left / hanging indent."""
+    ind.set(f"{W}left", "0")
+    ind.set(f"{W}leftChars", "0")
+    ind.set(f"{W}firstLine", "0")
+    ind.set(f"{W}firstLineChars", "0")
+    for hang in (f"{W}hanging", f"{W}hangingChars"):
+        if hang in ind.attrib:
+            del ind.attrib[hang]
+
+
+def fix_heading1_number_spacing(docx_path: Path) -> dict:
+    """H1 flush left + numbered titles use exactly two ASCII spaces (N  title).
+
+    Pandoc collapses multiple spaces in ATX headings; LibreOffice may remap
+    style 1 → Heading1 and put firstLine=480 on the style (inherited Normal).
+    Call AFTER LO roundtrip (and after body-indent re-apply).
+    """
+    XML_SPACE = "{http://www.w3.org/XML/1998/namespace}space"
+    H1_STYLE_IDS = frozenset({"1", "Heading1"})
+    H1_STYLE_NAMES = frozenset({"heading 1", "Heading 1", "标题 1", "一级标题"})
+    work = Path(tempfile.mkdtemp(prefix="h1space-"))
+    stats = {
+        "styles_ind_zeroed": 0,
+        "paras_ind_zeroed": 0,
+        "texts_respace": 0,
+        "paras_seen": 0,
+    }
+    try:
+        with zipfile.ZipFile(docx_path, "r") as zf:
+            zf.extractall(work)
+        styles_path = work / "word" / "styles.xml"
+        doc_path = work / "word" / "document.xml"
+        styles_tree = etree.parse(str(styles_path))
+        styles_root = styles_tree.getroot()
+        doc_tree = etree.parse(str(doc_path))
+        doc_root = doc_tree.getroot()
+
+        for s in styles_root.findall(_qn("style")):
+            if s.get(f"{W}type") not in (None, "paragraph"):
+                continue
+            sid = s.get(f"{W}styleId") or ""
+            name_el = s.find(_qn("name"))
+            name = name_el.get(f"{W}val") if name_el is not None else ""
+            if sid not in H1_STYLE_IDS and name not in H1_STYLE_NAMES:
+                continue
+            pPr = s.find(_qn("pPr"))
+            if pPr is None:
+                pPr = etree.SubElement(s, _qn("pPr"))
+            ind = pPr.find(_qn("ind"))
+            if ind is None:
+                ind = etree.SubElement(pPr, _qn("ind"))
+            _set_ind_zero(ind)
+            stats["styles_ind_zeroed"] += 1
+
+        body = doc_root.find(_qn("body"))
+        paras = body.findall(_qn("p")) if body is not None else []
+        for p in paras:
+            pPr = p.find(_qn("pPr"))
+            if pPr is None:
+                continue
+            ps = pPr.find(_qn("pStyle"))
+            if ps is None:
+                continue
+            sid = ps.get(f"{W}val") or ""
+            if sid not in H1_STYLE_IDS:
+                continue
+            stats["paras_seen"] += 1
+
+            ind = pPr.find(_qn("ind"))
+            if ind is None:
+                ind = etree.SubElement(pPr, _qn("ind"))
+            _set_ind_zero(ind)
+            stats["paras_ind_zeroed"] += 1
+
+            t_nodes = p.findall(".//" + _qn("t"))
+            full = "".join(t.text or "" for t in t_nodes)
+            # Numbered H1: "1 摘要" / "1 摘要" / NBSP variants → "1  摘要"
+            m = re.match(r"^(\d+)[ \t\u00a0\u3000]+(.+)$", full.strip())
+            if m:
+                new_text = f"{m.group(1)}  {m.group(2).strip()}"
+            else:
+                # Appendices etc.: strip leading indent spaces only
+                new_text = full.lstrip(" \t\u00a0\u3000")
+            if new_text != full:
+                if t_nodes:
+                    t_nodes[0].text = new_text
+                    t_nodes[0].set(XML_SPACE, "preserve")
+                    for t in t_nodes[1:]:
+                        t.text = ""
+                else:
+                    r = etree.SubElement(p, _qn("r"))
+                    t = etree.SubElement(r, _qn("t"))
+                    t.set(XML_SPACE, "preserve")
+                    t.text = new_text
+                stats["texts_respace"] += 1
+            elif t_nodes and "  " in (t_nodes[0].text or ""):
+                # Already two spaces — still mark preserve so OOXML keeps them
+                t_nodes[0].set(XML_SPACE, "preserve")
+
+        styles_tree.write(
+            str(styles_path), xml_declaration=True, encoding="UTF-8", standalone=True
+        )
+        doc_tree.write(
+            str(doc_path), xml_declaration=True, encoding="UTF-8", standalone=True
+        )
+        tmp = docx_path.with_suffix(".h1space.docx")
+        with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for f in sorted(work.rglob("*")):
+                if f.is_file():
+                    zf.write(f, f.relative_to(work).as_posix())
+        tmp.replace(docx_path)
+        return stats
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def demote_numbered_lists_to_body(docx_path: Path, body_style: str = "A5") -> dict:
+    """Turn auto-numbered list paras into plain body paragraphs.
+
+    Visual goal (Chinese body indent):
+      - first line starts at firstLine=480 (~2 chars) — includes manual "N. " text
+      - wrapped lines at left margin 0
+
+    Word hanging indent is the opposite (wrap at left, first at left-hanging), and
+    numbering.xml lvl w:ind stacks on top of para ind — so hanging=480 left=480 still
+    leaves wraps indented. Manual numbers + firstLine only is the reliable path.
+    """
+    import re
+    import zipfile
+    import tempfile
+    import shutil
+    from lxml import etree
+
+    stats = {
+        "demoted_numPr": 0,
+        "numbers_injected": 0,
+        "firstLine_forced": 0,
+        "numbering_lvl0_zeroed": 0,
+        "style_to_body": 0,
+    }
+    work = Path(tempfile.mkdtemp(prefix="demote-list-"))
+    try:
+        with zipfile.ZipFile(docx_path) as z:
+            z.extractall(work)
+        doc_path = work / "word" / "document.xml"
+        num_path = work / "word" / "numbering.xml"
+        tree = etree.parse(str(doc_path))
+        root = tree.getroot()
+
+        # Build abstractNum / numId indent + format lookup for injecting labels
+        abs_lvl = {}  # (abstractNumId, ilvl) -> {fmt, lvlText, start, ind}
+        num_to_abs = {}
+        num_start_override = {}  # (numId, ilvl) -> start
+        if num_path.exists():
+            ntree = etree.parse(str(num_path))
+            nroot = ntree.getroot()
+            for an in nroot.findall(_qn("abstractNum")):
+                aid = an.get(f"{W}abstractNumId")
+                for lvl in an.findall(_qn("lvl")):
+                    ilvl = lvl.get(f"{W}ilvl")
+                    fmt = (lvl.find(_qn("numFmt")).get(f"{W}val")
+                           if lvl.find(_qn("numFmt")) is not None else "decimal")
+                    lt = (lvl.find(_qn("lvlText")).get(f"{W}val")
+                          if lvl.find(_qn("lvlText")) is not None else "%1.")
+                    start_el = lvl.find(_qn("start"))
+                    start = int(start_el.get(f"{W}val")) if start_el is not None else 1
+                    pPr_lvl = lvl.find(_qn("pPr"))
+                    ind_el = pPr_lvl.find(_qn("ind")) if pPr_lvl is not None else None
+                    abs_lvl[(aid, ilvl)] = {
+                        "fmt": fmt, "lvlText": lt, "start": start, "ind": ind_el
+                    }
+            for num in nroot.findall(_qn("num")):
+                nid = num.get(f"{W}numId")
+                absref = num.find(_qn("abstractNumId"))
+                if absref is None:
+                    continue
+                aid = absref.get(f"{W}val")
+                num_to_abs[nid] = aid
+                for ov in num.findall(_qn("lvlOverride")):
+                    ilvl = ov.get(f"{W}ilvl")
+                    so = ov.find(_qn("startOverride"))
+                    if so is not None:
+                        num_start_override[(nid, ilvl)] = int(so.get(f"{W}val"))
+                    # Also override indent if present
+                    lvl_ov = ov.find(_qn("lvl"))
+                    if lvl_ov is not None:
+                        pPr_lvl = lvl_ov.find(_qn("pPr"))
+                        if pPr_lvl is not None and pPr_lvl.find(_qn("ind")) is not None:
+                            # replace abs ind conceptually via side table
+                            abs_lvl[(f"num:{nid}", ilvl)] = {
+                                "fmt": abs_lvl.get((aid, ilvl), {}).get("fmt", "decimal"),
+                                "lvlText": abs_lvl.get((aid, ilvl), {}).get("lvlText", "%1."),
+                                "start": num_start_override.get((nid, ilvl),
+                                         abs_lvl.get((aid, ilvl), {}).get("start", 1)),
+                                "ind": pPr_lvl.find(_qn("ind")),
+                            }
+
+            # Zero ALL abstractNum lvl0 indents (and higher) so any leftover numPr
+            # cannot add wrap indent on top of para ind.
+            for an in nroot.findall(_qn("abstractNum")):
+                for lvl in an.findall(_qn("lvl")):
+                    pPr_lvl = lvl.find(_qn("pPr"))
+                    if pPr_lvl is None:
+                        continue
+                    ind_el = pPr_lvl.find(_qn("ind"))
+                    if ind_el is None:
+                        ind_el = etree.SubElement(pPr_lvl, _qn("ind"))
+                    # Force wrap origin 0; no hanging/firstLine from numbering
+                    for a in list(ind_el.attrib):
+                        del ind_el.attrib[a]
+                    ind_el.set(f"{W}left", "0")
+                    ind_el.set(f"{W}hanging", "0")
+                    stats["numbering_lvl0_zeroed"] += 1
+                    # num tab at 0
+                    tabs = pPr_lvl.find(_qn("tabs"))
+                    if tabs is not None:
+                        for tab in tabs.findall(_qn("tab")):
+                            if tab.get(f"{W}val") == "num":
+                                tab.set(f"{W}pos", "0")
+            ntree.write(str(num_path), xml_declaration=True, encoding="UTF-8", standalone=True)
+
+        # Counters per numId for sequential labels
+        counters: dict[tuple[str, str], int] = {}
+
+        def format_label(nid: str, ilvl: str) -> str:
+            aid = num_to_abs.get(nid)
+            meta = abs_lvl.get((aid, ilvl), {"fmt": "decimal", "lvlText": "%1.", "start": 1})
+            if (nid, ilvl) not in counters:
+                counters[(nid, ilvl)] = num_start_override.get(
+                    (nid, ilvl), meta["start"]
+                )
+            else:
+                counters[(nid, ilvl)] += 1
+            nval = counters[(nid, ilvl)]
+            lt = meta["lvlText"] or "%1."
+            # Only handle decimal %1. style used in this report
+            label = lt.replace("%1", str(nval)).replace("%2", str(nval)).replace("%3", str(nval))
+            if meta.get("fmt") == "none":
+                return ""
+            # Ensure trailing space if suffix not already spacing via numbering suff
+            if label and not label.endswith(" "):
+                label = label + " "
+            return label
+
+        BODY_FIRSTLINE = {
+            f"{W}left": "0",
+            f"{W}leftChars": "0",
+            f"{W}firstLine": "480",
+            f"{W}firstLineChars": "200",
+        }
+
+        def force_body_firstline(pPr: etree._Element) -> None:
+            # Drop hanging; set firstLine like A5 body
+            ind = pPr.find(_qn("ind"))
+            if ind is None:
+                ind = etree.SubElement(pPr, _qn("ind"))
+            # Clear hanging attrs
+            for a in [f"{W}hanging", f"{W}hangingChars"]:
+                if a in ind.attrib:
+                    del ind.attrib[a]
+            for k, v in BODY_FIRSTLINE.items():
+                ind.set(k, v)
+            stats["firstLine_forced"] += 1
+
+        def prepend_text(p: etree._Element, label: str) -> None:
+            if not label:
+                return
+            # Find first w:t in paragraph (skip empty)
+            texts = p.findall(".//" + _qn("t"))
+            if texts:
+                t0 = texts[0]
+                existing = t0.text or ""
+                # Avoid double-prefix if already starts with same number pattern
+                if re.match(r"^\d+\.\s", existing):
+                    return
+                t0.text = label + existing
+                # preserve spaces
+                t0.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                stats["numbers_injected"] += 1
+            else:
+                # Create a run
+                r = etree.SubElement(p, _qn("r"))
+                t = etree.SubElement(r, _qn("t"))
+                t.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                t.text = label
+                stats["numbers_injected"] += 1
+
+        for p in root.findall(".//" + _qn("p")):
+            # Skip table cells? Still demote if numbered inside tables (rare)
+            pPr = p.find(_qn("pPr"))
+            if pPr is None:
+                continue
+            numPr = pPr.find(_qn("numPr"))
+            text_join = "".join(p.xpath(".//w:t/text()", namespaces={"w": W_NS}))
+
+            if numPr is not None:
+                ilvl_el = numPr.find(_qn("ilvl"))
+                nid_el = numPr.find(_qn("numId"))
+                ilvl = ilvl_el.get(f"{W}val") if ilvl_el is not None else "0"
+                nid = nid_el.get(f"{W}val") if nid_el is not None else "0"
+                label = format_label(nid, ilvl)
+                prepend_text(p, label)
+                pPr.remove(numPr)
+                stats["demoted_numPr"] += 1
+                # Map ListParagraph → body
+                ps = pPr.find(_qn("pStyle"))
+                if ps is not None:
+                    sid = ps.get(f"{W}val") or ""
+                    if sid in ("ListParagraph", "Compact", "BodyText", "FirstParagraph") or sid.startswith("List"):
+                        ps.set(f"{W}val", body_style)
+                        stats["style_to_body"] += 1
+                else:
+                    etree.SubElement(pPr, _qn("pStyle"), {f"{W}val": body_style})
+                    stats["style_to_body"] += 1
+                force_body_firstline(pPr)
+            else:
+                # Already-plain "N. ..." body paras (from escaped MD): ensure firstLine
+                if re.match(r"^\d+\.\s", text_join):
+                    ps = pPr.find(_qn("pStyle"))
+                    if ps is None:
+                        etree.SubElement(pPr, _qn("pStyle"), {f"{W}val": body_style})
+                        stats["style_to_body"] += 1
+                    elif ps.get(f"{W}val") in ("ListParagraph", "Compact"):
+                        ps.set(f"{W}val", body_style)
+                        stats["style_to_body"] += 1
+                    force_body_firstline(pPr)
+
+        tree.write(str(doc_path), xml_declaration=True, encoding="UTF-8", standalone=True)
+        tmp = docx_path.with_suffix(".demote.docx")
+        with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for f in sorted(work.rglob("*")):
+                if f.is_file():
+                    zf.write(f, f.relative_to(work).as_posix())
+        tmp.replace(docx_path)
+        return stats
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
 
 
 def convert(md: Path, template: Path, outdir: Path) -> dict:
@@ -806,16 +1311,30 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
     omml_info = fix_omml_for_word(final_out)
     # Table styling after OMML fix, before LO roundtrip
     table_style_pre = style_tables_for_report(final_out)
+    demote_info_pre = demote_numbered_lists_to_body(final_out)
+    # Body firstLine AFTER demote so plain "N. " lists keep firstLine=480 left=0
+    body_indent_pre = ensure_body_first_line_indent(final_out)
+    h1_space_pre = fix_heading1_number_spacing(final_out)
 
     word_safe = outdir / "final-word.docx"
     pdf_out = outdir / "final.pdf"
     lo_info = {}
     table_style_post = None
+    body_indent_post = None
     try:
         lo_info = libreoffice_word_safe_roundtrip(final_out, word_safe, pdf_out)
-        # LO may strip header shade / jc / widths — re-apply, then rebuild PDF
+        # LO may strip header shade / jc / vAlign / widths / firstLineChars — re-apply
         if word_safe.exists():
             table_style_post = style_tables_for_report(word_safe)
+            # CRITICAL: LO may recreate numPr; demote to body firstLine=480 (wrap@0)
+            demote_info_lo = demote_numbered_lists_to_body(word_safe)
+            lo_info["demote_lists"] = demote_info_lo
+            # CRITICAL: LO drops firstLineChars; re-apply on Normal/A5 + all body paras
+            # (including demoted list paras — same firstLine=480 left=0)
+            body_indent_post = ensure_body_first_line_indent(word_safe)
+            # CRITICAL: H1 two-space numbering + flush left (LO collapses / re-indents)
+            h1_space_post = fix_heading1_number_spacing(word_safe)
+            lo_info["h1_number_spacing"] = h1_space_post
             # Re-export PDF from restyled Word-safe doc so shading is visible
             if pdf_out is not None:
                 try:
@@ -856,6 +1375,11 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
         "post_info": post_info,
         "table_style_pre_lo": table_style_pre,
         "table_style_post_lo": table_style_post,
+        "demote_lists_pre_lo": demote_info_pre,
+        "body_indent_pre": body_indent_pre,
+        "body_indent_post_lo": body_indent_post,
+        "h1_space_pre": h1_space_pre,
+        "h1_space_post_lo": lo_info.get("h1_number_spacing") if isinstance(lo_info, dict) else None,
     }
 
 

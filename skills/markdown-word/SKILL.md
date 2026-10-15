@@ -17,6 +17,16 @@ description: 用户给出 Word 模板(.docx 或 .dotx),要把 Markdown 报告转
 4. **不要改 Markdown 正文**,除非只为修正相对图片路径。
 5. **不要提交** `<outdir>`、`__pycache__` 或中间 docx。
 
+## 已锁定的中文报告排版 (勿回退)
+
+后处理在 LibreOffice roundtrip 前后都要再跑,必须保持下面五条。改脚本时以这五条为准。
+
+1. **一级标题顶格,数字后两个空格**。`left` 与 `firstLine` 都是 0。数字和标题文字之间恰好 2 个 ASCII 空格,例如 `1  摘要`。pandoc 会把 Markdown 里的连续空格压成 1 个,由 `fix_heading1_number_spacing` 恢复。LibreOffice 可能把样式改成 `Heading1` 并重新缩进,所以 roundtrip 之后必须再执行一次。
+2. **正文首行两个汉字**。`w:firstLineChars="200"` 且 `w:firstLine="480"`(twips,约 2×12pt),`left=0`。模板里 Normal 的 `firstLine` 只有 200,LibreOffice 又会丢掉 `firstLineChars`,看起来会变成只缩进一个字。`ensure_body_first_line_indent` 对 Normal / A正文(`A5`)样式和正文段落在 roundtrip 前后各补一次。
+3. **编号不用 `numPr`,续行顶格**。`demote_numbered_lists_to_body` 去掉自动编号,把 `N. ` 写进普通正文段落,首行缩进与正文相同,`left=0`,换行回到左边界。Markdown 写成 `1\.` 时直接是普通段落,同样按正文首行缩进。roundtrip 后若 LibreOffice 写回 `numPr`,再降级一次。
+4. **表格表头居中,表体居左,垂直居中**。`style_tables_for_report`:表头第一行底纹 `D9D9D9`(可带 `themeFill` / `themeFillShade`),表头段落 `jc=center`;表体段落 `jc=left`;每个单元格 `vAlign=center`。清掉单元格上从 A正文继承来的首行缩进。`tblW` 为 `pct` / `5000`,列宽按版心等分。OMML 修复之后和 roundtrip 之后各执行一次。
+5. **优先交付 `final-word.docx`**。有 LibreOffice 时把 `<outdir>/final-word.docx` 交给用户。`final.docx` 保留模板样式并已做 OMML 修复;Word 打不开时仍以 roundtrip 后的 `final-word.docx` 为主文件。
+
 ## 依赖
 
 本技能不调用 ASTROX Web API。
@@ -80,15 +90,15 @@ python3 skills/markdown-word/md_to_docx_with_template.py <report.md> skills/mark
 
 ## 输出
 
-脚本向 stdout 打印 JSON,包含路径以及 `omml_fix`、`lo_roundtrip`、`table_style_pre_lo`、`table_style_post_lo`。
+脚本向 stdout 打印 JSON,包含路径以及 `omml_fix`、`lo_roundtrip`、`table_style_pre_lo`、`table_style_post_lo`、`demote_lists_pre_lo`、`body_indent_pre`、`body_indent_post_lo`、`h1_space_pre`、`h1_space_post_lo`。
 
 | 文件 | 说明 |
 | :--- | :--- |
 | `<outdir>/reference.docx` | 由本次模板生成的 pandoc reference-doc(补了英文样式名,并去掉标题自动编号) |
 | `<outdir>/out.docx` | pandoc 原始输出 |
-| `<outdir>/final.docx` | 样式回映射、页眉页脚与 `sectPr`、OMML 修复、表格后处理 |
-| `<outdir>/final-word.docx` | LibreOffice DOCX→ODT→DOCX。**给 Word 用户时优先交这个** |
-| `<outdir>/final.pdf` | roundtrip 后再次套表格样式再导出的 PDF(有 LibreOffice 时) |
+| `<outdir>/final.docx` | 样式回映射、页眉页脚与 `sectPr`、OMML 修复,以及表格、编号、正文缩进、一级标题后处理 |
+| `<outdir>/final-word.docx` | LibreOffice DOCX→ODT→DOCX,并再次套用锁定排版。**给 Word 用户时优先交这个** |
+| `<outdir>/final.pdf` | roundtrip 并再次套用锁定排版后导出的 PDF(有 LibreOffice 时) |
 | `<outdir>/_ref_unpacked/` | 解包后的模板工作目录,属于中间产物 |
 
 ## 脚本做了什么
@@ -108,13 +118,16 @@ pandoc report.md -o out.docx \
    - 删除空的 `m:sepChr`(无 `m:val` 或 `m:val=""`)。无分隔符时不应保留空 sepChr
    - 补上缺失的 `VerbatimChar` 字符样式
    - 去掉未引用的空 `comments.xml`
-5. **表格**:`style_tables_for_report` 在 OMML 修复之后、LibreOffice roundtrip 之前执行;若 LO 去掉底纹,roundtrip 后再执行一次。约定为表头第一行底纹 `D9D9D9`(可带 `themeFill` / `themeFillShade`),`tblW` 为 `pct` / `5000`(拉满版心),单元格段落 `jc` 一律 `left`,列宽按版心等分。
-6. **LibreOffice roundtrip** (`libreoffice_word_safe_roundtrip`):DOCX→ODT→DOCX,写出 `final-word.docx`,并导出 `final.pdf`。
+5. **表格**:`style_tables_for_report` 在 OMML 修复之后执行,roundtrip 后再执行一次。表头第一行底纹 `D9D9D9`(可带 `themeFill` / `themeFillShade`),表头段落 `jc=center`,表体段落 `jc=left`,全部单元格 `vAlign=center`,并清掉单元格首行缩进。`tblW` 为 `pct` / `5000`(拉满版心),列宽按版心等分。
+6. **编号**:`demote_numbered_lists_to_body` 去掉段落 `numPr`,把编号写成正文里的 `N. `。首行缩进两个汉字,续行 `left=0`。roundtrip 后再执行一次。
+7. **正文首行**:`ensure_body_first_line_indent` 在去掉自动编号之后执行。Normal / A正文(`A5`)与正文段落使用 `firstLineChars=200`、`firstLine=480`、`left=0`。roundtrip 后再补一次。
+8. **一级标题**:`fix_heading1_number_spacing` 把一级标题缩进清零,并把数字后的空白收成恰好两个 ASCII 空格。roundtrip 之后必须再执行。
+9. **LibreOffice roundtrip** (`libreoffice_word_safe_roundtrip`):DOCX→ODT→DOCX,写出 `final-word.docx`。上面的表格、编号、正文缩进和一级标题在 roundtrip 之后再跑一遍,然后导出 `final.pdf`。
 
 ## 注意事项
 
 - LibreOffice 往往能打开 Microsoft Word 打不开的文件。能转成 PDF 不能当成 Word 已兼容。
-- 模板样式优先留在 `final.docx`(styleId 与模板一致,例如一级标题 `1`、图题 `A0`)。若 Word 仍拒收,交付 `final-word.docx`。LibreOffice 可能改写 styleId,但样式显示名往往还在:试跑中 `A5` 仍是 A正文,图题由 styleId `A0` 变成 `A3` 且 `w:name` 仍为 A图片,标题 `1` / `af6` 变成 `Heading1` / `Title`。
+- `final.docx` 保留模板 styleId(例如一级标题 `1`、图题 `A0`)。有 LibreOffice 时交给用户的仍是 `final-word.docx`。LibreOffice 可能改写 styleId,但样式显示名往往还在:试跑中 `A5` 仍是 A正文,图题由 styleId `A0` 变成 `A3` 且 `w:name` 仍为 A图片,标题 `1` / `af6` 变成 `Heading1` / `Title`。
 - Word 打不开时先查公式里的空 `m:sepChr`,对照 stdout JSON 的 `omml_fix.empty_sepchr_removed`。
 - 公式仍有问题时,可退回 pandoc `--mathml`,或把公式改成纯 Unicode / 图片后再转。
 - `<outdir>` 不要用本技能目录,也不要把其中的中间产物提交进仓。
