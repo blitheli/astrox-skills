@@ -70,4 +70,5 @@ skills/
 - `rocket-trajectory-optim`(目录 `skills/rocket-trajectory-optim/`;火箭方案弹道优化,契约见仓库根目录 `rocket-web-api.json`,默认服务 `http://astrox.cn:8764`)
 - `terrain-mask`(目录 `skills/terrain-mask/`;方位–仰角地形遮罩 `/Terrain/AzElMask` 与 `/Terrain/AzElMaskSimple`)
 - `cesium-astrox`(目录 `skills/cesium-astrox/`;ASTROX 扩展 Cesium.js。多天体 SolarSystem 场景、分辨率与回退 Viewer、地球/月球影像和地形图层、CZML position 轨迹 Entity、地面轨迹与 orbits、多段 path 按时间上色见 `SKILL.md` 与 `examples/path-segment-colors.js`)
+- `markdown-word`(目录 `skills/markdown-word/`;按用户 Word 模板把 Markdown 转成 docx。本地脚本,无 HTTP 端点与 fixtures;依赖 pandoc、python3、lxml、LibreOffice)
 
