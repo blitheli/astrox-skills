@@ -30,6 +30,7 @@
 - 使用技能时不必展开查询 `astrox-web-api.json`;该文件主要用于创建或维护技能、核对字段与 OpenAPI 契约。
 - 火箭相关技能以仓库根目录 `rocket-web-api.json` 为准,默认服务为 `http://astrox.cn:8764`。
 - `markdown-word`(目录 `skills/markdown-word/`)是本地 Markdown→docx 转换技能,不是 Web API,也没有 fixtures。验证时运行 `python3 skills/markdown-word/md_to_docx_with_template.py`,依赖 pandoc、python3、lxml、LibreOffice(`soffice`)。
+- `close-approach`(目录 `skills/close-approach/`)对应 `POST /CAT/CA_ComputeV5`。验证示例: `curl http://astrox.cn:8765/CAT/CA_ComputeV5 -X POST -H 'Content-Type: application/json' --data-binary @skills/close-approach/fixtures/ca-computev5-min.json`。
 
 ---
 

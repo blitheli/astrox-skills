@@ -59,6 +59,7 @@ skills/
 - `lighting-times`、`lighting-solar-aer`、`lighting-solar-intensity`(别名 lighting-solarIntensity)
 - `query-city`、`query-facility`、`query-tle`
 - `access`(目录 `skills/access/`)
+- `close-approach`(目录 `skills/close-approach/`;近距离交会 `POST /CAT/CA_ComputeV5`,fixtures 见 `fixtures/ca-computev5-min.json` 等)
 - `celestial-ephemeris`(目录 `skills/celestial-ephemeris/`)
 - `celestial-mpc`(目录 `skills/celestial-mpc/`)
 - `celestial-transfer`(目录 `skills/celestial-transfer/`)
