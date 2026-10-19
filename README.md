@@ -89,6 +89,7 @@ curl "http://astrox.cn:8765/city?cityName=Beijing"
 | 技能 | 说明 |
 | :--- | :--- |
 | [`access`](skills/access/SKILL.md) | 两对象间可见性/Access 弧段,AER 采样 |
+| [`close-approach`](skills/close-approach/SKILL.md) | 近距离交会/碰撞筛选: 一颗 SGP4 主星对 TLE 目标 (`POST /CAT/CA_ComputeV5`) |
 | [`lighting-times`](skills/lighting-times/SKILL.md) | 光照/阴影时间 (含地形遮罩) |
 | [`lighting-solar-aer`](skills/lighting-solar-aer/SKILL.md) | 相对视太阳的方位角、高度角、距离 |
 | [`lighting-solar-intensity`](skills/lighting-solar-intensity/SKILL.md) | 视太阳光照强度 / 遮挡率 / 日食状态 (别名 lighting-solarIntensity) |

@@ -216,6 +216,57 @@
         }
       }
     },
+    "/CAT/CA_ComputeV5": {
+      "post": {
+        "tags": [
+          "CAT2"
+        ],
+        "summary": "空间碎片接近计算V5",
+        "description": "取代V3版本, 飞行器和碎片均使用SGP4积分器  <br>轨道面夹角由输入参数控制,缺省为1°,TimeFilter改为距离判断且并行, 大幅减少计算时间  <br>输入参数中，Targets可为Null，则从数据库中读取所有目标(Data/DataBases/Satellite)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CAInput5"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CAInput5"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CAInput5"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAOutput5"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAOutput5"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CAOutput5"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/CAT/CA_ComputeV4": {
       "post": {
         "tags": [
@@ -7767,6 +7818,66 @@
         },
         "description": "单飞行器对空间目标碰撞输入参数(飞行器对象为CzmlPosition类型，适用于火箭等对象)"
       },
+      "CAInput5": {
+        "required": [
+          "Start_UTCG",
+          "Stop_UTCG",
+          "SAT1"
+        ],
+        "type": "object",
+        "properties": {
+          "Start_UTCG": {
+            "type": "string",
+            "description": "分析开始时间(UTC)(yyyy-MM-ddTHH:mm:ss.fffZ)"
+          },
+          "Stop_UTCG": {
+            "type": "string",
+            "description": "分析结束时间(UTC)(yyyy-MM-ddTHH:mm:ss.fffZ)"
+          },
+          "TolMaxDistance": {
+            "description": "两卫星接近的最大距离(km)(缺省为5km)",
+            "format": "double",
+            "default": 5
+          },
+          "ApoPeriPad": {
+            "description": "近地点远地点径向包络垫量(km)(缺省30km，对应STK apoPeriPad)",
+            "format": "double",
+            "default": 30
+          },
+          "TimeDistPad": {
+            "description": "Time筛距离垫量(km)(缺省30km，对应STK timeDistPad)",
+            "format": "double",
+            "default": 30
+          },
+          "UseApoPeriFilter": {
+            "type": "boolean",
+            "description": "是否启用Apo/Peri区间包络筛(缺省true；主星300s扫、次星T0/T1端点)",
+            "default": true
+          },
+          "UseTimeOrCrossFilter": {
+            "type": "boolean",
+            "description": "是否启用交点时间筛(缺省true；V5为CrossTimePreFilter5)",
+            "default": true
+          },
+          "SAT1": {
+            "description": "飞行器对象",
+            "$ref": "#/components/schemas/TleInfo"
+          },
+          "Targets": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TleInfo"
+            },
+            "description": "其它所有目标（用于计算碰撞）"
+          },
+          "TolTheta": {
+            "description": "交点筛选时，轨道面夹角阈值(deg)(缺省为1°)",
+            "format": "double",
+            "default": 1
+          }
+        },
+        "description": "单飞行器对空间目标C接近输入参数(V5/CA_ComputeV5)"
+      },
       "CAOutput": {
         "type": "object",
         "properties": {
@@ -7838,6 +7949,70 @@
           }
         },
         "description": "飞行器对多空间目标的接近分析结果"
+      },
+      "CAOutput5": {
+        "type": "object",
+        "properties": {
+          "IsSuccess": {
+            "type": "boolean",
+            "description": "CA 结果(True:成功；FALSE:失败)"
+          },
+          "Message": {
+            "type": "string",
+            "description": "CA 结果信息(主要是存储失败的原因)"
+          },
+          "TotalNumber": {
+            "type": "integer",
+            "description": "目标总数",
+            "format": "int32"
+          },
+          "AfterApoPeriFilterNumber": {
+            "type": "integer",
+            "description": "近地点、远地点高度过滤后的总数",
+            "format": "int32"
+          },
+          "AfterTimeFilterNumber": {
+            "type": "integer",
+            "description": "轨道面交点过滤后的总目标数",
+            "format": "int32"
+          },
+          "CA_Results": {
+            "type": [
+              "null",
+              "array"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/CAResultInfo"
+            },
+            "description": "所有碰撞结果，一个对象为两两碰撞结果"
+          },
+          "TimingPrepareMs": {
+            "type": "integer",
+            "description": "准备阶段墙钟(ms)",
+            "format": "int64"
+          },
+          "TimingApoPeriMs": {
+            "type": "integer",
+            "description": "Apo/Peri筛累计墙钟(ms)",
+            "format": "int64"
+          },
+          "TimingTimeOrCrossMs": {
+            "type": "integer",
+            "description": "CrossTime筛累计墙钟(ms)",
+            "format": "int64"
+          },
+          "TimingAccessMinRangeMs": {
+            "type": "integer",
+            "description": "Access与MinRange终检累计墙钟(ms)",
+            "format": "int64"
+          },
+          "TimingTotalMs": {
+            "type": "integer",
+            "description": "CA_ComputeV3总墙钟(ms)",
+            "format": "int64"
+          }
+        },
+        "description": "单飞行器对多空间目标的碰撞结果"
       },
       "CAResultInfo": {
         "type": "object",

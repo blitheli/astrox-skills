@@ -75,6 +75,11 @@
       "fixturesDir": "skills/access/fixtures"
     },
     {
+      "name": "close-approach",
+      "skillFile": "skills/close-approach/SKILL.md",
+      "fixturesDir": "skills/close-approach/fixtures"
+    },
+    {
       "name": "celestial-ephemeris",
       "skillFile": "skills/celestial-ephemeris/SKILL.md",
       "fixturesDir": "skills/celestial-ephemeris/fixtures"
