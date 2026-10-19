@@ -1,6 +1,6 @@
 ---
 name: close-approach
-description: use this when the user needs close-approach screening between one SGP4 satellite and TLE targets (近距离交会, 最近距离, TEME 相对速度). Calls POST /CAT/CA_ComputeV5. V5 does not compute collision probability.
+description: 当用户需要卫星近距离接近或交会分析 (close approach) 时使用本技能。调用 ASTROX 的 POST /CAT/CA_ComputeV5 (CA_ComputeV5), 用 SGP4/TLE 计算最近距离和 TEME 相对速度。本接口不计算碰撞概率。
 ---
 
 # 近距离交会技能 (Close Approach / CA_ComputeV5)
