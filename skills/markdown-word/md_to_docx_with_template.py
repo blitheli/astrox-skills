@@ -657,25 +657,30 @@ def _reorder_tblPr(tblPr: etree._Element) -> None:
 # Body + plain lists: firstLineChars=200, firstLine=480, left=0; list wraps at 0
 #     (plain "N. text", no numPr). ensure_body_first_line_indent + demote after LO.
 # Tables: header jc=center + shade D9D9D9; body jc=left; all vAlign=center;
+#     row height atLeast 480 twips (24 pt); cell para spacing before/after 40 twips (2 pt);
 #     strip cell edge spaces/NBSP; no "圈" in table2 body period/rev cells;
 #     re-apply style_tables_for_report after LO.
 # Fig captions: "图 1" / "图 2" (A0/A3), centered, no indent.
 # ---------------------------------------------------------------------------
 
 
-def style_tables_for_report(docx_path: Path) -> dict:
-    """Post-process every table: full-width, header gray D9D9D9 and centered.
+# Locked table geometry (Chinese ballistic reports). Delivery filename is per task.
+TABLE_ROW_HEIGHT_TWIPS = "480"  # atLeast 24 pt
+TABLE_CELL_SPACING_TWIPS = "40"  # before/after 2 pt
 
-    Header paragraphs are jc=center. Body paragraphs are jc=left. Every cell gets
-    w:vAlign=center. Header fill is D9D9D9 with optional themeFill background1 /
-    themeFillShade D9. Re-run after LibreOffice roundtrip so shade / jc / vAlign /
-    widths survive.
+
+def style_tables_for_report(docx_path: Path) -> dict:
+    """Post-process every table: full-width, header gray D9D9D9, vAlign=center, left text.
+
+    Matches the sample table in the Chinese Word template (header fill D9D9D9 with
+    optional themeFill background1 / themeFillShade D9). All cells get w:vAlign=center,
+    row height atLeast 24 pt, cell paragraph spacing before/after 2 pt.
+    Re-run after LibreOffice roundtrip so shade / jc / vAlign / widths / row height survive.
     """
     work = Path(tempfile.mkdtemp(prefix="tblstyle-"))
     stats = {
         "tables": 0,
         "header_cells_shaded": 0,
-        "jc_forced_center": 0,
         "jc_forced_left": 0,
         "vAlign_center": 0,
         "widths_set": 0,
@@ -743,6 +748,21 @@ def style_tables_for_report(docx_path: Path) -> dict:
 
             rows = tbl.findall(_qn("tr"))
             for ri, tr in enumerate(rows):
+                trPr = tr.find(_qn("trPr"))
+                if trPr is None:
+                    trPr = etree.Element(_qn("trPr"))
+                    tr.insert(0, trPr)
+                trHeight = trPr.find(_qn("trHeight"))
+                if trHeight is None:
+                    etree.SubElement(
+                        trPr,
+                        _qn("trHeight"),
+                        {f"{W}val": TABLE_ROW_HEIGHT_TWIPS, f"{W}hRule": "atLeast"},
+                    )
+                else:
+                    trHeight.set(f"{W}val", TABLE_ROW_HEIGHT_TWIPS)
+                    trHeight.set(f"{W}hRule", "atLeast")
+
                 cells = tr.findall(_qn("tc"))
                 for ci, tc in enumerate(cells):
                     tcPr = tc.find(_qn("tcPr"))
@@ -791,9 +811,9 @@ def style_tables_for_report(docx_path: Path) -> dict:
                     else:
                         stats["vAlign_center"] += 1
 
-                    # Header row centered; body left. Clear A5 first-line indent in cells.
-                    align = "center" if ri == 0 else "left"
-                    stat_key = "jc_forced_center" if align == "center" else "jc_forced_left"
+                    # Header: horizontal center; body: left. Clear first-line indent from A5.
+                    # Locked spacing so vAlign=center is visible without oversized rows.
+                    want_jc = "center" if ri == 0 else "left"
                     for p in tc.findall(".//" + _qn("p")):
                         pPr = p.find(_qn("pPr"))
                         if pPr is None:
@@ -814,13 +834,20 @@ def style_tables_for_report(docx_path: Path) -> dict:
                             for hang in (f"{W}hanging", f"{W}hangingChars"):
                                 if hang in ind.attrib:
                                     del ind.attrib[hang]
+                        spacing = pPr.find(_qn("spacing"))
+                        if spacing is None:
+                            spacing = etree.SubElement(pPr, _qn("spacing"))
+                        spacing.set(f"{W}before", TABLE_CELL_SPACING_TWIPS)
+                        spacing.set(f"{W}after", TABLE_CELL_SPACING_TWIPS)
                         jc = pPr.find(_qn("jc"))
                         if jc is None:
-                            etree.SubElement(pPr, _qn("jc"), {f"{W}val": align})
-                            stats[stat_key] += 1
-                        elif jc.get(f"{W}val") != align:
-                            jc.set(f"{W}val", align)
-                            stats[stat_key] += 1
+                            etree.SubElement(pPr, _qn("jc"), {f"{W}val": want_jc})
+                            if want_jc == "left":
+                                stats["jc_forced_left"] += 1
+                        elif jc.get(f"{W}val") != want_jc:
+                            jc.set(f"{W}val", want_jc)
+                            if want_jc == "left":
+                                stats["jc_forced_left"] += 1
 
         tree.write(
             str(doc_path), xml_declaration=True, encoding="UTF-8", standalone=True
