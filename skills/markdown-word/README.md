@@ -26,7 +26,7 @@ python3 skills/markdown-word/md_to_docx_with_template.py <report.md> skills/mark
 2. 正文样式 `A正文`(小四),首行两个汉字:`firstLineChars=200`,`firstLine=480`,`left=0`。不要在 run 上写显式 `w:sz`(例如五号 21)。
 3. 编号不用 Word `numPr`。编号行按正文首行缩进,续行顶格(`left=0`)。
 4. 表格表头居中并铺 `D9D9D9` 底纹,表体左对齐,单元格 `vAlign=center`,行高 `atLeast` 480 twips(24 pt),单元格段前段后各 40 twips。
-5. 图题 / 表题用模板样式 `A图片` / `A表`。
+5. 图题 / 表题用模板样式 `A图片` / `A表` 的 Word 自动编号（`图%1` / `表%1`）。文案只写标题，Markdown 用 `![说明]` 和 `Table: 标题`。禁止把 styleId `A0` / `A` 放进 `STRIP_NUMPR`。LibreOffice 之后要把 numbering 的 `pStyle` 对齐当前 styleId；`A图片2` 的 `numId` 为 `0`。
 6. 交给用户的文件优先是 `final-word.docx`。文件名按任务定。
 
 ## 依赖
@@ -43,7 +43,7 @@ python3 skills/markdown-word/md_to_docx_with_template.py <report.md> skills/mark
 | `reference.docx` | 由本次模板生成的 pandoc reference-doc |
 | `out.docx` | pandoc 原始输出 |
 | `final.docx` | 样式映射、页眉页脚、OMML 修复,以及表格、编号、正文缩进、一级标题后处理 |
-| `final-word.docx` | LibreOffice DOCX→ODT→DOCX,并再次套用锁定排版。给 Word 用户时优先交这个 |
+| `final-word.docx` | LibreOffice DOCX→ODT→DOCX,再次套用锁定排版,并重新对齐 A图片/A表 自动编号。给 Word 用户时优先交这个 |
 | `final.pdf` | roundtrip 并再次套用锁定排版后导出的 PDF(有 LibreOffice 时) |
 
 表格约定:表头第一行底纹 `D9D9D9` 且段落居中,表体段落左对齐,全部单元格 `vAlign=center`,行高 `atLeast` 480 twips,单元格段前段后各 40 twips,表宽 `tblW` 为 `pct` / `5000`,列宽按版心等分。单元格上的首行缩进会被清掉。
