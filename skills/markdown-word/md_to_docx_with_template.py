@@ -26,6 +26,19 @@ from pathlib import Path
 
 from lxml import etree
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+if str(_SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPT_DIR))
+
+from caption_numbering import (
+    abstract_lvl0_is_caption,
+    caption_num_ids,
+    caption_style_ids,
+    fix_caption_numbering,
+    sid_by_name,
+    suppress_image_style,
+)
+
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 W = f"{{{W_NS}}}"
@@ -42,8 +55,10 @@ STYLE_MAP = {
     "TableCaption": "A",
     "ImageCaption": "A0",
     "Caption": "A0",
-    "CaptionedFigure": "A0",
-    "Figure": "A0",
+    # Drawing paragraph, not the caption. A20 is A图片2 in the bundled template
+    # (postprocess overrides this by style name). Must not use A图片 / A0.
+    "CaptionedFigure": "A20",
+    "Figure": "A20",
     "Date": "a1",
     "Author": "A5",
     "Abstract": "A5",
@@ -56,8 +71,10 @@ STYLE_MAP = {
     "Heading3": "3",
 }
 
-# Styles that must not carry auto-numbering (MD text already numbered)
-STRIP_NUMPR_STYLE_IDS = {"1", "2", "3", "a1", "A0", "A", "a2", "a3", "-1", "-2"}
+# Heading styles whose Markdown source is already numbered.
+# Never add A图片/A表 here. In the bundled template those styleIds are A0 and A;
+# stripping their numPr deletes 图%1 / 表%1 auto-numbering.
+STRIP_NUMPR_STYLE_IDS = {"1", "2", "3", "a1", "a2", "a3", "-1", "-2"}
 
 
 def _qn(tag: str) -> str:
@@ -138,7 +155,8 @@ def add_pandoc_styles(styles_root: etree._Element) -> list[str]:
     ]:
         maybe_add(sid, name, based_on="A5", next_style="A5")
 
-    # Captions → based on A0 (image) / A (table); no numPr
+    # Captions → based on A0 (A图片) / A (A表). Do not put numPr on these
+    # pandoc styles: they inherit 图%1 / 表%1 until paragraphs are remapped.
     center = etree.Element(_qn("jc"), {f"{W}val": "center"})
     no_indent = etree.Element(
         _qn("ind"),
@@ -227,10 +245,10 @@ def build_reference_docx(template: Path, reference_out: Path) -> dict:
 
     removed = strip_numPr_from_styles(root, STRIP_NUMPR_STYLE_IDS)
     added = add_pandoc_styles(root)
-    # Also strip numPr from any newly-added styles that inherited via basedOn
-    # (basedOn alone doesn't copy numPr into the style element; A0/A still have theirs)
-    # Re-strip A0/A so captions based on them don't pick up numbering when applied as A0/A
-    strip_numPr_from_styles(root, {"A0", "A", "a1"})
+    # A图片 (A0) and A表 (A) must keep numPr. basedOn does not copy numPr into
+    # the child style element; caption paragraphs are remapped onto A0/A later.
+    # A图片2 is basedOn A图片 — numId=0 so the drawing paragraph does not take a 图 number.
+    suppress_image_style(root)
 
     tree.write(
         str(styles_path),
@@ -262,15 +280,18 @@ def run_pandoc(md: Path, reference: Path, out_docx: Path, resource_path: Path) -
     subprocess.run(cmd, check=True)
 
 
-def remap_paragraph_styles(doc_root: etree._Element) -> dict[str, int]:
+def remap_paragraph_styles(
+    doc_root: etree._Element, style_map: dict[str, str] | None = None
+) -> dict[str, int]:
+    style_map = STYLE_MAP if style_map is None else style_map
     counts: dict[str, int] = {}
     for pPr in doc_root.findall(".//" + _qn("pPr")):
         ps = pPr.find(_qn("pStyle"))
         if ps is None:
             continue
         old = ps.get(f"{W}val")
-        if old in STYLE_MAP:
-            new = STYLE_MAP[old]
+        if old in style_map:
+            new = style_map[old]
             ps.set(f"{W}val", new)
             counts[f"{old}→{new}"] = counts.get(f"{old}→{new}", 0) + 1
     return counts
@@ -495,11 +516,25 @@ def postprocess(
     styles_tree = etree.parse(str(styles_path))
     styles_root = styles_tree.getroot()
 
-    # Ensure numPr stripped in final styles too
+    # Heading numPr only. A图片/A表 (A0/A) stay numbered; fix_caption_numbering
+    # re-binds them and aligns numbering.xml pStyle after LibreOffice.
     removed_styles = strip_numPr_from_styles(styles_root, STRIP_NUMPR_STYLE_IDS)
 
-    remap_counts = remap_paragraph_styles(doc_root)
-    stripped_p = strip_paragraph_numPr(doc_root, {"1", "2", "3", "a1", "A0", "A", "af6"})
+    style_map = dict(STYLE_MAP)
+    fig_id = sid_by_name(styles_root, "A图片")
+    tab_id = sid_by_name(styles_root, "A表")
+    img2_id = sid_by_name(styles_root, "A图片2")
+    if fig_id:
+        style_map["ImageCaption"] = fig_id
+        style_map["Caption"] = fig_id
+    if tab_id:
+        style_map["TableCaption"] = tab_id
+    if img2_id:
+        # Image body must not use A图片, or it consumes a 图 number.
+        style_map["CaptionedFigure"] = img2_id
+        style_map["Figure"] = img2_id
+    remap_counts = remap_paragraph_styles(doc_root, style_map)
+    stripped_p = strip_paragraph_numPr(doc_root, {"1", "2", "3", "a1", "af6"})
     # Don't force Normal→A5 for every empty para; only leave as-is.
     # CaptionedFigure already remapped.
 
@@ -660,7 +695,9 @@ def _reorder_tblPr(tblPr: etree._Element) -> None:
 #     row height atLeast 480 twips (24 pt); cell para spacing before/after 40 twips (2 pt);
 #     strip cell edge spaces/NBSP; no "圈" in table2 body period/rev cells;
 #     re-apply style_tables_for_report after LO.
-# Fig captions: "图 1" / "图 2" (A0/A3), centered, no indent.
+# Fig/table captions: A图片 / A表 Word auto-number (lvlText 图%1 / 表%1).
+# Do not bake "图 1" into w:t. LO remaps styleId; fix_caption_numbering
+# realigns numbering pStyle afterwards. A图片2 numId=0. Demote skips them.
 # ---------------------------------------------------------------------------
 
 
@@ -1124,13 +1161,19 @@ def demote_numbered_lists_to_body(docx_path: Path, body_style: str = "A5") -> di
             z.extractall(work)
         doc_path = work / "word" / "document.xml"
         num_path = work / "word" / "numbering.xml"
+        styles_path = work / "word" / "styles.xml"
         tree = etree.parse(str(doc_path))
         root = tree.getroot()
+        # A图片 / A表 / A图片2: leave Word caption numbering alone (no static 图N/表N).
+        cap_sids: set[str] = set()
+        if styles_path.exists():
+            cap_sids = caption_style_ids(etree.parse(str(styles_path)).getroot())
 
         # Build abstractNum / numId indent + format lookup for injecting labels
         abs_lvl = {}  # (abstractNumId, ilvl) -> {fmt, lvlText, start, ind}
         num_to_abs = {}
         num_start_override = {}  # (numId, ilvl) -> start
+        cap_nums: set[str] = set()
         if num_path.exists():
             ntree = etree.parse(str(num_path))
             nroot = ntree.getroot()
@@ -1175,9 +1218,12 @@ def demote_numbered_lists_to_body(docx_path: Path, body_style: str = "A5") -> di
                                 "ind": pPr_lvl.find(_qn("ind")),
                             }
 
-            # Zero ALL abstractNum lvl0 indents (and higher) so any leftover numPr
-            # cannot add wrap indent on top of para ind.
+            cap_nums = caption_num_ids(nroot)
+            # Zero list abstractNum indents so leftover numPr cannot add wrap indent.
+            # Skip 图/表 caption abstracts — their hanging indent belongs to 图%1 / 表%1.
             for an in nroot.findall(_qn("abstractNum")):
+                if abstract_lvl0_is_caption(an):
+                    continue
                 for lvl in an.findall(_qn("lvl")):
                     pPr_lvl = lvl.find(_qn("pPr"))
                     if pPr_lvl is None:
@@ -1270,6 +1316,11 @@ def demote_numbered_lists_to_body(docx_path: Path, body_style: str = "A5") -> di
             pPr = p.find(_qn("pPr"))
             if pPr is None:
                 continue
+            ps_early = pPr.find(_qn("pStyle"))
+            if ps_early is not None and (ps_early.get(f"{W}val") or "") in cap_sids:
+                continue
+            if p.xpath(".//w:drawing", namespaces={"w": W_NS}):
+                continue
             numPr = pPr.find(_qn("numPr"))
             text_join = "".join(p.xpath(".//w:t/text()", namespaces={"w": W_NS}))
 
@@ -1278,6 +1329,9 @@ def demote_numbered_lists_to_body(docx_path: Path, body_style: str = "A5") -> di
                 nid_el = numPr.find(_qn("numId"))
                 ilvl = ilvl_el.get(f"{W}val") if ilvl_el is not None else "0"
                 nid = nid_el.get(f"{W}val") if nid_el is not None else "0"
+                # numId 0 and 图/表 definitions are not list items.
+                if nid == "0" or nid in cap_nums:
+                    continue
                 label = format_label(nid, ilvl)
                 prepend_text(p, label)
                 pPr.remove(numPr)
@@ -1342,18 +1396,22 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
     # Body firstLine AFTER demote so plain "N. " lists keep firstLine=480 left=0
     body_indent_pre = ensure_body_first_line_indent(final_out)
     h1_space_pre = fix_heading1_number_spacing(final_out)
+    # Caption auto-number before LO, then again after LO remaps styleId.
+    caption_pre = fix_caption_numbering(final_out, template)
 
     word_safe = outdir / "final-word.docx"
     pdf_out = outdir / "final.pdf"
     lo_info = {}
     table_style_post = None
     body_indent_post = None
+    caption_post = None
     try:
         lo_info = libreoffice_word_safe_roundtrip(final_out, word_safe, pdf_out)
         # LO may strip header shade / jc / vAlign / widths / firstLineChars — re-apply
         if word_safe.exists():
             table_style_post = style_tables_for_report(word_safe)
             # CRITICAL: LO may recreate numPr; demote to body firstLine=480 (wrap@0)
+            # Skips A图片/A表 so caption numbers stay in numbering.xml.
             demote_info_lo = demote_numbered_lists_to_body(word_safe)
             lo_info["demote_lists"] = demote_info_lo
             # CRITICAL: LO drops firstLineChars; re-apply on Normal/A5 + all body paras
@@ -1362,6 +1420,9 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
             # CRITICAL: H1 two-space numbering + flush left (LO collapses / re-indents)
             h1_space_post = fix_heading1_number_spacing(word_safe)
             lo_info["h1_number_spacing"] = h1_space_post
+            # LO rewrites styleId (A0/A → A3/A4) and leaves numbering pStyle stale.
+            caption_post = fix_caption_numbering(word_safe, template)
+            lo_info["caption_numbering"] = caption_post
             # Re-export PDF from restyled Word-safe doc so shading is visible
             if pdf_out is not None:
                 try:
@@ -1407,6 +1468,8 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
         "body_indent_post_lo": body_indent_post,
         "h1_space_pre": h1_space_pre,
         "h1_space_post_lo": lo_info.get("h1_number_spacing") if isinstance(lo_info, dict) else None,
+        "caption_numbering_pre": caption_pre,
+        "caption_numbering_post_lo": caption_post,
     }
 
 

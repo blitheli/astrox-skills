@@ -14,9 +14,9 @@ python3 skills/markdown-word/md_to_docx_with_template.py <report.md> skills/mark
 
 1. 一级标题顶格,数字后恰好两个 ASCII 空格。
 2. 正文样式 `A正文`(小四)。首行两个汉字(`firstLineChars=200`,`firstLine=480`)。不要在 run 上写显式 `w:sz`(例如五号 21)。
-3. 编号不用 `numPr`,续行顶格。
+3. 列表不用 `numPr`,续行顶格。demote 必须跳过 A图片 / A表 / A图片2,不得改写 `图%1` / `表%1`。
 4. 表格表头居中并铺 `D9D9D9`,表体居左,单元格 `vAlign=center`,行高 `atLeast` 480 twips,段前段后各 40 twips,`tblW` 为 `pct`/`5000`。
-5. 图题 / 表题用模板样式 `A图片` / `A表`。
+5. 图题 / 表题用模板样式 `A图片` / `A表` 的 Word 自动编号(`图%1` / `表%1`)。禁止把 `A0` / `A` 放进 `STRIP_NUMPR_STYLE_IDS`。LO roundtrip 之后再跑一遍 `fix_caption_numbering`,把 numbering 的 `pStyle` 对齐当前 styleId。`A图片2` 设 `numId=0`。题注正文不要手写「图N」「表N」。
 6. 优先交付 `final-word.docx`。文件名按任务定。
 
 同一套材料在 `blitheli/STK-Scenario` 的 `demo/docx/` 有 demo 副本;在本仓库以本目录为准。
