@@ -683,6 +683,169 @@ def _reorder_tblPr(tblPr: etree._Element) -> None:
 
 
 
+WP_NS = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+A_DRAW_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
+
+
+def _content_cx_emu(doc_root: etree._Element) -> int:
+    """版心宽度（页宽减去左右页边距），单位 EMU。1 twip = 635 EMU。"""
+    sect = doc_root.find(".//" + _qn("sectPr"))
+    if sect is None:
+        return 5_760_085
+    pg = sect.find(_qn("pgSz"))
+    mar = sect.find(_qn("pgMar"))
+    width = int(pg.get(f"{W}w") or "11906")
+    left = int(mar.get(f"{W}left") or "1440") if mar is not None else 1440
+    right = int(mar.get(f"{W}right") or "1440") if mar is not None else 1440
+    return (width - left - right) * 635
+
+
+def layout_figures_in_content_area(docx_path: Path) -> dict:
+    """上下型环绕，图左端对齐版心左边，宽度等于版心；图注与图同一段。
+
+    不要 relativeFrom=page、不要铺满页宽（会伸进页边距）。
+    图注若在下一段，并入图所在段，避免图和图注之间多出一个空段。
+    并入后该段用 A图片（自动「图N」），不要单独留 A图片2 占一行。
+    """
+    work = Path(tempfile.mkdtemp(prefix="figlayout-"))
+    stats = {"figures": 0, "captions_merged": 0, "empty_removed": 0}
+    try:
+        with zipfile.ZipFile(docx_path, "r") as zf:
+            zf.extractall(work)
+        styles_root = etree.parse(str(work / "word" / "styles.xml")).getroot()
+        doc_tree = etree.parse(str(work / "word" / "document.xml"))
+        doc_root = doc_tree.getroot()
+        fig_sid = sid_by_name(styles_root, "A图片") or "A0"
+        names = {}
+        for s in styles_root.findall(_qn("style")):
+            n = s.find(_qn("name"))
+            names[s.get(f"{W}styleId") or ""] = (n.get(f"{W}val") if n is not None else "") or ""
+        caption_ids = {
+            sid for sid, name in names.items()
+            if name in ("A图片", "Image Caption", "ImageCaption")
+        }
+        body = doc_root.find(_qn("body"))
+        content_cx = _content_cx_emu(doc_root)
+        children = [c for c in list(body) if c.tag != _qn("sectPr")]
+
+        def is_caption(p: etree._Element) -> bool:
+            if p.tag != _qn("p"):
+                return False
+            if p.find(".//" + f"{{{WP_NS}}}anchor") is not None or p.find(".//" + f"{{{WP_NS}}}inline") is not None:
+                return False
+            pPr = p.find(_qn("pPr"))
+            ps = pPr.find(_qn("pStyle")) if pPr is not None else None
+            return ps is not None and (ps.get(f"{W}val") or "") in caption_ids
+
+        def is_empty(p: etree._Element) -> bool:
+            if p.tag != _qn("p"):
+                return False
+            if p.find(".//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing") is not None:
+                return False
+            return not "".join(p.xpath(".//w:t/text()", namespaces={"w": W_NS})).strip()
+
+        i = 0
+        while i < len(children):
+            p = children[i]
+            if p.tag != _qn("p") or p.find(".//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing") is None:
+                i += 1
+                continue
+            j = i + 1
+            while j < len(children) and is_empty(children[j]):
+                body.remove(children[j])
+                stats["empty_removed"] += 1
+                j += 1
+            if j < len(children) and is_caption(children[j]):
+                cap = children[j]
+                for child in list(cap):
+                    if child.tag == _qn("r"):
+                        p.append(child)
+                body.remove(cap)
+                stats["captions_merged"] += 1
+            pPr = p.find(_qn("pPr"))
+            if pPr is None:
+                pPr = etree.Element(_qn("pPr"))
+                p.insert(0, pPr)
+            ps = pPr.find(_qn("pStyle"))
+            if ps is None:
+                ps = etree.SubElement(pPr, _qn("pStyle"))
+            ps.set(f"{W}val", fig_sid)
+            numPr = pPr.find(_qn("numPr"))
+            if numPr is not None:
+                pPr.remove(numPr)
+            _float_drawing(p, content_cx, stats["figures"] + 1)
+            stats["figures"] += 1
+            children = [c for c in list(body) if c.tag != _qn("sectPr")]
+            i += 1
+
+        doc_tree.write(str(work / "word" / "document.xml"), xml_declaration=True, encoding="UTF-8", standalone=True)
+        tmp = docx_path.with_suffix(".figlayout.docx")
+        with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for f in sorted(work.rglob("*")):
+                if f.is_file():
+                    zf.write(f, f.relative_to(work).as_posix())
+        tmp.replace(docx_path)
+        return stats
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
+def _float_drawing(p: etree._Element, content_cx: int, seq: int) -> None:
+    drawing = p.find(".//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing")
+    if drawing is None:
+        return
+    inline = drawing.find(f"{{{WP_NS}}}inline")
+    anchor = drawing.find(f"{{{WP_NS}}}anchor")
+    host = inline if inline is not None else anchor
+    if host is None:
+        return
+    extent = host.find(f"{{{WP_NS}}}extent")
+    if extent is None:
+        return
+    cx, cy = int(extent.get("cx") or "1"), int(extent.get("cy") or "1")
+    new_cy = int(round(cy * content_cx / max(cx, 1)))
+    extent.set("cx", str(content_cx))
+    extent.set("cy", str(new_cy))
+    for ext in host.findall(".//" + f"{{{A_DRAW_NS}}}ext"):
+        if ext.get("cx") is not None:
+            ext.set("cx", str(content_cx))
+            ext.set("cy", str(new_cy))
+    if anchor is not None and inline is None:
+        pos = anchor.find(f"{{{WP_NS}}}positionH")
+        if pos is not None:
+            pos.set("relativeFrom", "column")
+            off = pos.find(f"{{{WP_NS}}}posOffset")
+            align = pos.find(f"{{{WP_NS}}}align")
+            if align is not None:
+                pos.remove(align)
+            if off is None:
+                off = etree.SubElement(pos, f"{{{WP_NS}}}posOffset")
+            off.text = "0"
+        return
+    anchor_el = etree.fromstring(
+        f'<wp:anchor xmlns:wp="{WP_NS}" xmlns:a="{A_DRAW_NS}"'
+        f' distT="0" distB="0" distL="0" distR="0" simplePos="0"'
+        f' relativeHeight="{250000000 + seq}" behindDoc="0" locked="0"'
+        f' layoutInCell="1" allowOverlap="0">'
+        f'<wp:simplePos x="0" y="0"/>'
+        f'<wp:positionH relativeFrom="column"><wp:posOffset>0</wp:posOffset></wp:positionH>'
+        f'<wp:positionV relativeFrom="paragraph"><wp:posOffset>0</wp:posOffset></wp:positionV>'
+        f'<wp:wrapTopAndBottom/>'
+        f'</wp:anchor>'
+    )
+    order = ("extent", "effectExtent", "docPr", "cNvGraphicFramePr", "graphic")
+    taken = {c.tag.split("}")[-1]: c for c in list(inline)}
+    for name in order:
+        if name in taken:
+            anchor_el.append(taken[name])
+    wrap = anchor_el.find(f"{{{WP_NS}}}wrapTopAndBottom")
+    docpr = anchor_el.find(f"{{{WP_NS}}}docPr")
+    if wrap is not None and docpr is not None:
+        anchor_el.remove(wrap)
+        docpr.addprevious(wrap)
+    drawing.replace(inline, anchor_el)
+
+
 # ---------------------------------------------------------------------------
 # CHECKLIST — locked formatting (do not regress in future edits)
 # ---------------------------------------------------------------------------
@@ -698,6 +861,10 @@ def _reorder_tblPr(tblPr: etree._Element) -> None:
 # Fig/table captions: A图片 / A表 Word auto-number (lvlText 图%1 / 表%1).
 # Do not bake "图 1" into w:t. LO remaps styleId; fix_caption_numbering
 # realigns numbering pStyle afterwards. A图片2 numId=0. Demote skips them.
+# Figures: wrapTopAndBottom; positionH relativeFrom=column posOffset=0;
+# width = content area (page minus margins), NOT page width.
+# Merge the caption into the drawing paragraph so no blank line sits between
+# the picture and 图N. Re-run layout_figures_in_content_area after LO.
 # ---------------------------------------------------------------------------
 
 
@@ -1398,6 +1565,7 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
     h1_space_pre = fix_heading1_number_spacing(final_out)
     # Caption auto-number before LO, then again after LO remaps styleId.
     caption_pre = fix_caption_numbering(final_out, template)
+    figure_pre = layout_figures_in_content_area(final_out)
 
     word_safe = outdir / "final-word.docx"
     pdf_out = outdir / "final.pdf"
@@ -1423,6 +1591,7 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
             # LO rewrites styleId (A0/A → A3/A4) and leaves numbering pStyle stale.
             caption_post = fix_caption_numbering(word_safe, template)
             lo_info["caption_numbering"] = caption_post
+            lo_info["figure_layout"] = layout_figures_in_content_area(word_safe)
             # Re-export PDF from restyled Word-safe doc so shading is visible
             if pdf_out is not None:
                 try:
@@ -1468,6 +1637,7 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
         "body_indent_post_lo": body_indent_post,
         "h1_space_pre": h1_space_pre,
         "h1_space_post_lo": lo_info.get("h1_number_spacing") if isinstance(lo_info, dict) else None,
+        "figure_layout_pre": figure_pre,
         "caption_numbering_pre": caption_pre,
         "caption_numbering_post_lo": caption_post,
     }
