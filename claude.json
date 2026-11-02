@@ -40,6 +40,16 @@
       "fixturesDir": "skills/orbitwizard-walker/fixtures"
     },
     {
+      "name": "orbitwizard-repeating-ground-trace",
+      "skillFile": "skills/orbitwizard-repeating-ground-trace/SKILL.md",
+      "fixturesDir": "skills/orbitwizard-repeating-ground-trace/fixtures"
+    },
+    {
+      "name": "orbitwizard-repeating-sun-sync",
+      "skillFile": "skills/orbitwizard-repeating-sun-sync/SKILL.md",
+      "fixturesDir": "skills/orbitwizard-repeating-sun-sync/fixtures"
+    },
+    {
       "name": "lighting-times",
       "skillFile": "skills/lighting-times/SKILL.md",
       "fixturesDir": "skills/lighting-times/fixtures"

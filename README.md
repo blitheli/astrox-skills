@@ -83,6 +83,8 @@ curl "http://astrox.cn:8765/city?cityName=Beijing"
 | [`orbitwizard-geo`](skills/orbitwizard-geo/SKILL.md) | 地球同步轨道 (GEO) |
 | [`orbitwizard-molniya`](skills/orbitwizard-molniya/SKILL.md) | 莫尔尼亚轨道 |
 | [`orbitwizard-walker`](skills/orbitwizard-walker/SKILL.md) | Walker 星座 |
+| [`orbitwizard-repeating-ground-trace`](skills/orbitwizard-repeating-ground-trace/SKILL.md) | 回归地面轨迹 (Repeating Ground Trace) |
+| [`orbitwizard-repeating-sun-sync`](skills/orbitwizard-repeating-sun-sync/SKILL.md) | 回归太阳同步 (Repeating Sun Sync) |
 
 ### 可见性、光照与访问
 

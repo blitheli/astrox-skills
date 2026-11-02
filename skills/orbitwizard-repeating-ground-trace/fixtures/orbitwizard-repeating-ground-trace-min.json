@@ -1,0 +1,8 @@
+{
+  "Description": "回归轨道，倾角 98.2°，约 700 km，233 圈",
+  "OrbitEpoch": "2023-08-11T04:00:00.000Z",
+  "ApproxAltitude": 700,
+  "Inclination": 98.2,
+  "RevsToRepeat": 233,
+  "LongitudeFirstAN": 0
+}

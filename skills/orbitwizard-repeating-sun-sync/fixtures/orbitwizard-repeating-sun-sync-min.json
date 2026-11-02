@@ -1,0 +1,8 @@
+{
+  "Description": "回归太阳同步，约 540 km，437 圈，降交点地方时 10:30",
+  "OrbitEpoch": "2023-08-11T04:00:00.000Z",
+  "ApproxAltitude": 540,
+  "RevsToRepeat": 437,
+  "LongitudeFirstAN": 0,
+  "LocalTimeDescNode": 10.5
+}
