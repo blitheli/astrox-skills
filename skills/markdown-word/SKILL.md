@@ -25,7 +25,7 @@ description: >-
 ## 步骤
 
 1. **拷贝模板**到工作目录，查看 `word/styles.xml`：记下正文、Heading 1/2/3、表题、图题、Title 的 `styleId`。
-2. **做 pandoc reference-doc**：补充 `Body Text`、`First Paragraph`、`Compact`、`Block Text`、`Source Code`、`Table Caption`、`Image Caption`、`Caption` 等，`basedOn` 指到模板正文。若模板标题带 `numPr` 而 Markdown 已自带编号，只删掉标题 1/2/3 上的 `numPr`。技能实现必须保留「A图片」「A表」的 Word 自动编号（`lvlText` 为 `图%1` / `表%1`）。这两个样式在模板里的 styleId 通常是 `A0` / `A`，LibreOffice 之后会变成别的 id。禁止把 `A0`、`A` 放进 `STRIP_NUMPR_STYLE_IDS`；`build_reference_docx` 和 `postprocess` 都不得剥掉它们的 `numPr`。
+2. **做 pandoc reference-doc**：补充 `Body Text`、`First Paragraph`、`Compact`、`Block Text`、`Source Code`、`Table Caption`、`Image Caption`、`Caption` 等，`basedOn` 指到模板正文。标题 1/2/3 的 `numPr` 一律去掉，章节号写在标题文字里，避免和样式编号叠成「1  1  标题」。技能实现必须保留「A图片」「A表」的 Word 自动编号（`lvlText` 为 `图%1` / `表%1`）。这两个样式在模板里的 styleId 通常是 `A0` / `A`，LibreOffice 之后会变成别的 id。禁止把 `A0`、`A` 放进 `STRIP_NUMPR_STYLE_IDS`；`build_reference_docx` 和 `postprocess` 都不得剥掉它们的 `numPr`。
 3. **转换**：
    ```bash
    pandoc report.md -o out.docx \
@@ -61,9 +61,9 @@ description: >-
 
 后处理（LO roundtrip 前后都要再跑）必须保持：
 
-1. **一级标题**：顶格（left/firstLine=0）；数字与标题之间恰好 **2 个 ASCII 空格**（如 `1  摘要`）。pandoc 会压成 1 个空格，靠 `fix_heading1_number_spacing` 恢复。
+1. **章节标题**：顶格（left/firstLine=0）；数字与标题之间恰好 **2 个 ASCII 空格**（如 `1  摘要`）。标题文字里没有章节号时，`number_unnumbered_headings` 按层级补上：一级 `1  标题`、二级 `1.1  标题`、三级 `1.1.1  标题`。已有 `1`、`1.`、`1.1`、`1.1.1` 前缀则不另加。pandoc 会压成 1 个空格，靠 `fix_heading1_number_spacing` 恢复。LibreOffice 前后都要再跑一遍。
 2. **正文**：样式 `A正文`，小四；首行 `firstLineChars=200`、`firstLine=480`（约两个汉字），`left=0`。禁止 run 级显式字号覆盖样式。
-3. **编号列表**：列表不要用 Word `numPr`（会叠缩进）。MD 可用 `1\.` 写成普通段落后，按正文同样首行缩进；**续行顶格**（left=0）。这只针对列表。A图片 / A表 的题注编号要保留，demote 不得把它们收成静态「图N」「表N」。
+3. **列表（有序与无序）**：列表不要用 Word `numPr`（会叠缩进）。无论是 Markdown 有序列表还是 `- ` 无序列表，在转换为 docx 时均统一使用 `1. `、`2. `、`3. ` 这种编号方式，每个列表项为正文样式 `A正文`（按正文同样首行缩进 `firstLineChars=200`、`firstLine=480`，**续行顶格** `left=0`）。这只针对列表。A图片 / A表 的题注编号要保留，demote 不得把它们收成静态「图N」「表N」。
 4. **表格**（现行中文弹道报告交付一致）：
    - 表头：文字水平居中 + 灰底 D9D9D9
    - 表体：左对齐

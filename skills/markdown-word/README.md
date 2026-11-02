@@ -22,7 +22,7 @@ python3 skills/markdown-word/md_to_docx_with_template.py <report.md> skills/mark
 
 与脚本后处理一致,roundtrip 前后都要保持。细节见 [SKILL.md](SKILL.md)。
 
-1. 一级标题顶格,数字后恰好两个 ASCII 空格,例如 `1  摘要`。
+1. 章节标题顶格,数字后恰好两个 ASCII 空格,例如 `1  摘要`。没有章节号时按层级补上 `1`、`1.1`、`1.1.1`;已有则不另加。
 2. 正文样式 `A正文`(小四),首行两个汉字:`firstLineChars=200`,`firstLine=480`,`left=0`。不要在 run 上写显式 `w:sz`(例如五号 21)。
 3. 编号不用 Word `numPr`。编号行按正文首行缩进,续行顶格(`left=0`)。
 4. 表格表头居中并铺 `D9D9D9` 底纹,表体左对齐,单元格 `vAlign=center`,行高 `atLeast` 480 twips(24 pt),单元格段前段后各 40 twips。

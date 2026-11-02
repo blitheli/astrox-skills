@@ -852,6 +852,9 @@ def _float_drawing(p: etree._Element, content_cx: int, seq: int) -> None:
 # H1: flush left (para + style ind all 0); numbered titles "N  title" (exactly
 #     2 ASCII spaces). Pandoc collapses MD spaces; LO may re-indent Heading1 —
 #     fix_heading1_number_spacing MUST run AFTER LibreOffice roundtrip.
+# Headings: if the text has no chapter number, number_unnumbered_headings writes
+#     "1  ", "1.1  ", "1.1.1  " by level. Existing "1" / "1.1" / "1.1.1" prefixes
+#     are kept (spacing only). Heading style numPr stays stripped either way.
 # Body + plain lists: firstLineChars=200, firstLine=480, left=0; list wraps at 0
 #     (plain "N. text", no numPr). ensure_body_first_line_indent + demote after LO.
 # Tables: header jc=center + shade D9D9D9; body jc=left; all vAlign=center;
@@ -1150,6 +1153,19 @@ def ensure_body_first_line_indent(docx_path: Path) -> dict:
                 style = ps.get(f"{W}val") if ps is not None else None
                 if style not in BODY_STYLE_IDS:
                     continue
+                # Display math is its own paragraph. Do not inherit the body
+                # first-line indent; center it like a displayed equation.
+                if p.find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMathPara") is not None:
+                    ind = pPr.find(_qn("ind"))
+                    if ind is None:
+                        ind = etree.SubElement(pPr, _qn("ind"))
+                    _set_ind_zero(ind)
+                    jc = pPr.find(_qn("jc"))
+                    if jc is None:
+                        jc = etree.SubElement(pPr, _qn("jc"))
+                    jc.set(f"{W}val", "center")
+                    stats["math_centered"] = stats.get("math_centered", 0) + 1
+                    continue
                 texts = "".join(t.text or "" for t in p.findall(".//" + _qn("t")))
                 if not texts.strip():
                     continue
@@ -1190,6 +1206,138 @@ def _set_ind_zero(ind: etree._Element) -> None:
     for hang in (f"{W}hanging", f"{W}hangingChars"):
         if hang in ind.attrib:
             del ind.attrib[hang]
+
+
+# 1–2 digits so "540 km" is not treated as chapter 540. Optional trailing dot: "1. 标题".
+_HEADING_NUM_RE = re.compile(
+    r"^(?P<num>\d{1,2}(?:\.\d{1,2}){0,3})\.?(?:[ \t\u00a0\u3000]+)(?P<rest>\S.*)$"
+)
+_HEADING_LEVEL_BY_ID = {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "Heading1": 1,
+    "Heading2": 2,
+    "Heading3": 3,
+}
+_HEADING_LEVEL_BY_NAME = {
+    "heading 1": 1,
+    "heading 2": 2,
+    "heading 3": 3,
+    "标题 1": 1,
+    "标题 2": 2,
+    "标题 3": 3,
+    "一级标题": 1,
+    "二级标题": 2,
+    "三级标题": 3,
+}
+
+
+def _heading_levels(styles_root: etree._Element) -> dict[str, int]:
+    levels: dict[str, int] = {}
+    for s in styles_root.findall(_qn("style")):
+        if s.get(f"{W}type") not in (None, "paragraph"):
+            continue
+        sid = s.get(f"{W}styleId") or ""
+        name_el = s.find(_qn("name"))
+        name = name_el.get(f"{W}val") if name_el is not None else ""
+        level = _HEADING_LEVEL_BY_ID.get(sid)
+        if level is None:
+            level = _HEADING_LEVEL_BY_NAME.get(name) or _HEADING_LEVEL_BY_NAME.get(name.lower())
+        if level:
+            levels[sid] = level
+    return levels
+
+
+def _replace_para_text(p: etree._Element, new_text: str) -> None:
+    XML_SPACE = "{http://www.w3.org/XML/1998/namespace}space"
+    t_nodes = [t for t in p.findall(".//" + _qn("t")) if t.getparent() is not None]
+    # Leave OMML runs alone; only plain headings are rewritten as one run of text.
+    if p.find(".//{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath") is not None:
+        return
+    if t_nodes:
+        t_nodes[0].text = new_text
+        t_nodes[0].set(XML_SPACE, "preserve")
+        for t in t_nodes[1:]:
+            t.text = ""
+        return
+    r = etree.SubElement(p, _qn("r"))
+    t = etree.SubElement(r, _qn("t"))
+    t.set(XML_SPACE, "preserve")
+    t.text = new_text
+
+
+def number_unnumbered_headings(docx_path: Path) -> dict:
+    """Write chapter numbers into heading text when the heading has none.
+
+    Level 1 → ``1  标题``, level 2 → ``1.1  标题``, level 3 → ``1.1.1  标题``.
+    A heading that already starts with ``1``, ``1.``, ``1.1`` or ``1.1.1`` keeps
+    that number; only the gap before the title is normalized to two ASCII spaces.
+    Heading styles keep ``numPr`` stripped, so Word does not add a second number.
+    Safe to run again after LibreOffice: numbered headings are left in place.
+    """
+    work = Path(tempfile.mkdtemp(prefix="hdgnum-"))
+    stats = {"injected": 0, "kept": 0, "respaced": 0}
+    try:
+        with zipfile.ZipFile(docx_path, "r") as zf:
+            zf.extractall(work)
+        styles_tree = etree.parse(str(work / "word" / "styles.xml"))
+        doc_path = work / "word" / "document.xml"
+        doc_tree = etree.parse(str(doc_path))
+        levels = _heading_levels(styles_tree.getroot())
+        body = doc_tree.getroot().find(_qn("body"))
+        paras = body.findall(_qn("p")) if body is not None else []
+        counts = [0, 0, 0, 0]
+
+        for p in paras:
+            pPr = p.find(_qn("pPr"))
+            if pPr is None:
+                continue
+            ps = pPr.find(_qn("pStyle"))
+            if ps is None:
+                continue
+            level = levels.get(ps.get(f"{W}val") or "")
+            if not level:
+                continue
+            full = "".join(t.text or "" for t in p.findall(".//" + _qn("t")))
+            stripped = full.strip()
+            if not stripped:
+                continue
+            matched = _HEADING_NUM_RE.match(stripped)
+            if matched:
+                parts = [int(x) for x in matched.group("num").split(".")]
+                for i, n in enumerate(parts[:3]):
+                    counts[i + 1] = n
+                for j in range(len(parts) + 1, 4):
+                    counts[j] = 0
+                label = ".".join(str(n) for n in parts)
+                new_text = f"{label}  {matched.group('rest').strip()}"
+                if new_text != full:
+                    _replace_para_text(p, new_text)
+                    stats["respaced"] += 1
+                else:
+                    stats["kept"] += 1
+                continue
+            for parent in range(1, level):
+                if counts[parent] == 0:
+                    counts[parent] = 1
+            counts[level] += 1
+            for child in range(level + 1, 4):
+                counts[child] = 0
+            label = ".".join(str(counts[i]) for i in range(1, level + 1))
+            _replace_para_text(p, f"{label}  {stripped}")
+            stats["injected"] += 1
+
+        doc_tree.write(str(doc_path), xml_declaration=True, encoding="UTF-8", standalone=True)
+        tmp = docx_path.with_suffix(".hdgnum.docx")
+        with zipfile.ZipFile(tmp, "w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for f in sorted(work.rglob("*")):
+                if f.is_file():
+                    zf.write(f, f.relative_to(work).as_posix())
+        tmp.replace(docx_path)
+        return stats
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
 
 
 def fix_heading1_number_spacing(docx_path: Path) -> dict:
@@ -1425,11 +1573,16 @@ def demote_numbered_lists_to_body(docx_path: Path, body_style: str = "A5") -> di
             else:
                 counters[(nid, ilvl)] += 1
             nval = counters[(nid, ilvl)]
-            lt = meta["lvlText"] or "%1."
-            # Only handle decimal %1. style used in this report
-            label = lt.replace("%1", str(nval)).replace("%2", str(nval)).replace("%3", str(nval))
             if meta.get("fmt") == "none":
                 return ""
+            if meta.get("fmt") == "bullet":
+                return f"{nval}. "
+            lt = meta["lvlText"] or "%1."
+            # Handle decimal %1. style and fallback to N. if lvlText has no % placeholder
+            if "%1" in lt or "%2" in lt or "%3" in lt:
+                label = lt.replace("%1", str(nval)).replace("%2", str(nval)).replace("%3", str(nval))
+            else:
+                label = f"{nval}."
             # Ensure trailing space if suffix not already spacing via numbering suff
             if label and not label.endswith(" "):
                 label = label + " "
@@ -1539,6 +1692,21 @@ def demote_numbered_lists_to_body(docx_path: Path, body_style: str = "A5") -> di
 
 
 
+def _find_soffice() -> str:
+    """Locate soffice binary (PATH or standard Windows/macOS install paths)."""
+    found = shutil.which("soffice")
+    if found:
+        return found
+    for candidate in (
+        Path(r"C:\Program Files\LibreOffice\program\soffice.exe"),
+        Path(r"C:\Program Files (x86)\LibreOffice\program\soffice.exe"),
+        Path("/Applications/LibreOffice.app/Contents/MacOS/soffice"),
+    ):
+        if candidate.exists():
+            return str(candidate)
+    return "soffice"
+
+
 def convert(md: Path, template: Path, outdir: Path) -> dict:
     outdir.mkdir(parents=True, exist_ok=True)
     reference = outdir / "reference.docx"
@@ -1562,6 +1730,7 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
     demote_info_pre = demote_numbered_lists_to_body(final_out)
     # Body firstLine AFTER demote so plain "N. " lists keep firstLine=480 left=0
     body_indent_pre = ensure_body_first_line_indent(final_out)
+    heading_num_pre = number_unnumbered_headings(final_out)
     h1_space_pre = fix_heading1_number_spacing(final_out)
     # Caption auto-number before LO, then again after LO remaps styleId.
     caption_pre = fix_caption_numbering(final_out, template)
@@ -1585,7 +1754,9 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
             # CRITICAL: LO drops firstLineChars; re-apply on Normal/A5 + all body paras
             # (including demoted list paras — same firstLine=480 left=0)
             body_indent_post = ensure_body_first_line_indent(word_safe)
-            # CRITICAL: H1 two-space numbering + flush left (LO collapses / re-indents)
+            # Fill missing chapter numbers, then keep H1 flush left with two spaces.
+            heading_num_post = number_unnumbered_headings(word_safe)
+            lo_info["heading_numbers"] = heading_num_post
             h1_space_post = fix_heading1_number_spacing(word_safe)
             lo_info["h1_number_spacing"] = h1_space_post
             # LO rewrites styleId (A0/A → A3/A4) and leaves numbering pStyle stale.
@@ -1606,7 +1777,7 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
                         )
                     except (FileNotFoundError, subprocess.CalledProcessError):
                         subprocess.run(
-                            ["soffice", "--headless", "--convert-to", "pdf",
+                            [_find_soffice(), "--headless", "--convert-to", "pdf",
                              "--outdir", str(work_pdf), str(src)],
                             check=True, capture_output=True, text=True,
                         )
@@ -1635,6 +1806,8 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
         "demote_lists_pre_lo": demote_info_pre,
         "body_indent_pre": body_indent_pre,
         "body_indent_post_lo": body_indent_post,
+        "heading_numbers_pre": heading_num_pre,
+        "heading_numbers_post_lo": lo_info.get("heading_numbers") if isinstance(lo_info, dict) else None,
         "h1_space_pre": h1_space_pre,
         "h1_space_post_lo": lo_info.get("h1_number_spacing") if isinstance(lo_info, dict) else None,
         "figure_layout_pre": figure_pre,
@@ -1757,7 +1930,7 @@ def libreoffice_word_safe_roundtrip(docx_path: Path, out_docx: Path | None = Non
                 )
             except (FileNotFoundError, subprocess.CalledProcessError):
                 subprocess.run(
-                    ["soffice", "--headless", "--convert-to", fmt, "--outdir", str(outdir), str(src_file)],
+                    [_find_soffice(), "--headless", "--convert-to", fmt, "--outdir", str(outdir), str(src_file)],
                     check=True, capture_output=True, text=True,
                 )
             produced = list(outdir.glob(src_file.stem + ".*"))
