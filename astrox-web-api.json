@@ -3101,6 +3101,106 @@
         }
       }
     },
+    "/OrbitWizard/RepeatingGroundTrace": {
+      "post": {
+        "tags": [
+          "OrbitWizard"
+        ],
+        "summary": "生成 STK Repeating Ground Trace",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepeatingGroundTrace_Input"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepeatingGroundTrace_Input"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepeatingGroundTrace_Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepeatingGroundTrace_Output"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepeatingGroundTrace_Output"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepeatingGroundTrace_Output"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/OrbitWizard/RepeatingSunSync": {
+      "post": {
+        "tags": [
+          "OrbitWizard"
+        ],
+        "summary": "生成 STK Repeating Sun Sync",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepeatingSunSync_Input"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepeatingSunSync_Input"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RepeatingSunSync_Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepeatingSunSync_Output"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepeatingSunSync_Output"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepeatingSunSync_Output"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/OrbitWizard/Walker": {
       "post": {
         "tags": [
@@ -15841,6 +15941,282 @@
           }
         },
         "description": "矩形传感器(以+Z轴为中心定义半角)  <br>json反序列化时，首行为:\"$type\":\"Rectangular\""
+      },
+      "RepeatingGroundTrace_Input": {
+        "required": [
+          "OrbitEpoch",
+          "Inclination",
+          "RevsToRepeat",
+          "LongitudeFirstAN"
+        ],
+        "type": "object",
+        "properties": {
+          "Description": {
+            "type": "string",
+            "description": "说明",
+            "default": "回归轨道，倾角 98.2°，约 700 km，233 圈"
+          },
+          "OrbitEpoch": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "轨道历元(UTCG)(\"yyyy-MM-ddTHH:mm:ss.fffZ\")",
+            "default": "2023-08-11T04:00:00Z"
+          },
+          "ApproxAltitude": {
+            "description": "近似轨道高度(km)，与 ApproxRevsPerDay 二选一",
+            "format": "double"
+          },
+          "ApproxRevsPerDay": {
+            "description": "近似每天圈数，与 ApproxAltitude 二选一",
+            "format": "double"
+          },
+          "Inclination": {
+            "description": "轨道倾角(deg)",
+            "format": "double",
+            "default": 98.200000000000003
+          },
+          "RevsToRepeat": {
+            "type": "integer",
+            "description": "回归圈数 RevsToRepeat",
+            "format": "int32",
+            "default": 233
+          },
+          "LongitudeFirstAN": {
+            "description": "首次升交点地固经度(deg)",
+            "format": "double",
+            "default": 0
+          },
+          "UseAnomalisticMeanMotion": {
+            "type": "boolean",
+            "description": "true 时用近点平均角速度（仅对照）。默认 false",
+            "default": false
+          }
+        },
+        "description": "STK Repeating Ground Trace 输入"
+      },
+      "RepeatingGroundTrace_Output": {
+        "type": "object",
+        "properties": {
+          "IsSuccess": {
+            "type": "boolean",
+            "description": "结果(True:成功；False:失败)"
+          },
+          "Message": {
+            "type": "string",
+            "description": "结果信息(主要是存储失败的原因)"
+          },
+          "OrbitEpoch": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "实际采用的轨道历元(UTC)"
+          },
+          "Elements_TOD": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "TOD坐标系下的开普勒轨道根数",
+                "$ref": "#/components/schemas/KeplerElements"
+              }
+            ]
+          },
+          "Elements_Inertial": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "惯性坐标系下的开普勒轨道根数",
+                "$ref": "#/components/schemas/KeplerElements"
+              }
+            ]
+          },
+          "RevsToRepeat": {
+            "type": "integer",
+            "description": "回归圈数 N",
+            "format": "int32"
+          },
+          "DaysToRepeat": {
+            "type": "integer",
+            "description": "回归天数 D（节点日）",
+            "format": "int32"
+          },
+          "DesiredRevsPerDay": {
+            "description": "选取回归天数时用的近似每天圈数",
+            "format": "double"
+          },
+          "NodePeriod": {
+            "description": "节点周期 T_Ω (s)",
+            "format": "double"
+          },
+          "Altitude": {
+            "description": "轨道高度 a−Re (km)",
+            "format": "double"
+          },
+          "ClosureErrorDeg": {
+            "description": "升交点地理经度闭合误差 ε (deg)",
+            "format": "double"
+          },
+          "Inclination": {
+            "description": "设计倾角(deg)，TOD",
+            "format": "double"
+          },
+          "RightAscensionOfAscendingNode": {
+            "description": "设计升交点赤经(deg)，TOD",
+            "format": "double"
+          },
+          "LongitudeFirstAN": {
+            "description": "首次升交点地固经度(deg)",
+            "format": "double"
+          }
+        },
+        "description": "STK Repeating Ground Trace 输出"
+      },
+      "RepeatingSunSync_Input": {
+        "required": [
+          "OrbitEpoch",
+          "RevsToRepeat",
+          "LongitudeFirstAN"
+        ],
+        "type": "object",
+        "properties": {
+          "Description": {
+            "type": "string",
+            "description": "说明",
+            "default": "回归太阳同步，约 540 km，437 圈，降交点地方时 10:30"
+          },
+          "OrbitEpoch": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "轨道历元(UTCG)(\"yyyy-MM-ddTHH:mm:ss.fffZ\")，可被平移",
+            "default": "2023-08-11T04:00:00Z"
+          },
+          "ApproxAltitude": {
+            "description": "近似轨道高度(km)，与 ApproxRevsPerDay 二选一",
+            "format": "double"
+          },
+          "ApproxRevsPerDay": {
+            "description": "近似每天圈数，与 ApproxAltitude 二选一",
+            "format": "double"
+          },
+          "RevsToRepeat": {
+            "type": "integer",
+            "description": "回归圈数 RevsToRepeat",
+            "format": "int32",
+            "default": 437
+          },
+          "LongitudeFirstAN": {
+            "description": "首次升交点地固经度(deg)",
+            "format": "double",
+            "default": 0
+          },
+          "LocalTimeAscNode": {
+            "description": "升交点地方时(小时)，与 LocalTimeDescNode 二选一",
+            "format": "double"
+          },
+          "LocalTimeDescNode": {
+            "description": "降交点地方时(小时)，与 LocalTimeAscNode 二选一",
+            "format": "double"
+          },
+          "UseAnomalisticMeanMotion": {
+            "type": "boolean",
+            "description": "true 时用近点平均角速度（仅对照）。默认 false",
+            "default": false
+          }
+        },
+        "description": "STK Repeating Sun Sync 输入"
+      },
+      "RepeatingSunSync_Output": {
+        "type": "object",
+        "properties": {
+          "LocalTimeDescNode": {
+            "description": "采用的降交点地方时(小时)",
+            "format": "double"
+          },
+          "IsSuccess": {
+            "type": "boolean",
+            "description": "结果(True:成功；False:失败)"
+          },
+          "Message": {
+            "type": "string",
+            "description": "结果信息(主要是存储失败的原因)"
+          },
+          "OrbitEpoch": {
+            "type": [
+              "null",
+              "string"
+            ],
+            "description": "实际采用的轨道历元(UTC)"
+          },
+          "Elements_TOD": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "TOD坐标系下的开普勒轨道根数",
+                "$ref": "#/components/schemas/KeplerElements"
+              }
+            ]
+          },
+          "Elements_Inertial": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "description": "惯性坐标系下的开普勒轨道根数",
+                "$ref": "#/components/schemas/KeplerElements"
+              }
+            ]
+          },
+          "RevsToRepeat": {
+            "type": "integer",
+            "description": "回归圈数 N",
+            "format": "int32"
+          },
+          "DaysToRepeat": {
+            "type": "integer",
+            "description": "回归天数 D（节点日）",
+            "format": "int32"
+          },
+          "DesiredRevsPerDay": {
+            "description": "选取回归天数时用的近似每天圈数",
+            "format": "double"
+          },
+          "NodePeriod": {
+            "description": "节点周期 T_Ω (s)",
+            "format": "double"
+          },
+          "Altitude": {
+            "description": "轨道高度 a−Re (km)",
+            "format": "double"
+          },
+          "ClosureErrorDeg": {
+            "description": "升交点地理经度闭合误差 ε (deg)",
+            "format": "double"
+          },
+          "Inclination": {
+            "description": "设计倾角(deg)，TOD",
+            "format": "double"
+          },
+          "RightAscensionOfAscendingNode": {
+            "description": "设计升交点赤经(deg)，TOD",
+            "format": "double"
+          },
+          "LongitudeFirstAN": {
+            "description": "首次升交点地固经度(deg)",
+            "format": "double"
+          }
+        },
+        "description": "STK Repeating Sun Sync 输出"
       },
       "ReportCoverageByAsset": {
         "type": "object",
