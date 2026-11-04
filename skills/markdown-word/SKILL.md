@@ -1,5 +1,5 @@
 ---
-name: Markdown 转 Word（模板）
+name: markdown-word
 description: >-
   Use when converting Markdown to .docx with a user-provided Word template
   (reference-doc), especially Chinese styles like A正文 / 一级标题 / A表 / A图片.
