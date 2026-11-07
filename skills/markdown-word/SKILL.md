@@ -32,6 +32,7 @@ description: >-
      --reference-doc=reference.docx \
      --resource-path=<含插图的目录>
    ```
+   行内/块级 LaTeX 公式（如 `\(U_1\)`）原样交给 pandoc，不要在导出前改写或转义。
 4. **后处理**：映射 `BodyText`/`FirstParagraph`/`Compact`→正文；`TableCaption`→表题；`ImageCaption`→图题。必要时从模板拷回 `sectPr` 与页眉页脚。
 4b. **表格后处理**（`style_tables_for_report`）：每个表表头第一行底纹 `D9D9D9`（可带 themeFill）、段落 `jc=center`、单元格 `vAlign=center`；表体行段落 `jc=left`；**行高 `atLeast` 480 twips（24 pt）**；单元格段落段前段后各 **40 twips（2 pt）**；清除单元格首行缩进（避免继承 A正文）；去掉单元格 `w:t` 首尾空白/NBSP；`tblW` 为 `pct`/`5000`；等分列宽。OMML 修复后与 LibreOffice roundtrip 后再各执行一次。
 4c. **正文首行缩进**（`ensure_body_first_line_indent`）：正文两字缩进 — `w:firstLineChars="200"` 且 `w:firstLine="480"`（twips，≈2×12pt；模板原 `firstLine=200` 且 LO 会丢掉 `firstLineChars`，看起来像一字）。对 Normal/A5 样式与正文段落在 roundtrip 前后各补一次。
@@ -54,7 +55,7 @@ description: >-
    - 题注段落使用这两个样式；正文只有标题。Markdown 图用 `![说明](路径)`，表用 `Table: 标题`。不要把手写的「图1」「表1」写进 `w:t`
    - 「A图片2」（图所在段落）设 `numId=0`，禁止继承图编号
    - 编号列表 demote 必须跳过 A图片 / A表 / A图片2 段落，也不得改写 `图%1` / `表%1` 的 abstractNum
-7. **检查**：`unzip -t`、`office validate`、`office render` 或 soffice→PDF 抽查。不要用「能转 PDF」当成 Word 已兼容。交付用的 `final.docx` 和 `final-word.docx` 都要核对题注自动编号（见下文）。
+7. **检查**：`unzip -t`、`office validate`、`office render` 或 soffice→PDF 抽查。不要用「能转 PDF」当成 Word 已兼容。交付用的 `final.docx` 和 `final-word.docx` 都要核对题注自动编号（见下文）。抽查行内公式：`U_1` / `U_2` 应为 Word OMML 下标，正文里没有 `\(` `\)` 括号。
 
 
 ## 已锁定的中文报告排版（勿回退）
@@ -71,13 +72,14 @@ description: >-
    - **行高至少 24 pt**（`trHeight` `atLeast` 480 twips）
    - 单元格段落段前段后各 **2 pt**（40 twips），使垂直居中可见且行高不过大
    - `tblW` pct 5000；去掉单元格误继承的首行缩进与首尾空白
-5. **图题 / 表题**：用模板样式 `A图片` / `A表` 的 Word 自动编号（`图%1` / `表%1`），文案只写标题，不写「图1」「表1」。图所在段落用 `A图片2`，且 `numId=0`。图题字号可比正文小一号。轴标签用中文。LO roundtrip 之后必须再把 numbering 的 `pStyle` 对齐当前 styleId。
+5. **图题 / 表题**：用模板样式 `A图片` / `A表` 的 Word 自动编号（`图%1` / `表%1`），文案只写标题，不写「图1」「表1」。图所在段落用 `A图片2`，且 `numId=0`。图题字号为小四。轴标签用中文。LO roundtrip 之后必须再把 numbering 的 `pStyle` 对齐当前 styleId。
 5b. **图的位置**（`layout_figures_in_content_area`，LO 前后都要跑）：
    - 上下型环绕 `wp:wrapTopAndBottom`，不要嵌入型 `wp:inline`
    - 水平 `relativeFrom="column"`、`posOffset=0`（版心左端）。**不要** `relativeFrom="page"`，那会贴到纸边并伸进页边距
    - 宽度等于版心（`pgSz.w - pgMar.left - pgMar.right`，twip×635 = EMU），不要等于页宽
    - 图注并入图所在段落（样式改为 `A图片`），图与「图N」之间不得再留空段。并入后不要让该段继承 `A图片2` 再占一行
-6. **交付**：优先 `final-word.docx`（或 LO roundtrip 后的主 docx）。**交付文件名按具体任务而定**，不要在本技能里写死报告名。
+6. **行内公式**：Markdown 继续写 `\(U_1\)` / `\(U_2\)` 这类标准 LaTeX 行内公式。Preview 会显示成 U₁ / U₂，`\(` `\)` 只是定界符，不会印在页面上。导出按 LaTeX 公式原样转换（保留定界，交给 pandoc 生成 OMML）；**禁止**导出前把 `U_1` 改成 `U\_1`，也禁止去掉定界或改成纯文本。交付 docx 里应为 Word 公式下标，正文中没有括号。
+7. **交付**：优先 `final-word.docx`（或 LO roundtrip 后的主 docx）。**交付文件名按具体任务而定**，不要在本技能里写死报告名。
 
 ## 验证题注自动编号
 
@@ -113,5 +115,5 @@ PY
 
 - LibreOffice 往往能打开「Word 打不开」的文件；**以 LO roundtrip 后的 `*-word.docx` 作为给 Word 用户的主交付**。
 - 模板样式优先保留在 `final.docx`；若 Word 仍拒收，交付 LO roundtrip（样式可能被 LO 轻微改写，但可打开）。
-- 不要改 Markdown 正文，除非只为修正相对图片路径。
-- 若公式仍有问题：可退回 pandoc `--mathml`，或把公式改成纯 Unicode/图片后再转 docx（最后手段）。
+- 不要改 Markdown 正文，除非只为修正相对图片路径。尤其不要把 `\(U_1\)` 改成 `U\_1`，或删掉定界符。
+- 公式：旧问题是导出把公式拆掉（pandoc 未按 `\(...\)` 定界，导出前又把 `U_1` 改成 `U\_1`）。现已按 LaTeX 公式原样转换。若仍异常，再考虑 pandoc `--mathml`，或把公式改成纯 Unicode/图片后再转 docx（最后手段）。
