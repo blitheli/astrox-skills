@@ -635,6 +635,44 @@ def suppress_image_style(styles_root: etree._Element) -> bool:
     return True
 
 
+def _collapse_anchor_line(p: etree._Element) -> None:
+    """Anchor paragraph should not open a blank line under a top-and-bottom float."""
+    pPr = _ensure_ppr(p)
+    sp = pPr.find(q("spacing"))
+    if sp is None:
+        sp = etree.SubElement(pPr, q("spacing"))
+    sp.set(q("before"), "0")
+    sp.set(q("after"), "0")
+    sp.set(q("line"), "20")
+    sp.set(q("lineRule"), "exact")
+    _reorder_ppr(pPr)
+
+
+def _detach_caption_runs(p: etree._Element) -> list[etree._Element]:
+    """Text runs sitting in a drawing paragraph. Leave the drawing itself."""
+    moved: list[etree._Element] = []
+    for child in list(p):
+        local = etree.QName(child).localname
+        if local not in ("r", "hyperlink"):
+            continue
+        if child.find(".//w:drawing", namespaces=NS) is not None:
+            continue
+        if child.find(".//w:pict", namespaces=NS) is not None:
+            continue
+        if not "".join(child.xpath(".//w:t/text()", namespaces=NS)).strip():
+            continue
+        p.remove(child)
+        moved.append(child)
+    return moved
+
+
+def _run_text(nodes: list[etree._Element]) -> str:
+    parts: list[str] = []
+    for node in nodes:
+        parts.extend(node.xpath(".//w:t/text()", namespaces=NS))
+    return "".join(parts).strip()
+
+
 def _neighbor(el: etree._Element, direction: int) -> etree._Element | None:
     e = el.getnext() if direction > 0 else el.getprevious()
     while e is not None and etree.QName(e).localname not in ("p", "tbl"):
@@ -716,11 +754,33 @@ def fix_caption_numbering(docx_path: Path, template_path: Path) -> dict:
                     _strip_para_numpr(el)
                 elif fig_sid and _para_style(el) == fig_sid:
                     _set_num_id(_ensure_ppr(el), "0")
+                _collapse_anchor_line(el)
                 if _clear_drawing_caption_text(el):
                     prefixes += 1
+                # Caption text must not stay in the float paragraph: PDF draws
+                # that paragraph's 图%1 at the left of the image.
+                moved = _detach_caption_runs(el)
+                nxt = _neighbor(el, 1)
+                if moved:
+                    moved_text = _run_text(moved)
+                    if (
+                        nxt is not None
+                        and etree.QName(nxt).localname == "p"
+                        and not _has_drawing(nxt)
+                        and ptext(nxt).strip() in ("", moved_text)
+                    ):
+                        if not ptext(nxt).strip():
+                            for node in moved:
+                                nxt.append(node)
+                    else:
+                        cap = etree.Element(q("p"))
+                        el.addnext(cap)
+                        for node in moved:
+                            cap.append(node)
+                        nxt = cap
                 nxt = _neighbor(el, 1)
                 if nxt is not None and etree.QName(nxt).localname == "p" and fig_sid:
-                    if _looks_like_caption(nxt, "图", names):
+                    if (moved or _looks_like_caption(nxt, "图", names)) and ptext(nxt).strip():
                         if _normalize_caption(nxt, "图", fig_sid):
                             prefixes += 1
                         captions += 1
@@ -841,6 +901,12 @@ def verify_caption_numbering(docx_path: Path) -> list[str]:
 
     for p in doc.findall(f"{q('body')}/{q('p')}"):
         if _has_drawing(p):
+            draw_name = smap.get(_para_style(p) or "", "")
+            if draw_name == FIG_STYLE:
+                errors.append("drawing paragraph uses A图片; 图 number would sit beside the float")
+            leftover = ptext(p).strip()
+            if leftover:
+                errors.append(f"caption text still inside drawing paragraph: {leftover!r}")
             continue
         sid = _para_style(p)
         name = smap.get(sid or "", "")
