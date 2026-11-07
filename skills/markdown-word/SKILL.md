@@ -71,7 +71,7 @@ description: >-
    - **行高至少 24 pt**（`trHeight` `atLeast` 480 twips）
    - 单元格段落段前段后各 **2 pt**（40 twips），使垂直居中可见且行高不过大
    - `tblW` pct 5000；去掉单元格误继承的首行缩进与首尾空白
-5. **图题 / 表题**：用模板样式 `A图片` / `A表` 的 Word 自动编号（`图%1` / `表%1`），文案只写标题，不写「图1」「表1」。图所在段落用 `A图片2`，且 `numId=0`。图题字号可比正文小一号。轴标签用中文。LO roundtrip 之后必须再把 numbering 的 `pStyle` 对齐当前 styleId。
+5. **图题 / 表题**：用模板样式 `A图片` / `A表` 的 Word 自动编号（`图%1` / `表%1`），文案只写标题，不写「图1」「表1」。图所在段落用 `A图片2`，且 `numId=0`。图题字号为五号。轴标签用中文。LO roundtrip 之后必须再把 numbering 的 `pStyle` 对齐当前 styleId。
 5b. **图的位置**（`layout_figures_in_content_area`，LO 前后都要跑）：
    - 上下型环绕 `wp:wrapTopAndBottom`，不要嵌入型 `wp:inline`
    - 水平 `relativeFrom="column"`、`posOffset=0`（版心左端）。**不要** `relativeFrom="page"`，那会贴到纸边并伸进页边距
