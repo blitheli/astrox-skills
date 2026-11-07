@@ -49,11 +49,11 @@ description: >-
    office soffice convert lo/fixed.docx pdf --outdir lo/
    ```
    或调用脚本里的 `libreoffice_word_safe_roundtrip`。`convert()` 会写出 `final.docx`（模板样式 + OMML 修复）、`final-word.docx`（LO roundtrip，优先给 Word 用户）、`final.pdf`。
-6b. **题注自动编号（LO 之后再修一次）**：`convert()` 在 roundtrip 前调用 `fix_caption_numbering`，roundtrip 以及表格 / 列表 demote / 正文缩进 / 一级标题修复之后再调用一次（与报告构建里 LO 后补跑题注后处理一致）。这一步要：
+6b. **题注自动编号（LO 之后再修一次）**：`convert()` 在 roundtrip 前后都先跑 `layout_figures_in_content_area`，再跑 `fix_caption_numbering`（roundtrip 后还要先做表格、列表 demote、正文缩进、一级标题修复）。这一步要：
    - 保证「A图片」「A表」样式带 `numPr`，对应 `lvlText` 为 `图%1` / `表%1`
    - 把 `numbering.xml` 里该 abstractNum 的 `pStyle` 改成**当前**「A图片」「A表」的 styleId（LO 常把 A0/A 改成 A3/A4，旧 `pStyle` 会让表号失效）
    - 题注段落使用这两个样式；正文只有标题。Markdown 图用 `![说明](路径)`，表用 `Table: 标题`。不要把手写的「图1」「表1」写进 `w:t`
-   - 「A图片2」（图所在段落）设 `numId=0`，禁止继承图编号
+   - 「A图片2」（图所在段落）设 `numId=0`，禁止继承图编号。题注不要留在这一段里
    - 编号列表 demote 必须跳过 A图片 / A表 / A图片2 段落，也不得改写 `图%1` / `表%1` 的 abstractNum
 7. **检查**：`unzip -t`、`office validate`、`office render` 或 soffice→PDF 抽查。不要用「能转 PDF」当成 Word 已兼容。交付用的 `final.docx` 和 `final-word.docx` 都要核对题注自动编号（见下文）。抽查行内公式：`U_1` / `U_2` 应为 Word OMML 下标，正文里没有 `\(` `\)` 括号。
 
@@ -77,7 +77,7 @@ description: >-
    - 上下型环绕 `wp:wrapTopAndBottom`，不要嵌入型 `wp:inline`
    - 水平 `relativeFrom="column"`、`posOffset=0`（版心左端）。**不要** `relativeFrom="page"`，那会贴到纸边并伸进页边距
    - 宽度等于版心（`pgSz.w - pgMar.left - pgMar.right`，twip×635 = EMU），不要等于页宽
-   - 图注并入图所在段落（样式改为 `A图片`），图与「图N」之间不得再留空段。并入后不要让该段继承 `A图片2` 再占一行
+   - 图所在段只用 `A图片2`（`numId=0`），段落里不放题注文字。题注是紧随其后的下一段，样式 `A图片`，自动编号 `图%1` 画在这一段上，Word 和 PDF 都在图下方。不要把题注并进浮动图所在段，否则 PDF 会把「图」「1」拆到图的左侧。两段之间不留空段。锚点段行高压到 1 pt，避免图和题注之间多出一行空白
 6. **行内公式**：Markdown 继续写 `\(U_1\)` / `\(U_2\)` 这类标准 LaTeX 行内公式。Preview 会显示成 U₁ / U₂，`\(` `\)` 只是定界符，不会印在页面上。导出按 LaTeX 公式原样转换（保留定界，交给 pandoc 生成 OMML）；**禁止**导出前把 `U_1` 改成 `U\_1`，也禁止去掉定界或改成纯文本。交付 docx 里应为 Word 公式下标，正文中没有括号。
 7. **交付**：优先 `final-word.docx`（或 LO roundtrip 后的主 docx）。**交付文件名按具体任务而定**，不要在本技能里写死报告名。
 
@@ -109,7 +109,7 @@ for name in ("final.docx", "final-word.docx"):
 PY
 ```
 
-`verify_caption_numbering` 为空才算通过。它检查：A图片 / A表 带 `numPr`，lvlText 为 `图%1` / `表%1`，abstractNum 的 `pStyle` 等于这两个样式当前的 styleId，题注 `w:t` 没有手写「图N」「表N」，A图片2 的 `numId` 为 `0`。也可以 `unzip` 后直接看 `word/styles.xml` 与 `word/numbering.xml`。`final-word.docx` 上 styleId 可以不再是 A0/A，但必须和 `pStyle` 一致。
+`verify_caption_numbering` 为空才算通过。它检查：A图片 / A表 带 `numPr`，lvlText 为 `图%1` / `表%1`，abstractNum 的 `pStyle` 等于这两个样式当前的 styleId，题注 `w:t` 没有手写「图N」「表N」，A图片2 的 `numId` 为 `0`。含图的段落不能是 `A图片`，也不能留下题注文字。也可以 `unzip` 后直接看 `word/styles.xml` 与 `word/numbering.xml`。`final-word.docx` 上 styleId 可以不再是 A0/A，但必须和 `pStyle` 一致。
 
 ## 注意
 

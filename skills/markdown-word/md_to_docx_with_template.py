@@ -701,11 +701,12 @@ def _content_cx_emu(doc_root: etree._Element) -> int:
 
 
 def layout_figures_in_content_area(docx_path: Path) -> dict:
-    """上下型环绕，图左端对齐版心左边，宽度等于版心；图注与图同一段。
+    """上下型环绕，图左端对齐版心左边，宽度等于版心。
 
     不要 relativeFrom=page、不要铺满页宽（会伸进页边距）。
-    图注若在下一段，并入图所在段，避免图和图注之间多出一个空段。
-    并入后该段用 A图片（自动「图N」），不要单独留 A图片2 占一行。
+    图所在段用 A图片2，不带「图N」。题注留在下一段（A图片，自动编号）。
+    不要把题注并进浮动图所在段：PDF 会把段落编号画在图左侧。
+    图和题注之间的空段删掉。
     """
     work = Path(tempfile.mkdtemp(prefix="figlayout-"))
     stats = {"figures": 0, "captions_merged": 0, "empty_removed": 0}
@@ -716,6 +717,7 @@ def layout_figures_in_content_area(docx_path: Path) -> dict:
         doc_tree = etree.parse(str(work / "word" / "document.xml"))
         doc_root = doc_tree.getroot()
         fig_sid = sid_by_name(styles_root, "A图片") or "A0"
+        img2_sid = sid_by_name(styles_root, "A图片2")
         names = {}
         for s in styles_root.findall(_qn("style")):
             n = s.find(_qn("name"))
@@ -755,13 +757,11 @@ def layout_figures_in_content_area(docx_path: Path) -> dict:
                 body.remove(children[j])
                 stats["empty_removed"] += 1
                 j += 1
-            if j < len(children) and is_caption(children[j]):
-                cap = children[j]
-                for child in list(cap):
-                    if child.tag == _qn("r"):
-                        p.append(child)
-                body.remove(cap)
-                stats["captions_merged"] += 1
+            # 题注留在下一段。并进浮动图所在段时，PDF 会把「图N」画到图左侧。
+            if img2_sid:
+                draw_style = img2_sid
+            else:
+                draw_style = fig_sid
             pPr = p.find(_qn("pPr"))
             if pPr is None:
                 pPr = etree.Element(_qn("pPr"))
@@ -769,10 +769,14 @@ def layout_figures_in_content_area(docx_path: Path) -> dict:
             ps = pPr.find(_qn("pStyle"))
             if ps is None:
                 ps = etree.SubElement(pPr, _qn("pStyle"))
-            ps.set(f"{W}val", fig_sid)
+            ps.set(f"{W}val", draw_style)
             numPr = pPr.find(_qn("numPr"))
             if numPr is not None:
                 pPr.remove(numPr)
+            if not img2_sid:
+                numPr = etree.SubElement(pPr, _qn("numPr"))
+                etree.SubElement(numPr, _qn("ilvl")).set(f"{W}val", "0")
+                etree.SubElement(numPr, _qn("numId")).set(f"{W}val", "0")
             _float_drawing(p, content_cx, stats["figures"] + 1)
             stats["figures"] += 1
             children = [c for c in list(body) if c.tag != _qn("sectPr")]
@@ -866,8 +870,10 @@ def _float_drawing(p: etree._Element, content_cx: int, seq: int) -> None:
 # realigns numbering pStyle afterwards. A图片2 numId=0. Demote skips them.
 # Figures: wrapTopAndBottom; positionH relativeFrom=column posOffset=0;
 # width = content area (page minus margins), NOT page width.
-# Merge the caption into the drawing paragraph so no blank line sits between
-# the picture and 图N. Re-run layout_figures_in_content_area after LO.
+# Drawing paragraph is A图片2 (numId=0). Caption stays the next paragraph
+# (A图片 / 图%1) so Word and PDF both put 图N under the figure. Do not merge
+# the caption into the float paragraph. No empty paragraph between them.
+# layout_figures then fix_caption_numbering, before and after LO.
 # ---------------------------------------------------------------------------
 
 
@@ -1732,9 +1738,10 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
     body_indent_pre = ensure_body_first_line_indent(final_out)
     heading_num_pre = number_unnumbered_headings(final_out)
     h1_space_pre = fix_heading1_number_spacing(final_out)
-    # Caption auto-number before LO, then again after LO remaps styleId.
-    caption_pre = fix_caption_numbering(final_out, template)
+    # Float first, then caption repair. Caption must stay the paragraph
+    # after the drawing; merging it into the float puts 图N beside the image in PDF.
     figure_pre = layout_figures_in_content_area(final_out)
+    caption_pre = fix_caption_numbering(final_out, template)
 
     word_safe = outdir / "final-word.docx"
     pdf_out = outdir / "final.pdf"
@@ -1760,9 +1767,10 @@ def convert(md: Path, template: Path, outdir: Path) -> dict:
             h1_space_post = fix_heading1_number_spacing(word_safe)
             lo_info["h1_number_spacing"] = h1_space_post
             # LO rewrites styleId (A0/A → A3/A4) and leaves numbering pStyle stale.
+            # Layout first so a float is not restyled as A图片 after the caption split.
+            lo_info["figure_layout"] = layout_figures_in_content_area(word_safe)
             caption_post = fix_caption_numbering(word_safe, template)
             lo_info["caption_numbering"] = caption_post
-            lo_info["figure_layout"] = layout_figures_in_content_area(word_safe)
             # Re-export PDF from restyled Word-safe doc so shading is visible
             if pdf_out is not None:
                 try:
