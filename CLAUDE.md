@@ -63,6 +63,7 @@ skills/
 - `celestial-ephemeris`(目录 `skills/celestial-ephemeris/`)
 - `celestial-mpc`(目录 `skills/celestial-mpc/`)
 - `celestial-transfer`(目录 `skills/celestial-transfer/`)
+- `celestial-transfer-dsm`(目录 `skills/celestial-transfer-dsm/`;行星/小行星间 1-DSM 转移 `POST /celestial/TransferBetweenPlanetsDSM`)
 - `celestial-cbaxes-rotation`(目录 `skills/celestial-cbaxes-rotation/`)
 - `kepler2rv`(目录 `skills/kepler2rv/`)
 - `rv2kepler`(目录 `skills/rv2kepler/`)

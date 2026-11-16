@@ -110,6 +110,11 @@
       "fixturesDir": "skills/celestial-transfer/fixtures"
     },
     {
+      "name": "celestial-transfer-dsm",
+      "skillFile": "skills/celestial-transfer-dsm/SKILL.md",
+      "fixturesDir": "skills/celestial-transfer-dsm/fixtures"
+    },
+    {
       "name": "celestial-cbaxes-rotation",
       "skillFile": "skills/celestial-cbaxes-rotation/SKILL.md",
       "fixturesDir": "skills/celestial-cbaxes-rotation/fixtures"
